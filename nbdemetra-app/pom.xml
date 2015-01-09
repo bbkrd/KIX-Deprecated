@@ -94,6 +94,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>nbdemetra-anomalydetection</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>nbdemetra-kix</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
