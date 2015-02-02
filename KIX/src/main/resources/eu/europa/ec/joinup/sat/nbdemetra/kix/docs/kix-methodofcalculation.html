@@ -1,1785 +1,1792 @@
 <!doctype html>
 <html lang ="en-US">
-	<head>
-		<meta charset="UTF-8" />
-		<title>KIX - Method of calculation</title>
-		<style>
-			h1, h2, h3 {
-			color:blue;
-			background: lightblue;
-			} 
-			
-			h1 {font-size: 28px;}
-			
-			h2 {font-size: 18px;}
-			
-			h3 {font-size: 16px;}
-			
-			table {
-			margin-left:1.0cm;
-			border-collapse: collapse;
-			}
-			
-			td, th {
-			border:solid black 1.0pt;
-			padding: 4.0pt;
-			}
-			
-			td {
-			vertical-align:text-bottom;
-			text-align:right;
-			}
-			
-			.calculated {background: yellow;}
-			
-			body {
-			font-family: "Arial", Helvetica, sans-serif;
-			font-size: 14px;
-			color: black;
-			}
-			
-			p {margin-left:1.0cm;}
-			
-			ul {margin-left:1.5cm;}
-		</style>
-	</head>
-	<body lang=DE>
-		<h1>Method of calculation</h1>
-		<p>Version:2014-12-09</p>
-		<h2>Aggregation of chain indices with plus and minus</h2>
-		<p><b>Enter: KIX,i1,w1,+/-,i2,w2,...,refyr</b></p>
-		<p>Execution of the calculation loops: </p>
-		
-		<ul>
-		<li>Entries are read into the system and evaluated from left to right, ie starting with i1, w1.<br/>
-			Each loop operation produces two interim values in the form of an aggregated index and a </li>
-		
-		<li>weight (simple +/-) which can then be used for the next addition or subtraction. </li>
-		<li>As a final step the last calculated index is normalised to match with the reference year (refyr).</li>
-		</ul>
-		
-		<p><b>Note:</b>If you use different starting years for the KIX formula this may cause the entry sequence to <br/>
-			influence the first year of the final result wherever more than two input indices exist.<br/>
-			This effect stems from the fact that interim results contain starting years that are sequentially dependent.</p>
-		<h3>Aggregating two indices (i1, w1) +/- (i2, w2)</h3>
-		<p>Firstly, a check is made for the following conditions:</p>
-		
-		<ul>
-			<li>weight series must not begin after corresponding index series<br/>
-			(However, all weight values preceding the latest index starting time are ignored during calculation.)</li>
-			<li>during the first year index series must be defined from their first period onward</li>
-		</ul>
-		
-		<p>As a next step both index series are unchained.<br/>
-			These unchained series are then aggregated, ie a weighted total or difference is calculated on a value-by-value basis<br/>
-			To do this the previous year averages from the weight series are applied as weights.<br/>
-			The resulting series is then chain-linked and normalised.</p>
-		<p><u>Example</u></p>
-		<p>KIX,A,wA,+,B,wB,2005</p>
-		
-		<table>
-			<thead>
-				<tr>
-					<th>Time</th>
-					<th>A</th>
-					<th>wA</th>
-					<th>B</th>
-					<th>wB</th>
-					<th class ="calculated">A unch.</th>
-					<th class ="calculated">B unch.</th>
-					<th class ="calculated">Weighted<br/>sum</th>
-					<th class ="calculated">prev. year<br/>averages</th>
-					<th class ="calculated">prev. year<br/>avg. (cum.)</th>
-					<th class ="calculated">sum chain-<br/>linked</th>
-					<th class ="calculated">weight A for<br/>aggregation in<br/>reference year</th>
-					<th class ="calculated">weight B for<br/>aggregation in<br/>reference year</th>
-					<th class ="calculated">result<br/>2005 = 100</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>31.03.04</td>
-					<td>89,78</td>
-					<td>175,09</td>
-					<td>81,19</td>
-					<td>25,15</td>
-					<td class ="calculated">97,18</td>
-					<td class ="calculated">88,21</td>
-					<td class ="calculated">95,95</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">95,95</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">88,59</td>
-				</tr> 
-				<tr>
-					<td>30.06.04</td>
-					<td>93,71</td>
-					<td>184,14</td>
-					<td>93,96</td>
-					<td>29,51</td>
-					<td class ="calculated">101,43</td>
-					<td class ="calculated">102,08</td>
-					<td class ="calculated">101,52</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">101,52</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">93,74</td>
-				</tr> 
-				<tr>
-					<td>30.09.04</td>
-					<td>90,85</td>
-					<td>178,95</td>
-					<td>95,71</td>
-					<td>30,30</td>
-					<td class ="calculated">98,34</td>
-					<td class ="calculated">103,98</td>
-					<td class ="calculated">99,12</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">99,12</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">91,52</td>
-				</tr> 
-				<tr>
-					<td>31.12.04</td>
-					<td>95,20</td>
-					<td>187,45</td>
-					<td>97,31</td>
-					<td>30,85</td>
-					<td class ="calculated">103,05</td>
-					<td class ="calculated">105,72</td>
-					<td class ="calculated">103,42</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">103,42</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">95,49</td>
-				</tr>
-				<tr>
-					<td>31.03.05</td>
-					<td>95,47</td>
-					<td>188,09</td>
-					<td>89,17</td>
-					<td>28,51</td>
-					<td class ="calculated">103,34</td>
-					<td class ="calculated">96,88</td>
-					<td class ="calculated">102,45</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">102,45</td>
-					<td rowspan=4 class ="calculated" style='vertical-align:middle'>782,83</td>
-					<td rowspan=4 class ="calculated" style='vertical-align:middle'>125,58</td>
-					<td class ="calculated">94,60</td>
-				</tr>
-				<tr>
-					<td>30.06.05</td>
-					<td>98,29</td>
-					<td>194,33</td>
-					<td>94,84</td>
-					<td>30,68</td>
-					<td class ="calculated">106,39</td>
-					<td class ="calculated">103,04</td>
-					<td class ="calculated">105,93</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">105,93</td>
-					<td class ="calculated">97,81</td>
-				</tr>
-				<tr>
-					<td>30.09.05</td>
-					<td>100,15</td>
-					<td>197,97</td>
-					<td>104,22</td>
-					<td>32,95</td>
-					<td class ="calculated">108,41</td>
-					<td class ="calculated">113,23</td>
-					<td class ="calculated">109,07</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">109,07</td>
-					<td class ="calculated">100,71</td>
-				</tr>
-				<tr>
-					<td>31.12.05</td>
-					<td>104,76</td>
-					<td>207,50</td>
-					<td>111,00</td>
-					<td>36,13</td>
-					<td class ="calculated">113,40</td>
-					<td class ="calculated">120,60</td>
-					<td class ="calculated">114,39</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">100,00</td>
-					<td class ="calculated">114,39</td>
-					<td class ="calculated">105,62</td>
-				</tr>
-				<tr>
-					<td>31.03.06</td>
-					<td>107,69</td>
-					<td>214,56</td>
-					<td>99,15</td>
-					<td>31,86</td>
-					<td class ="calculated">108,05</td>
-					<td class ="calculated">99,34</td>
-					<td class ="calculated">106,83</td>
-					<td class ="calculated">107,96</td>
-					<td class ="calculated">107,96</td>
-					<td class ="calculated">115,33</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">106,50</td>
-				</tr>
-				<tr>
-					<td>30.06.06</td>
-					<td>109,16</td>
-					<td>219,10</td>
-					<td>115,17</td>
-					<td>37,94</td>
-					<td class ="calculated">109,52</td>
-					<td class ="calculated">115,39</td>
-					<td class ="calculated">110,35</td>
-					<td class ="calculated">107,96</td>
-					<td class ="calculated">107,96</td>
-					<td class ="calculated">119,13</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">110,00</td>
-				</tr>
-				<tr>
-					<td>30.09.06</td>
-					<td>112,40</td>
-					<td>225,54</td>
-					<td>113,44</td>
-					<td>37,00</td>
-					<td class ="calculated">112,77</td>
-					<td class ="calculated">113,66</td>
-					<td class ="calculated">112,90</td>
-					<td class ="calculated">107,96</td>
-					<td class ="calculated">107,96</td>
-					<td class ="calculated">121,88</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">112,55</td>
-				</tr>
-				<tr>
-					<td>31.12.06</td>
-					<td>122,26</td>
-					<td>245,62</td>
-					<td>132,40</td>
-					<td>42,43</td>
-					<td class ="calculated">122,67</td>
-					<td class ="calculated">132,66</td>
-					<td class ="calculated">124,07</td>
-					<td class ="calculated">107,96</td>
-					<td class ="calculated">107,96</td>
-					<td class ="calculated">133,94</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">123,68</td>
-				</tr>
-				<tr>
-					<td>31.03.07</td>
-					<td>119,73</td>
-					<td>241,17</td>
-					<td>112,77</td>
-					<td>36,29</td>
-					<td class ="calculated">106,07</td>
-					<td class ="calculated">98,03</td>
-					<td class ="calculated">104,93</td>
-					<td class ="calculated">113,54</td>
-					<td class ="calculated">122,57</td>
-					<td class ="calculated">128,62</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">118,76</td>
-				</tr>
-				<tr>
-					<td>30.06.07</td>
-					<td>120,83</td>
-					<td>244,79</td>
-					<td>118,62</td>
-					<td>38,60</td>
-					<td class ="calculated">107,05</td>
-					<td class ="calculated">103,11</td>
-					<td class ="calculated">106,49</td>
-					<td class ="calculated">113,54</td>
-					<td class ="calculated">122,57</td>
-					<td class ="calculated">130,52</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">120,52</td>
-				</tr>
-				<tr>
-					<td>30.09.07</td>
-					<td>122,45</td>
-					<td>247,22</td>
-					<td>121,56</td>
-					<td>40,18</td>
-					<td class ="calculated">108,48</td>
-					<td class ="calculated">105,67</td>
-					<td class ="calculated">108,08</td>
-					<td class ="calculated">113,54</td>
-					<td class ="calculated">122,57</td>
-					<td class ="calculated">132,48</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">122,33</td>
-				</tr>
-				<tr>
-					<td>31.12.07</td>
-					<td>128,06</td>
-					<td>257,58</td>
-					<td>131,39</td>
-					<td>43,60</td>
-					<td class ="calculated">113,45</td>
-					<td class ="calculated">114,21</td>
-					<td class ="calculated">113,56</td>
-					<td class ="calculated">113,54</td>
-					<td class ="calculated">122,57</td>
-					<td class ="calculated">139,19</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">128,52</td>
-				</tr>
-				<tr>
-					<td>31.03.08</td>
-					<td>128,39</td>
-					<td>259,71</td>
-					<td>121,06</td>
-					<td>40,62</td>
-					<td class ="calculated">104,58</td>
-					<td class ="calculated">99,98</td>
-					<td class ="calculated">103,94</td>
-					<td class ="calculated">108,27</td>
-					<td class ="calculated">132,70</td>
-					<td class ="calculated">137,94</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">127,37</td>
-				</tr>
-				<tr>
-					<td>30.06.08</td>
-					<td>127,53</td>
-					<td>260,26</td>
-					<td>121,56</td>
-					<td>40,57</td>
-					<td class ="calculated">103,88</td>
-					<td class ="calculated">100,39</td>
-					<td class ="calculated">103,40</td>
-					<td class ="calculated">108,27</td>
-					<td class ="calculated">132,70</td>
-					<td class ="calculated">137,21</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">126,70</td>
-				</tr>
-				<tr>
-					<td>30.09.08</td>
-					<td>125,12</td>
-					<td>256,27</td>
-					<td>125,29</td>
-					<td>42,46</td>
-					<td class ="calculated">101,92</td>
-					<td class ="calculated">103,47</td>
-					<td class ="calculated">102,13</td>
-					<td class ="calculated">108,27</td>
-					<td class ="calculated">132,70</td>
-					<td class ="calculated">135,53</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">125,15</td>
-				</tr>
-				<tr>
-					<td>31.12.08</td>
-					<td>118,38</td>
-					<td>240,33</td>
-					<td>139,41</td>
-					<td>46,63</td>
-					<td class ="calculated">96,43</td>
-					<td class ="calculated">115,13</td>
-					<td class ="calculated">99,01</td>
-					<td class ="calculated">108,27</td>
-					<td class ="calculated">132,70</td>
-					<td class ="calculated">131,39</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">121,32</td>
-				</tr>
-				<tr>
-					<td>31.03.09</td>
-					<td>102,32</td>
-					<td>204,06</td>
-					<td>128,07</td>
-					<td>40,28</td>
-					<td class ="calculated">81,95</td>
-					<td class ="calculated">100,98</td>
-					<td class ="calculated">84,68</td>
-					<td class ="calculated">102,12</td>
-					<td class ="calculated">135,52</td>
-					<td class ="calculated">114,76</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">105,96</td>
-				</tr>
-				<tr>
-					<td>30.06.09</td>
-					<td>100,80</td>
-					<td>199,94</td>
-					<td>129,15</td>
-					<td>39,44</td>
-					<td class ="calculated">80,73</td>
-					<td class ="calculated">101,83</td>
-					<td class ="calculated">83,76</td>
-					<td class ="calculated">102,12</td>
-					<td class ="calculated">135,52</td>
-					<td class ="calculated">113,51</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">104,81</td>
-				</tr>
-				<tr>
-					<td>30.09.09</td>
-					<td>105,21</td>
-					<td>208,43</td>
-					<td>125,46</td>
-					<td>39,73</td>
-					<td class ="calculated">84,27</td>
-					<td class ="calculated">98,92</td>
-					<td class ="calculated">86,37</td>
-					<td class ="calculated">102,12</td>
-					<td class ="calculated">135,52</td>
-					<td class ="calculated">117,04</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">108,07</td>
-				</tr>
-				<tr>
-					<td>31.12.09</td>
-					<td>109,90</td>
-					<td>218,29</td>
-					<td>135,75</td>
-					<td>44,00</td>
-					<td class ="calculated">88,02</td>
-					<td class ="calculated">107,03</td>
-					<td class ="calculated">90,75</td>
-					<td class ="calculated">102,12</td>
-					<td class ="calculated">135,52</td>
-					<td class ="calculated">122,98</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">113,56</td>
-				</tr>
-			</tbody>
-		</table>
-		<br/>
-		<h2>Calculating growth contributions</h2>
-		<p><b>Enter: WBG,iContr,wContr,+/-,iTotal,wTotal,#ofLags</b></p>
-		<p>Firstly,a check is made for the following conditions:</p>
-		
-		<ul>
-			<li>weight series must not start later than corresponding index series<br/>
-				(However, any weight values positioned before the latest index starting point are excluded from the calculation.)</li>
-			<li>for their first year index series must be defined from the first period onward</li>
-			<li>the iContr series must not start later than iTotal</li>
-		</ul>	
-		
-		<p>	As a next step, iTotal is normalised to the year when it started in order to enable subsequent comparison with an auxiliary series.<br/>
-			Following this we calculate both auxiliary series iRes and wRes.</p>
-			
-		<ul>
-			<li>iRes represents
-				<ul>
-					<li>for a positive entry &quot;+&quot;: the difference between two indices iTotal &quot;-&quot; iContr</li>
-					<li>for a negative entry &quot;-&quot;: the sum of two indices iTotal &quot;+&quot; iContr</li>
-				</ul>
-				(In each case both indices are unchained then weighted using the previous year averages for wTotal and wContr<br/>
-				in order to create the sum or difference. iRes is left unchained.)
-			</li>
-		</ul>
-		<ul>
-			<li>wRes represents
-				<ul>
-					<li>for a positive entry &quot;+&quot;: the simple difference between two time series wTotal - wContr</li>
-					<li>for a negative entry &quot;-&quot;: the simple sum of two time series wTotal + wContr</li>
-				</ul>
-			</li>
-		</ul>	
-		
-		<p>	As a next step, iContr is lagged with #ofLags periods.<br/>
-			The lagged series is unchained using the previous year averages from the unlagged series.</p>
-		<p>This series is then weighted together with iRes as follows:</p>
-		<ul>
-			<li>for a positive entry &quot;+&quot;: as weighted sum</li>
-			<li>for a negative entry &quot;-&quot;: as weighted difference</li>
-		</ul>
-		
-		<p>	To do this the previous year averages for wContr (unlagged!) and wRes are applied as weights.<br/>
-			The resulting aggregate is then chain-linked, though in this case using the previous year averages from the unchained iTotal. <br/>
-			As an interim result we get the time series iTotalLag. This series is normalised to match its starting year; it therefore can be compared with iTotal. <br/>
-			Now we determine the relative differences to the #OfLags-th preceding period of iTotal for both iTotal and iTotalLag. <br/>
-			The final growth contribution figure is produced by subtracting the difference for iTotalLag from the difference for iTotal.</p>
-			
-		<p><u>Example</u></p>
-		<p>WBG,A,wA,+,Total,wTotal,1</p>
-		
-		
-		<table>
-			<thead>
-				<tr>
-					<th>Time</th>
-					<th>A</th>
-					<th>wA</th>
-					<th>Total</th>
-					<th>wTotal</th>
-					<th class ="calculated">A unch.</th>
-					<th class ="calculated">Total 1995</th>
-					<th class ="calculated">Total 1995<br/>unch.</th>
-					<th class ="calculated">prev. y. avg.<br/>Total</th>
-					<th class ="calculated">prev. y. avg.<br/>(cum.)</th>
-					<th class ="calculated">iRes. unch.</th>
-					<th class ="calculated">wRes</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>31.03.95</td>
-					<td>78,1</td>
-					<td>392,0</td>
-					<td>85,9</td>
-					<td>843,0</td>
-					<td class ="calculated">98,0</td>
-					<td class ="calculated">92,5</td>
-					<td class ="calculated">92,5</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">88,2</td>
-					<td class ="calculated">451,0</td>
-				</tr>
-				<tr>
-					<td>30.06.95</td>
-					<td>79,7</td>
-					<td>400,0</td>
-					<td>97,0</td>
-					<td>951,0</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">104,4</td>
-					<td class ="calculated">104,4</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">107,8</td>
-					<td class ="calculated">551,0</td>
-				</tr>
-				<tr>
-					<td>30.09.95</td>
-					<td>79,7</td>
-					<td>400,0</td>
-					<td>101,7</td>
-					<td>998,0</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">109,5</td>
-					<td class ="calculated">109,5</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">117,0</td>
-					<td class ="calculated">598,0</td>
-				</tr>
-				<tr>
-					<td>31.12.95</td>
-					<td>81,3</td>
-					<td>408,0</td>
-					<td>87,0</td>
-					<td>853,0</td>
-					<td class ="calculated">102,0</td>
-					<td class ="calculated">93,6</td>
-					<td class ="calculated">93,6</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">87,0</td>
-					<td class ="calculated">445,0</td>
-				</tr>
-				<tr>
-					<td>31.03.96</td>
-					<td>86,1</td>
-					<td>496,8</td>
-					<td>89,1</td>
-					<td>951,6</td>
-					<td class ="calculated">108,0</td>
-					<td class ="calculated">95,9</td>
-					<td class ="calculated">95,9</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">86,5</td>
-					<td class ="calculated">454,8</td>
-				</tr>
-				<tr>
-					<td>30.06.96</td>
-					<td>89,2</td>
-					<td>442,4</td>
-					<td>100,6</td>
-					<td>1114,4</td>
-					<td class ="calculated">112,0</td>
-					<td class ="calculated">108,3</td>
-					<td class ="calculated">108,3</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">105,4</td>
-					<td class ="calculated">672,0</td>
-				</tr>
-				<tr>
-					<td>30.09.96</td>
-					<td>90,8</td>
-					<td>461,7</td>
-					<td>106,2</td>
-					<td>1091,7</td>
-					<td class ="calculated">114,0</td>
-					<td class ="calculated">114,3</td>
-					<td class ="calculated">114,3</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">114,6</td>
-					<td class ="calculated">630,0</td>
-				</tr>
-				<tr>
-					<td>31.12.96</td>
-					<td>92,4</td>
-					<td>290,0</td>
-					<td>91,5</td>
-					<td>906,0</td>
-					<td class ="calculated">116,0</td>
-					<td class ="calculated">98,4</td>
-					<td class ="calculated">98,4</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">100,0</td>
-					<td class ="calculated">84,7</td>
-					<td class ="calculated">616,0</td>
-				</tr>
-				<tr>
-					<td>31.03.97</td>
-					<td>95,6</td>
-					<td>456,0</td>
-					<td>92,8</td>
-					<td>978,3</td>
-					<td class ="calculated">106,7</td>
-					<td class ="calculated">99,9</td>
-					<td class ="calculated">95,8</td>
-					<td class ="calculated">104,3</td>
-					<td class ="calculated">104,3</td>
-					<td class ="calculated">88,0</td>
-					<td class ="calculated">522,3</td>
-				</tr>
-				<tr>
-					<td>30.06.97</td>
-					<td>98,8</td>
-					<td>446,4</td>
-					<td>103,4</td>
-					<td>1196,4</td>
-					<td class ="calculated">110,2</td>
-					<td class ="calculated">111,3</td>
-					<td class ="calculated">106,8</td>
-					<td class ="calculated">104,3</td>
-					<td class ="calculated">104,3</td>
-					<td class ="calculated">104,4</td>
-					<td class ="calculated">750,0</td>
-				</tr>
-				<tr>
-					<td>30.09.97</td>
-					<td>103,6</td>
-					<td>442,0</td>
-					<td>109,5</td>
-					<td>1145,5</td>
-					<td class ="calculated">115,6</td>
-					<td class ="calculated">117,9</td>
-					<td class ="calculated">113,1</td>
-					<td class ="calculated">104,3</td>
-					<td class ="calculated">104,3</td>
-					<td class ="calculated">111,3</td>
-					<td class ="calculated">703,5</td>
-				</tr>
-				<tr>
-					<td>31.12.97</td>
-					<td>102,0</td>
-					<td>416,0</td>
-					<td>94,3</td>
-					<td>1096,5</td>
-					<td class ="calculated">113,8</td>
-					<td class ="calculated">101,5</td>
-					<td class ="calculated">97,4</td>
-					<td class ="calculated">104,3</td>
-					<td class ="calculated">104,3</td>
-					<td class ="calculated">85,7</td>
-					<td class ="calculated">680,5</td>
-				</tr>
-				<tr>
-					<td>31.03.98</td>
-					<td>107,4</td>
-					<td>411,1</td>
-					<td>96,6</td>
-					<td>1121,9</td>
-					<td class ="calculated">107,4</td>
-					<td class ="calculated">104,0</td>
-					<td class ="calculated">96,6</td>
-					<td class ="calculated">103,2</td>
-					<td class ="calculated">107,6</td>
-					<td class ="calculated">89,4</td>
-					<td class ="calculated">710,8</td>
-				</tr>
-				<tr>
-					<td>30.06.98</td>
-					<td>110,6</td>
-					<td>395,6</td>
-					<td>106,6</td>
-					<td>1306,6</td>
-					<td class ="calculated">110,6</td>
-					<td class ="calculated">114,7</td>
-					<td class ="calculated">106,6</td>
-					<td class ="calculated">103,2</td>
-					<td class ="calculated">107,6</td>
-					<td class ="calculated">103,9</td>
-					<td class ="calculated">911,1</td>
-				</tr>
-				<tr>
-					<td>30.09.98</td>
-					<td>113,9</td>
-					<td>379,0</td>
-					<td>112,1</td>
-					<td>1230,1</td>
-					<td class ="calculated">113,9</td>
-					<td class ="calculated">120,6</td>
-					<td class ="calculated">112,1</td>
-					<td class ="calculated">103,2</td>
-					<td class ="calculated">107,6</td>
-					<td class ="calculated">110,8</td>
-					<td class ="calculated">851,1</td>
-				</tr>
-				<tr>
-					<td>31.12.98</td>
-					<td>117,5</td>
-					<td>368,5</td>
-					<td>99,6</td>
-					<td>1176,5</td>
-					<td class ="calculated">117,5</td>
-					<td class ="calculated">107,2</td>
-					<td class ="calculated">99,6</td>
-					<td class ="calculated">103,2</td>
-					<td class ="calculated">107,6</td>
-					<td class ="calculated">87,8</td>
-					<td class ="calculated">808,0</td>
-				</tr>
-				<tr>
-					<td>31.03.99</td>
-					<td>121,1</td>
-					<td>342,0</td>
-					<td>99,9</td>
-					<td>1184,8</td>
-					<td class ="calculated">107,8</td>
-					<td class ="calculated">107,6</td>
-					<td class ="calculated">96,4</td>
-					<td class ="calculated">103,7</td>
-					<td class ="calculated">111,6</td>
-					<td class ="calculated">91,0</td>
-					<td class ="calculated">842,8</td>
-				</tr>
-				<tr>
-					<td>30.06.99</td>
-					<td>124,8</td>
-					<td>336,7</td>
-					<td>109,1</td>
-					<td>1386,9</td>
-					<td class ="calculated">111,1</td>
-					<td class ="calculated">117,4</td>
-					<td class ="calculated">105,2</td>
-					<td class ="calculated">103,7</td>
-					<td class ="calculated">111,6</td>
-					<td class ="calculated">102,4</td>
-					<td class ="calculated">1050,2</td>
-				</tr>
-				<tr>
-					<td>30.09.99</td>
-					<td>128,4</td>
-					<td>306,3</td>
-					<td>114,0</td>
-					<td>1260,4</td>
-					<td class ="calculated">114,3</td>
-					<td class ="calculated">122,7</td>
-					<td class ="calculated">109,9</td>
-					<td class ="calculated">103,7</td>
-					<td class ="calculated">111,6</td>
-					<td class ="calculated">107,8</td>
-					<td class ="calculated">954,1</td>
-				</tr>
-				<tr>
-					<td>31.12.99</td>
-					<td>132,4</td>
-					<td>290,9</td>
-					<td>101,9</td>
-					<td>1189,4</td>
-					<td class ="calculated">117,9</td>
-					<td class ="calculated">109,7</td>
-					<td class ="calculated">98,3</td>
-					<td class ="calculated">103,7</td>
-					<td class ="calculated">111,6</td>
-					<td class ="calculated">89,0</td>
-					<td class ="calculated">898,6</td>
-				</tr>
-				<tr>
-					<td>31.03.00</td>
-					<td>136,3</td>
-					<td>290,7</td>
-					<td>101,7</td>
-					<td>1205,7</td>
-					<td class ="calculated">107,5</td>
-					<td class ="calculated">109,5</td>
-					<td class ="calculated">95,8</td>
-					<td class ="calculated">102,4</td>
-					<td class ="calculated">114,3</td>
-					<td class ="calculated">91,8</td>
-					<td class ="calculated">915,0</td>
-				</tr>
-				<tr>
-					<td>30.06.00</td>
-					<td>140,6</td>
-					<td>273,4</td>
-					<td>110,6</td>
-					<td>1378,5</td>
-					<td class ="calculated">110,9</td>
-					<td class ="calculated">119,0</td>
-					<td class ="calculated">104,1</td>
-					<td class ="calculated">102,4</td>
-					<td class ="calculated">114,3</td>
-					<td class ="calculated">101,8</td>
-					<td class ="calculated">1105,1</td>
-				</tr>
-				<tr>
-					<td>30.09.00</td>
-					<td>144,7</td>
-					<td>254,2</td>
-					<td>115,1</td>
-					<td>1293,2</td>
-					<td class ="calculated">114,2</td>
-					<td class ="calculated">123,9</td>
-					<td class ="calculated">108,3</td>
-					<td class ="calculated">102,4</td>
-					<td class ="calculated">114,3</td>
-					<td class ="calculated">106,3</td>
-					<td class ="calculated">1039,0</td>
-				</tr>
-				<tr>
-					<td>31.12.00</td>
-					<td>149,0</td>
-					<td>252,5</td>
-					<td>103,3</td>
-					<td>1266,9</td>
-					<td class ="calculated">117,6</td>
-					<td class ="calculated">111,2</td>
-					<td class ="calculated">97,2</td>
-					<td class ="calculated">102,4</td>
-					<td class ="calculated">114,3</td>
-					<td class ="calculated">90,3</td>
-					<td class ="calculated">1014,4</td>
-				</tr>
-			</tbody>
-		</table>
-		<br/>
-		
-		
-		<table> 
-			<thead>
-				<tr>
-					<th>Time</th>
-					<th>A-lag</th>
-					<th>A-lag<br>unch.</th>
-					<th>A-lag + iRes<br>unch.</th>
-					<th>A-lag + iRes</th>
-					<th>Lagdiff.<br>Total</th>
-					<th>Lagdiff.<br>A-lag + iRes</th>
-					<th>growth<br>contribution</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>31.03.95</td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					</tr>
-				<tr>
-					<td>30.06.95</td>
-					<td>78,1</td>
-					<td>98,0</td>
-					<td>103,5</td>
-					<td>103,5</td>
-					<td>12,81</td>
-					<td>11,86</td>
-					<td>0,95</td>
-					</tr>
-				<tr>
-					<td>30.09.95</td>
-					<td>79,7</td>
-					<td>100,0</td>
-					<td>109,5</td>
-					<td>109,5</td>
-					<td>4,94</td>
-					<td>4,94</td>
-					<td>0,00</td>
-					</tr>
-				<tr>
-					<td>31.12.95</td>
-					<td>79,7</td>
-					<td>100,0</td>
-					<td>92,7</td>
-					<td>92,7</td>
-					<td>-14,53</td>
-					<td>-15,33</td>
-					<td>0,80</td>
-					</tr>
-				<tr>
-					<td>31.03.96</td>
-					<td>81,3</td>
-					<td>102,0</td>
-					<td>93,3</td>
-					<td>93,3</td>
-					<td>2,46</td>
-					<td>-0,35</td>
-					<td>2,81</td>
-					</tr>
-				<tr>
-					<td>30.06.96</td>
-					<td>86,1</td>
-					<td>108,0</td>
-					<td>106,6</td>
-					<td>106,6</td>
-					<td>12,93</td>
-					<td>11,10</td>
-					<td>1,83</td>
-					</tr>
-				<tr>
-					<td>30.09.96</td>
-					<td>89,2</td>
-					<td>112,0</td>
-					<td>113,5</td>
-					<td>113,5</td>
-					<td>5,57</td>
-					<td>4,76</td>
-					<td>0,81</td>
-					</tr>
-				<tr>
-					<td>31.12.96</td>
-					<td>90,8</td>
-					<td>114,0</td>
-					<td>97,6</td>
-					<td>97,6</td>
-					<td>-13,92</td>
-					<td>-14,68</td>
-					<td>0,77</td>
-					</tr>
-				<tr>
-					<td>31.03.97</td>
-					<td>92,4</td>
-					<td>103,1</td>
-					<td>94,3</td>
-					<td>98,3</td>
-					<td>1,44</td>
-					<td>-0,13</td>
-					<td>1,57</td>
-					</tr>
-				<tr>
-					<td>30.06.97</td>
-					<td>95,6</td>
-					<td>106,7</td>
-					<td>105,3</td>
-					<td>109,8</td>
-					<td>11,51</td>
-					<td>9,96</td>
-					<td>1,54</td>
-					</tr>
-				<tr>
-					<td>30.09.97</td>
-					<td>98,8</td>
-					<td>110,2</td>
-					<td>110,8</td>
-					<td>115,5</td>
-					<td>5,86</td>
-					<td>3,78</td>
-					<td>2,08</td>
-					</tr>
-				<tr>
-					<td>31.12.97</td>
-					<td>103,6</td>
-					<td>115,6</td>
-					<td>98,1</td>
-					<td>102,3</td>
-					<td>-13,89</td>
-					<td>-13,23</td>
-					<td>-0,65</td>
-					</tr>
-				<tr>
-					<td>31.03.98</td>
-					<td>102,0</td>
-					<td>102,0</td>
-					<td>94,4</td>
-					<td>101,6</td>
-					<td>2,42</td>
-					<td>0,13</td>
-					<td>2,29</td>
-					</tr>
-				<tr>
-					<td>30.06.98</td>
-					<td>107,4</td>
-					<td>107,4</td>
-					<td>105,3</td>
-					<td>113,3</td>
-					<td>10,34</td>
-					<td>9,02</td>
-					<td>1,32</td>
-					</tr>
-				<tr>
-					<td>30.09.98</td>
-					<td>110,6</td>
-					<td>110,6</td>
-					<td>110,7</td>
-					<td>119,2</td>
-					<td>5,16</td>
-					<td>3,91</td>
-					<td>1,25</td>
-					</tr>
-				<tr>
-					<td>31.12.98</td>
-					<td>113,9</td>
-					<td>113,9</td>
-					<td>98,2</td>
-					<td>105,7</td>
-					<td>-11,12</td>
-					<td>-12,37</td>
-					<td>1,25</td>
-					</tr>
-				<tr>
-					<td>31.03.99</td>
-					<td>117,5</td>
-					<td>104,5</td>
-					<td>95,3</td>
-					<td>106,4</td>
-					<td>0,34</td>
-					<td>-0,75</td>
-					<td>1,09</td>
-					</tr>
-				<tr>
-					<td>30.06.99</td>
-					<td>121,1</td>
-					<td>107,8</td>
-					<td>104,1</td>
-					<td>116,2</td>
-					<td>9,14</td>
-					<td>8,05</td>
-					<td>1,09</td>
-					</tr>
-				<tr>
-					<td>30.09.99</td>
-					<td>124,8</td>
-					<td>111,1</td>
-					<td>108,8</td>
-					<td>121,5</td>
-					<td>4,47</td>
-					<td>3,48</td>
-					<td>1,00</td>
-					</tr>
-				<tr>
-					<td>31.12.99</td>
-					<td>128,4</td>
-					<td>114,3</td>
-					<td>97,1</td>
-					<td>108,4</td>
-					<td>-10,57</td>
-					<td>-11,61</td>
-					<td>1,04</td>
-					</tr>
-				<tr>
-					<td>31.03.00</td>
-					<td>132,4</td>
-					<td>104,5</td>
-					<td>95,0</td>
-					<td>108,6</td>
-					<td>-0,16</td>
-					<td>-0,96</td>
-					<td>0,80</td>
-					</tr>
-				<tr>
-					<td>30.06.00</td>
-					<td>136,3</td>
-					<td>107,5</td>
-					<td>103,2</td>
-					<td>118,0</td>
-					<td>8,67</td>
-					<td>7,77</td>
-					<td>0,90</td>
-					</tr>
-				<tr>
-					<td>30.09.00</td>
-					<td>140,6</td>
-					<td>110,9</td>
-					<td>107,5</td>
-					<td>122,9</td>
-					<td>4,07</td>
-					<td>3,27</td>
-					<td>0,80</td>
-					</tr>
-				<tr>
-					<td>31.12.00</td>
-					<td>144,7</td>
-					<td>114,2</td>
-					<td>96,4</td>
-					<td>110,2</td>
-					<td>-10,23</td>
-					<td>-11,03</td>
-					<td>0,80</td>
-				</tr>
-			</tbody>
-		</table>
-		<br/>
-		<h3><i>Auxiliary functions</i></h3>
-		<p><b><i>Normalising a time series to match a reference year</i></b></p>
-		<p>	Normalising the average of the unadjusted data in the reference year to 100 yields the values<br/>
-			of the aggregate in the reference year as the weighted sum of the index values of the components, whereby the share of<br/>
-			the reference year volumes (valued at the average prices in the previous year) yields the weighting scheme.<br/>
-			However, as the volumes used as weights are not available directly, they are calculated as the product of the nominal<br/>
-			figures from the previous year and the change factor of the annual volumes.</p>
-		<p><u>Example</u></p>
-		<p>Aggregation of two calendar-adjusted time series A and B in the reference year</p>
-		<table>
-			<thead>
-				<tr>
-					<th>Time</th>
-					<th>A</th>
-					<th>B</th>
-					<th>gewA</th>
-					<th>gewB</th>
-					<th class ="calculated">change factor of<br/>the annual<br/>chain index A</th>
-					<th class ="calculated">change factor of<br/>the annual<br/>chain index B</th>
-					<th class ="calculated">weight A for<br/>aggregation in<br/>base year</th>
-					<th class ="calculated">weight B for<br/>aggregation in<br/>base year</th>
-					<th class ="calculated">aggregate</th>
-					</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>31.03.04</td>
-					<td>89,78</td>
-					<td>81,19</td>
-					<td>175,09</td>
-					<td>25,15</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-				</tr>
-				<tr>
-					<td>30.06.04</td>
-					<td>93,71</td>
-					<td>93,96</td>
-					<td>184,14</td>
-					<td>29,51</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-				</tr>
-				<tr>
-					<td>30.09.04</td>
-					<td>90,85</td>
-					<td>95,71</td>
-					<td>178,95</td>
-					<td>30,30</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-				</tr>
-				<tr>
-					<td>31.12.04</td>
-					<td>95,20</td>
-					<td>97,31</td>
-					<td>187,45</td>
-					<td>30,85</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-				</tr>
-				<tr>
-					<td>31.03.05</td>
-					<td>95,47</td>
-					<td>89,17</td>
-					<td>188,09</td>
-					<td>28,51</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">94,60 </td>
-				</tr>
-				<tr>
-					<td>30.06.05</td>
-					<td>98,29</td>
-					<td>94,84</td>
-					<td>194,33</td>
-					<td>30,68</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">97,81 </td>
-				</tr>
-				<tr>
-					<td>30.09.05</td>
-					<td>100,15</td>
-					<td>104,22</td>
-					<td>197,97</td>
-					<td>32,95</td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated"></td>
-					<td class ="calculated">100,71 </td>
-				</tr>
-				<tr>
-					<td>31.12.05</td>
-					<td>104,76</td>
-					<td>111,00</td>
-					<td>207,50</td>
-					<td>36,13</td>
-					<td class ="calculated">1,078827732</td>
-					<td class ="calculated">1,084363202</td>
-					<td class ="calculated">782,83</td>
-					<td class ="calculated">125,58</td>
-					<td class ="calculated">105,62 </td>
-				</tr>
-			</tbody>
-		</table>
-		
-		<br/>
-		<p><b><i>Unchaining a series</i></b></p>
-		<p>	Each value in the time series is divided by the respective <u>previous year average</u> then multiplied by 100.<br/>
-			This can be achieved only if both the values themselves and their previous year averages are defined.<br/>
-			This results in a series where each year refers to &quot;previous year=100&quot;.<br/>
-			When calculating growth contributions steps may be applied where the previous year averages are not calculated<br/>
-			on the basis of the actual time series but using a second, chain-linked time series instead.</p>
-		<p><u>Example</u></p>
-		<p>Unchaining series i1 and i2, using prev. year averages of i2</p>
-		<table>
-			<thead>
-				<tr>
-					<th>Time</th>
-					<th>i1</th>
-					<th>i2</th>
-					<th class ="calculated">i1,<br/>unchained</th>
-					<th class ="calculated">i2,<br/>unchained</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>31.03.91</td>
-					<td>78,1</td>
-					<td>85,9</td>
-					<td class ="calculated">84,1</td>
-					<td class ="calculated">92,5</td>
-				</tr>
-				<tr>
-					<td>30.06.91</td>
-					<td>79,7</td>
-					<td>97,0</td>
-					<td class ="calculated">85,8</td>
-					<td class ="calculated">104,4</td>
-				</tr>
-				<tr>
-					<td>30.09.91</td>
-					<td>79,7</td>
-					<td>101,7</td>
-					<td class ="calculated">85,8</td>
-					<td class ="calculated">109,5</td>
-				</tr>
-				<tr>
-					<td>31.12.91</td>
-					<td>81,3</td>
-					<td>87,0</td>
-					<td class ="calculated">87,5</td>
-					<td class ="calculated">93,6</td>
-				</tr>
-				<tr>
-					<td>31.03.92</td>
-					<td>86,1</td>
-					<td>89,1</td>
-					<td class ="calculated">92,6</td>
-					<td class ="calculated">95,9</td>
-				</tr>
-				<tr>
-					<td>30.06.92</td>
-					<td>89,2</td>
-					<td>100,6</td>
-					<td class ="calculated">96,1</td>
-					<td class ="calculated">108,3</td>
-				</tr>
-				<tr>
-					<td>30.09.92</td>
-					<td>90,8</td>
-					<td>106,2</td>
-					<td class ="calculated">97,8</td>
-					<td class ="calculated">114,3</td>
-				</tr>
-				<tr>
-					<td>31.12.92</td>
-					<td>92,4</td>
-					<td>91,5</td>
-					<td class ="calculated">99,5</td>
-					<td class ="calculated">98,4</td>
-				</tr>
-				<tr>
-					<td>31.03.93</td>
-					<td>95,6</td>
-					<td>92,8</td>
-					<td class ="calculated">98,7</td>
-					<td class ="calculated">95,8</td>
-				</tr>
-				<tr>
-					<td>30.06.93</td>
-					<td>98,8</td>
-					<td>103,4</td>
-					<td class ="calculated">102,0</td>
-					<td class ="calculated">106,8</td>
-				</tr>
-				<tr>
-					<td>30.09.93</td>
-					<td>103,6</td>
-					<td>109,5</td>
-					<td class ="calculated">106,9</td>
-					<td class ="calculated">113,1</td>
-				</tr>
-				<tr>
-					<td>31.12.93</td>
-					<td>102,0</td>
-					<td>94,3</td>
-					<td class ="calculated">105,3</td>
-					<td class ="calculated">97,4</td>
-				</tr>
-				<tr>
-					<td>31.03.94</td>
-					<td>107,4</td>
-					<td>96,6</td>
-					<td class ="calculated">107,4</td>
-					<td class ="calculated">96,6</td>
-				</tr>
-				<tr>
-					<td>30.06.94</td>
-					<td>110,6</td>
-					<td>106,6</td>
-					<td class ="calculated">110,6</td>
-					<td class ="calculated">106,6</td>
-				</tr>
-				<tr>
-					<td>30.09.94</td>
-					<td>113,9</td>
-					<td>112,1</td>
-					<td class ="calculated">113,9</td>
-					<td class ="calculated">112,1</td>
-				</tr>
-				<tr>
-					<td>31.12.94</td>
-					<td>117,5</td>
-					<td>99,6</td>
-					<td class ="calculated">117,5</td>
-					<td class ="calculated">99,6</td>
-				</tr>
-			</tbody>
-		</table>
-		<br/>
-		<p><b><i>Chain-linking a series</i></b></p>
-		<p>	Each value in the series is multiplied by the cumulated <u>previous year averages</u> then divided by 100.<br/>
-			This can be achieved only if both the value itself and all of the previous year averages(from the start of the series) are defined.<br/>
-			This results in a series where each year refers to &quot;first year=100&quot;.<br/>
-			When calculating growth contributions steps may be applied where the previous year averages are not calculated<br/>
-			on the basis of the actual time series but using a second, unchained time series instead.</p>
-		<p><u>Example</u></p>
-		<p>Chain-linking series i1, using prev. year averages of i2</p>
-		<table>
-			<thead>
-				<tr>
-					<th>Time</th>
-					<th>i1,<br/>unchained</th>
-					<th>i2,<br/>unchained</th>
-					<th>prev. y.<br/>avg. i2</th>
-					<th>prev. y.<br/>avg. i2 (cum.)</th>
-					<th>i1,<br>chain-linked</th>
-					<th></th>
-					<th>i1, norm. like<br>original series</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>31.03.91</td>
-					<td>84,1</td>
-					<td>92,5</td>
-					<td>100,0</td>
-					<td>100,0</td>
-					<td>84,1</td>
-					<td rowspan=16 style='vertical-align:middle'>normalised<br/>for &quot;first<br/>year of i2<br/>= 100&quot;</td>
-					<td>78,1</td>
-				</tr>
-				<tr>
-					<td>30.06.91</td>
-					<td>85,8</td>
-					<td>104,4</td>
-					<td>100,0</td>
-					<td>100,0</td>
-					<td>85,8</td>
-					<td>79,7</td>
-				</tr>
-				<tr>
-					<td>30.09.91</td>
-					<td>85,8</td>
-					<td>109,5</td>
-					<td>100,0</td>
-					<td>100,0</td>
-					<td>85,8</td>
-					<td>79,7</td>
-				</tr>
-				<tr>
-					<td>31.12.91</td>
-					<td>87,5</td>
-					<td>93,6</td>
-					<td>100,0</td>
-					<td>100,0</td>
-					<td>87,5</td>
-					<td>81,3</td>
-				</tr>
-				<tr>
-					<td>31.03.92</td>
-					<td>92,6</td>
-					<td>95,9</td>
-					<td>100,0</td>
-					<td>100,0</td>
-					<td>92,6</td>
-					<td>86,1</td>
-				</tr>
-				<tr>
-					<td>30.06.92</td>
-					<td>96,1</td>
-					<td>108,3</td>
-					<td>100,0</td>
-					<td>100,0</td>
-					<td>96,1</td>
-					<td>89,2</td>
-				</tr>
-				<tr>
-					<td>30.09.92</td>
-					<td>97,8</td>
-					<td>114,3</td>
-					<td>100,0</td>
-					<td>100,0</td>
-					<td>97,8</td>
-					<td>90,8</td>
-				</tr>
-				<tr>
-					<td>31.12.92</td>
-					<td>99,5</td>
-					<td>98,4</td>
-					<td>100,0</td>
-					<td>100,0</td>
-					<td>99,5</td>
-					<td>92,4</td>
-				</tr>
-				<tr>
-					<td>31.03.93</td>
-					<td>98,7</td>
-					<td>95,8</td>
-					<td>104,3</td>
-					<td>104,3</td>
-					<td>102,9</td>
-					<td>95,6</td>
-				</tr>
-				<tr>
-					<td>30.06.93</td>
-					<td>102,0</td>
-					<td>106,8</td>
-					<td>104,3</td>
-					<td>104,3</td>
-					<td>106,4</td>
-					<td>98,8</td>
-				</tr>
-				<tr>
-					<td>30.09.93</td>
-					<td>106,9</td>
-					<td>113,1</td>
-					<td>104,3</td>
-					<td>104,3</td>
-					<td>111,5</td>
-					<td>103,6</td>
-				</tr>
-				<tr>
-					<td>31.12.93</td>
-					<td>105,3</td>
-					<td>97,4</td>
-					<td>104,3</td>
-					<td>104,3</td>
-					<td>109,8</td>
-					<td>102,0</td>
-				</tr>
-				<tr>
-					<td>31.03.94</td>
-					<td>107,4</td>
-					<td>96,6</td>
-					<td>103,2</td>
-					<td>107,6</td>
-					<td>115,6</td>
-					<td>107,4</td>
-				</tr>
-				<tr>
-					<td>30.06.94</td>
-					<td>110,6</td>
-					<td>106,6</td>
-					<td>103,2</td>
-					<td>107,6</td>
-					<td>119,0</td>
-					<td>110,6</td>
-				</tr>
-				<tr>
-					<td>30.09.94</td>
-					<td>113,9</td>
-					<td>112,1</td>
-					<td>103,2</td>
-					<td>107,6</td>
-					<td>122,6</td>
-					<td>113,9</td>
-				</tr>
-				<tr>
-					<td>31.12.94</td>
-					<td>117,5</td>
-					<td>99,6</td>
-					<td>103,2</td>
-					<td>107,6</td>
-					<td>126,4</td>
-					<td>117,5</td>
-				</tr>
-			</tbody>
-		</table>
-		<br/>
-		<p><b><i>Previous year averages</i></b></p>
-		<p>	By previous year average we mean the unweighted average of all values recorded in the preceding year.<br/>
-			It is calculated only if all of the values for that year are available.<br/>
-			For the first defined year of a time series the previous year average is equal to the annual average.</p>
-		<p><u>Example</u></p>
-		<p>previous year average of series A</p>
-		<table>
-			<thead>
-				<tr>
-					<th>Time</th>
-					<th>A</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>31.03.91</td>
-					<td>99,1</td>
-					<td rowspan=8 style='vertical-align:middle'>
-						prev. year<br/>avg. of 1992<br/>= avg. 1991<br/><br/>
-						prev. year<br/>avg. of 1991<br/>= avg. 1991<br/><br/><br/>
-						99,25
-					</td>
-				</tr>
-				<tr>
-					<td>30.06.91</td>
-					<td>99,2</td>
-				</tr>
-				<tr>
-					<td>30.09.91</td>
-					<td>99,3</td>
-				</tr>
-				<tr>
-					<td>31.12.91</td>
-					<td>99,4</td>
-				</tr>
-				<tr>
-					<td>31.03.92</td>
-					<td>99,5</td>
-				</tr>
-				<tr>
-					<td>30.06.92</td>
-					<td>99,6</td>
-				</tr>
-				<tr>
-					<td>30.09.92</td>
-					<td>99,7</td>
-				</tr>
-				<tr>
-					<td>31.12.92</td>
-					<td>99,8</td>
-				</tr>
-			</tbody>	
-		</table>
-		<br/>
-		
-		<p><b><i>Relative differences compared with the previous period</i></b></p>
-		<p>	The relative differences between the current value of a series and that for the lag-th preceding period of the same series or a second series<br/>
-			are thus determined. The result can be determined only if both values are already defined and the second value is greater than zero. </p>
-		<p><u>Example</u></p>
-		<p>rel. diff. of i1, comp. with the lag-th preceding period of i2. Lag =1</p>
-		
-		<table>
-			<thead>
-				<tr>
-					<th>Time</th>
-					<th>i1</th>
-					<th>i2</th>
-					<th>rel. diff. (%)</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>31.03.91</td>
-					<td>99,1</td>
-					<td>88,1</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>30.06.91</td>
-					<td>99,2</td>
-					<td>88,2</td>
-					<td>12,60 </td>
-				</tr>
-				<tr>
-					<td>30.09.91</td>
-					<td>99,3</td>
-					<td></td>
-					<td>12,59 </td>
-				</tr>
-				<tr>
-					<td>31.12.91</td>
-					<td>99,4</td>
-					<td>88,4</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>31.03.92</td>
-					<td>99,5</td>
-					<td>88,5</td>
-					<td>12,56 </td>
-				</tr>
-				<tr>
-					<td>30.06.92</td>
-					<td></td>
-					<td>88,6</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>30.09.92</td>
-					<td>99,7</td>
-					<td>88,7</td>
-					<td>12,53 </td>
-				</tr>
-				<tr>
-					<td>31.12.92</td>
-					<td>99,8</td>
-					<td>88,8</td>
-					<td>12,51</td>
-				</tr>
-			</tbody>
-		</table>
-		<br/>
-	
-		<p><b><i>Lagging a series</i></b></p>
-		<p>The series values are pushed backwards by lag periods.</p>
-		<p><u>Example</u></p>
-		<p>Lagging the series A several periods</p>
-	
-		<table>
-			<thead>
-				<tr>
-					<th>Time</th>
-					<th>A</th>
-					<th>Lag1_A</th>
-					<th>Lag2_A</th>
-					<th>Lag3_A</th>
-					<th>Lag4_A</th>
-				</tr>
-			</thead>
-			<tbody>
-				 <tr>
-					<td>31.03.91</td>
-					<td>99,1</td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-				 <tr>
-					<td>30.06.91</td>
-					<td>99,2</td>
-					<td>99,1</td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>30.09.91</td>
-					<td>99,3</td>
-					<td>99,2</td>
-					<td>99,1</td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>31.12.91</td>
-					<td>99,4</td>
-					<td>99,3</td>
-					<td>99,2</td>
-					<td>99,1</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>31.03.92</td>
-					<td>99,5</td>
-					<td>99,4</td>
-					<td>99,3</td>
-					<td>99,2</td>
-					<td>99,1</td>
-				</tr>
-				<tr>
-					<td>30.06.92</td>
-					<td>99,6</td>
-					<td>99,5</td>
-					<td>99,4</td>
-					<td>99,3</td>
-					<td>99,2</td>
-				</tr>
-				<tr>
-					<td>30.09.92</td>
-					<td>99,7</td>
-					<td>99,6</td>
-					<td>99,5</td>
-					<td>99,4</td>
-					<td>99,3</td>
-				</tr>
-				<tr>
-					<td>31.12.92</td>
-					<td>99,8</td>
-					<td>99,7</td>
-					<td>99,6</td>
-					<td>99,5</td>
-					<td>99,4</td>
-				</tr>
-			</tbody>
-		</table>
-	</body>
+    <head>
+        <meta charset="UTF-8" />
+        <title>KIX - Method of calculation</title>
+        <style>
+            h1, h2, h3 {
+                color:blue;
+                background: lightblue;
+            } 
+
+            h1 {font-size: 28px;}
+
+            h2 {font-size: 18px;}
+
+            h3 {font-size: 16px;}
+
+            table {
+                margin-left:1.0cm;
+                border-collapse: collapse;
+            }
+
+            td, th {
+                border:solid black 1.0pt;
+                padding: 4.0pt;
+            }
+
+            td {
+                vertical-align:text-bottom;
+                text-align:right;
+            }
+
+            .calculated {background: yellow;}
+
+            body {
+                font-family: "Arial", Helvetica, sans-serif;
+                font-size: 14px;
+                color: black;
+            }
+
+            p {margin-left:1.0cm;}
+
+            ul {margin-left:1.5cm;}
+        </style>
+    </head>
+    <body lang=DE>
+        <h1>Method of calculation</h1>
+        <p>Version:2014-12-09</p>
+        <h2>Aggregation of chain indices with plus and minus</h2>
+        <p><b>Enter: [Name=]KIX,i1,w1,+/-,i2,w2,...,refyr</b></p>
+        <p>Execution of the calculation loops: </p>
+
+        <ul>
+            <li>Entries are read into the system and evaluated from left to right, ie starting with i1, w1.<br/>
+                Each loop operation produces two interim values in the form of an aggregated index and a </li>
+
+            <li>weight (simple +/-) which can then be used for the next addition or subtraction. </li>
+            <li>As a final step the last calculated index is normalised to match with the reference year (refyr).</li>
+        </ul>
+
+        <p><b>Note:</b>If you use different starting years for the KIX formula this may cause the entry sequence to <br/>
+            influence the first year of the final result wherever more than two input indices exist.<br/>
+            This effect stems from the fact that interim results contain starting years that are sequentially dependent.</p>
+        <h3>Aggregating two indices (i1, w1) +/- (i2, w2)</h3>
+        <p>Firstly, a check is made for the following conditions:</p>
+
+        <ul>
+            <li>weight series must not begin after corresponding index series<br/>
+                (However, all weight values preceding the latest index starting time are ignored during calculation.)</li>
+            <li>during the first year index series must be defined from their first period onward</li>
+        </ul>
+
+        <p>As a next step both index series are unchained.<br/>
+            These unchained series are then aggregated, ie a weighted total or difference is calculated on a value-by-value basis<br/>
+            To do this the previous year averages from the weight series are applied as weights.<br/>
+            The resulting series is then chain-linked and normalised.</p>
+        <p><u>Example</u></p>
+<p>KIX,A,wA,+,B,wB,2005</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>A</th>
+            <th>wA</th>
+            <th>B</th>
+            <th>wB</th>
+            <th class ="calculated">A unch.</th>
+            <th class ="calculated">B unch.</th>
+            <th class ="calculated">Weighted<br/>sum</th>
+            <th class ="calculated">prev. year<br/>averages</th>
+            <th class ="calculated">prev. year<br/>avg. (cum.)</th>
+            <th class ="calculated">sum chain-<br/>linked</th>
+            <th class ="calculated">weight A for<br/>aggregation in<br/>reference year</th>
+            <th class ="calculated">weight B for<br/>aggregation in<br/>reference year</th>
+            <th class ="calculated">result<br/>2005 = 100</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>31.03.04</td>
+            <td>89,78</td>
+            <td>175,09</td>
+            <td>81,19</td>
+            <td>25,15</td>
+            <td class ="calculated">97,18</td>
+            <td class ="calculated">88,21</td>
+            <td class ="calculated">95,95</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">95,95</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">88,59</td>
+        </tr> 
+        <tr>
+            <td>30.06.04</td>
+            <td>93,71</td>
+            <td>184,14</td>
+            <td>93,96</td>
+            <td>29,51</td>
+            <td class ="calculated">101,43</td>
+            <td class ="calculated">102,08</td>
+            <td class ="calculated">101,52</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">101,52</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">93,74</td>
+        </tr> 
+        <tr>
+            <td>30.09.04</td>
+            <td>90,85</td>
+            <td>178,95</td>
+            <td>95,71</td>
+            <td>30,30</td>
+            <td class ="calculated">98,34</td>
+            <td class ="calculated">103,98</td>
+            <td class ="calculated">99,12</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">99,12</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">91,52</td>
+        </tr> 
+        <tr>
+            <td>31.12.04</td>
+            <td>95,20</td>
+            <td>187,45</td>
+            <td>97,31</td>
+            <td>30,85</td>
+            <td class ="calculated">103,05</td>
+            <td class ="calculated">105,72</td>
+            <td class ="calculated">103,42</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">103,42</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">95,49</td>
+        </tr>
+        <tr>
+            <td>31.03.05</td>
+            <td>95,47</td>
+            <td>188,09</td>
+            <td>89,17</td>
+            <td>28,51</td>
+            <td class ="calculated">103,34</td>
+            <td class ="calculated">96,88</td>
+            <td class ="calculated">102,45</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">102,45</td>
+            <td rowspan=4 class ="calculated" style='vertical-align:middle'>782,83</td>
+            <td rowspan=4 class ="calculated" style='vertical-align:middle'>125,58</td>
+            <td class ="calculated">94,60</td>
+        </tr>
+        <tr>
+            <td>30.06.05</td>
+            <td>98,29</td>
+            <td>194,33</td>
+            <td>94,84</td>
+            <td>30,68</td>
+            <td class ="calculated">106,39</td>
+            <td class ="calculated">103,04</td>
+            <td class ="calculated">105,93</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">105,93</td>
+            <td class ="calculated">97,81</td>
+        </tr>
+        <tr>
+            <td>30.09.05</td>
+            <td>100,15</td>
+            <td>197,97</td>
+            <td>104,22</td>
+            <td>32,95</td>
+            <td class ="calculated">108,41</td>
+            <td class ="calculated">113,23</td>
+            <td class ="calculated">109,07</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">109,07</td>
+            <td class ="calculated">100,71</td>
+        </tr>
+        <tr>
+            <td>31.12.05</td>
+            <td>104,76</td>
+            <td>207,50</td>
+            <td>111,00</td>
+            <td>36,13</td>
+            <td class ="calculated">113,40</td>
+            <td class ="calculated">120,60</td>
+            <td class ="calculated">114,39</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">100,00</td>
+            <td class ="calculated">114,39</td>
+            <td class ="calculated">105,62</td>
+        </tr>
+        <tr>
+            <td>31.03.06</td>
+            <td>107,69</td>
+            <td>214,56</td>
+            <td>99,15</td>
+            <td>31,86</td>
+            <td class ="calculated">108,05</td>
+            <td class ="calculated">99,34</td>
+            <td class ="calculated">106,83</td>
+            <td class ="calculated">107,96</td>
+            <td class ="calculated">107,96</td>
+            <td class ="calculated">115,33</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">106,50</td>
+        </tr>
+        <tr>
+            <td>30.06.06</td>
+            <td>109,16</td>
+            <td>219,10</td>
+            <td>115,17</td>
+            <td>37,94</td>
+            <td class ="calculated">109,52</td>
+            <td class ="calculated">115,39</td>
+            <td class ="calculated">110,35</td>
+            <td class ="calculated">107,96</td>
+            <td class ="calculated">107,96</td>
+            <td class ="calculated">119,13</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">110,00</td>
+        </tr>
+        <tr>
+            <td>30.09.06</td>
+            <td>112,40</td>
+            <td>225,54</td>
+            <td>113,44</td>
+            <td>37,00</td>
+            <td class ="calculated">112,77</td>
+            <td class ="calculated">113,66</td>
+            <td class ="calculated">112,90</td>
+            <td class ="calculated">107,96</td>
+            <td class ="calculated">107,96</td>
+            <td class ="calculated">121,88</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">112,55</td>
+        </tr>
+        <tr>
+            <td>31.12.06</td>
+            <td>122,26</td>
+            <td>245,62</td>
+            <td>132,40</td>
+            <td>42,43</td>
+            <td class ="calculated">122,67</td>
+            <td class ="calculated">132,66</td>
+            <td class ="calculated">124,07</td>
+            <td class ="calculated">107,96</td>
+            <td class ="calculated">107,96</td>
+            <td class ="calculated">133,94</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">123,68</td>
+        </tr>
+        <tr>
+            <td>31.03.07</td>
+            <td>119,73</td>
+            <td>241,17</td>
+            <td>112,77</td>
+            <td>36,29</td>
+            <td class ="calculated">106,07</td>
+            <td class ="calculated">98,03</td>
+            <td class ="calculated">104,93</td>
+            <td class ="calculated">113,54</td>
+            <td class ="calculated">122,57</td>
+            <td class ="calculated">128,62</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">118,76</td>
+        </tr>
+        <tr>
+            <td>30.06.07</td>
+            <td>120,83</td>
+            <td>244,79</td>
+            <td>118,62</td>
+            <td>38,60</td>
+            <td class ="calculated">107,05</td>
+            <td class ="calculated">103,11</td>
+            <td class ="calculated">106,49</td>
+            <td class ="calculated">113,54</td>
+            <td class ="calculated">122,57</td>
+            <td class ="calculated">130,52</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">120,52</td>
+        </tr>
+        <tr>
+            <td>30.09.07</td>
+            <td>122,45</td>
+            <td>247,22</td>
+            <td>121,56</td>
+            <td>40,18</td>
+            <td class ="calculated">108,48</td>
+            <td class ="calculated">105,67</td>
+            <td class ="calculated">108,08</td>
+            <td class ="calculated">113,54</td>
+            <td class ="calculated">122,57</td>
+            <td class ="calculated">132,48</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">122,33</td>
+        </tr>
+        <tr>
+            <td>31.12.07</td>
+            <td>128,06</td>
+            <td>257,58</td>
+            <td>131,39</td>
+            <td>43,60</td>
+            <td class ="calculated">113,45</td>
+            <td class ="calculated">114,21</td>
+            <td class ="calculated">113,56</td>
+            <td class ="calculated">113,54</td>
+            <td class ="calculated">122,57</td>
+            <td class ="calculated">139,19</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">128,52</td>
+        </tr>
+        <tr>
+            <td>31.03.08</td>
+            <td>128,39</td>
+            <td>259,71</td>
+            <td>121,06</td>
+            <td>40,62</td>
+            <td class ="calculated">104,58</td>
+            <td class ="calculated">99,98</td>
+            <td class ="calculated">103,94</td>
+            <td class ="calculated">108,27</td>
+            <td class ="calculated">132,70</td>
+            <td class ="calculated">137,94</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">127,37</td>
+        </tr>
+        <tr>
+            <td>30.06.08</td>
+            <td>127,53</td>
+            <td>260,26</td>
+            <td>121,56</td>
+            <td>40,57</td>
+            <td class ="calculated">103,88</td>
+            <td class ="calculated">100,39</td>
+            <td class ="calculated">103,40</td>
+            <td class ="calculated">108,27</td>
+            <td class ="calculated">132,70</td>
+            <td class ="calculated">137,21</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">126,70</td>
+        </tr>
+        <tr>
+            <td>30.09.08</td>
+            <td>125,12</td>
+            <td>256,27</td>
+            <td>125,29</td>
+            <td>42,46</td>
+            <td class ="calculated">101,92</td>
+            <td class ="calculated">103,47</td>
+            <td class ="calculated">102,13</td>
+            <td class ="calculated">108,27</td>
+            <td class ="calculated">132,70</td>
+            <td class ="calculated">135,53</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">125,15</td>
+        </tr>
+        <tr>
+            <td>31.12.08</td>
+            <td>118,38</td>
+            <td>240,33</td>
+            <td>139,41</td>
+            <td>46,63</td>
+            <td class ="calculated">96,43</td>
+            <td class ="calculated">115,13</td>
+            <td class ="calculated">99,01</td>
+            <td class ="calculated">108,27</td>
+            <td class ="calculated">132,70</td>
+            <td class ="calculated">131,39</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">121,32</td>
+        </tr>
+        <tr>
+            <td>31.03.09</td>
+            <td>102,32</td>
+            <td>204,06</td>
+            <td>128,07</td>
+            <td>40,28</td>
+            <td class ="calculated">81,95</td>
+            <td class ="calculated">100,98</td>
+            <td class ="calculated">84,68</td>
+            <td class ="calculated">102,12</td>
+            <td class ="calculated">135,52</td>
+            <td class ="calculated">114,76</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">105,96</td>
+        </tr>
+        <tr>
+            <td>30.06.09</td>
+            <td>100,80</td>
+            <td>199,94</td>
+            <td>129,15</td>
+            <td>39,44</td>
+            <td class ="calculated">80,73</td>
+            <td class ="calculated">101,83</td>
+            <td class ="calculated">83,76</td>
+            <td class ="calculated">102,12</td>
+            <td class ="calculated">135,52</td>
+            <td class ="calculated">113,51</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">104,81</td>
+        </tr>
+        <tr>
+            <td>30.09.09</td>
+            <td>105,21</td>
+            <td>208,43</td>
+            <td>125,46</td>
+            <td>39,73</td>
+            <td class ="calculated">84,27</td>
+            <td class ="calculated">98,92</td>
+            <td class ="calculated">86,37</td>
+            <td class ="calculated">102,12</td>
+            <td class ="calculated">135,52</td>
+            <td class ="calculated">117,04</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">108,07</td>
+        </tr>
+        <tr>
+            <td>31.12.09</td>
+            <td>109,90</td>
+            <td>218,29</td>
+            <td>135,75</td>
+            <td>44,00</td>
+            <td class ="calculated">88,02</td>
+            <td class ="calculated">107,03</td>
+            <td class ="calculated">90,75</td>
+            <td class ="calculated">102,12</td>
+            <td class ="calculated">135,52</td>
+            <td class ="calculated">122,98</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">113,56</td>
+        </tr>
+    </tbody>
+</table>
+<br/>
+<h2>Calculating growth contributions</h2>
+<p><b>Enter: [Name=]WBG,iContr,wContr,+/-,iTotal,wTotal,#ofLags</b></p>
+<p>Firstly,a check is made for the following conditions:</p>
+
+<ul>
+    <li>weight series must not start later than corresponding index series<br/>
+        (However, any weight values positioned before the latest index starting point are excluded from the calculation.)</li>
+    <li>for their first year index series must be defined from the first period onward</li>
+    <li>the iContr series must not start later than iTotal</li>
+</ul>	
+
+<p>	As a next step, iTotal is normalised to the year when it started in order to enable subsequent comparison with an auxiliary series.<br/>
+    Following this we calculate both auxiliary series iRes and wRes.</p>
+
+<ul>
+    <li>iRes represents
+        <ul>
+            <li>for a positive entry &quot;+&quot;: the difference between two indices iTotal &quot;-&quot; iContr</li>
+            <li>for a negative entry &quot;-&quot;: the sum of two indices iTotal &quot;+&quot; iContr</li>
+        </ul>
+        (In each case both indices are unchained then weighted using the previous year averages for wTotal and wContr<br/>
+        in order to create the sum or difference. iRes is left unchained.)
+    </li>
+</ul>
+<ul>
+    <li>wRes represents
+        <ul>
+            <li>for a positive entry &quot;+&quot;: the simple difference between two time series wTotal - wContr</li>
+            <li>for a negative entry &quot;-&quot;: the simple sum of two time series wTotal + wContr</li>
+        </ul>
+    </li>
+</ul>	
+
+<p>	As a next step, iContr is lagged with #ofLags periods.<br/>
+    The lagged series is unchained using the previous year averages from the unlagged series.</p>
+<p>This series is then weighted together with iRes as follows:</p>
+<ul>
+    <li>for a positive entry &quot;+&quot;: as weighted sum</li>
+    <li>for a negative entry &quot;-&quot;: as weighted difference</li>
+</ul>
+
+<p>	To do this the previous year averages for wContr (unlagged!) and wRes are applied as weights.<br/>
+    The resulting aggregate is then chain-linked, though in this case using the previous year averages from the unchained iTotal. <br/>
+    As an interim result we get the time series iTotalLag. This series is normalised to match its starting year; it therefore can be compared with iTotal. <br/>
+    Now we determine the relative differences to the #OfLags-th preceding period of iTotal for both iTotal and iTotalLag. <br/>
+    The final growth contribution figure is produced by subtracting the difference for iTotalLag from the difference for iTotal.</p>
+
+<p><u>Example</u></p>
+<p>WBG,A,wA,+,Total,wTotal,1</p>
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>A</th>
+            <th>wA</th>
+            <th>Total</th>
+            <th>wTotal</th>
+            <th class ="calculated">A unch.</th>
+            <th class ="calculated">Total 1995</th>
+            <th class ="calculated">Total 1995<br/>unch.</th>
+            <th class ="calculated">prev. y. avg.<br/>Total</th>
+            <th class ="calculated">prev. y. avg.<br/>(cum.)</th>
+            <th class ="calculated">iRes. unch.</th>
+            <th class ="calculated">wRes</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>31.03.95</td>
+            <td>78,1</td>
+            <td>392,0</td>
+            <td>85,9</td>
+            <td>843,0</td>
+            <td class ="calculated">98,0</td>
+            <td class ="calculated">92,5</td>
+            <td class ="calculated">92,5</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">88,2</td>
+            <td class ="calculated">451,0</td>
+        </tr>
+        <tr>
+            <td>30.06.95</td>
+            <td>79,7</td>
+            <td>400,0</td>
+            <td>97,0</td>
+            <td>951,0</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">104,4</td>
+            <td class ="calculated">104,4</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">107,8</td>
+            <td class ="calculated">551,0</td>
+        </tr>
+        <tr>
+            <td>30.09.95</td>
+            <td>79,7</td>
+            <td>400,0</td>
+            <td>101,7</td>
+            <td>998,0</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">109,5</td>
+            <td class ="calculated">109,5</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">117,0</td>
+            <td class ="calculated">598,0</td>
+        </tr>
+        <tr>
+            <td>31.12.95</td>
+            <td>81,3</td>
+            <td>408,0</td>
+            <td>87,0</td>
+            <td>853,0</td>
+            <td class ="calculated">102,0</td>
+            <td class ="calculated">93,6</td>
+            <td class ="calculated">93,6</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">87,0</td>
+            <td class ="calculated">445,0</td>
+        </tr>
+        <tr>
+            <td>31.03.96</td>
+            <td>86,1</td>
+            <td>496,8</td>
+            <td>89,1</td>
+            <td>951,6</td>
+            <td class ="calculated">108,0</td>
+            <td class ="calculated">95,9</td>
+            <td class ="calculated">95,9</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">86,5</td>
+            <td class ="calculated">454,8</td>
+        </tr>
+        <tr>
+            <td>30.06.96</td>
+            <td>89,2</td>
+            <td>442,4</td>
+            <td>100,6</td>
+            <td>1114,4</td>
+            <td class ="calculated">112,0</td>
+            <td class ="calculated">108,3</td>
+            <td class ="calculated">108,3</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">105,4</td>
+            <td class ="calculated">672,0</td>
+        </tr>
+        <tr>
+            <td>30.09.96</td>
+            <td>90,8</td>
+            <td>461,7</td>
+            <td>106,2</td>
+            <td>1091,7</td>
+            <td class ="calculated">114,0</td>
+            <td class ="calculated">114,3</td>
+            <td class ="calculated">114,3</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">114,6</td>
+            <td class ="calculated">630,0</td>
+        </tr>
+        <tr>
+            <td>31.12.96</td>
+            <td>92,4</td>
+            <td>290,0</td>
+            <td>91,5</td>
+            <td>906,0</td>
+            <td class ="calculated">116,0</td>
+            <td class ="calculated">98,4</td>
+            <td class ="calculated">98,4</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">100,0</td>
+            <td class ="calculated">84,7</td>
+            <td class ="calculated">616,0</td>
+        </tr>
+        <tr>
+            <td>31.03.97</td>
+            <td>95,6</td>
+            <td>456,0</td>
+            <td>92,8</td>
+            <td>978,3</td>
+            <td class ="calculated">106,7</td>
+            <td class ="calculated">99,9</td>
+            <td class ="calculated">95,8</td>
+            <td class ="calculated">104,3</td>
+            <td class ="calculated">104,3</td>
+            <td class ="calculated">88,0</td>
+            <td class ="calculated">522,3</td>
+        </tr>
+        <tr>
+            <td>30.06.97</td>
+            <td>98,8</td>
+            <td>446,4</td>
+            <td>103,4</td>
+            <td>1196,4</td>
+            <td class ="calculated">110,2</td>
+            <td class ="calculated">111,3</td>
+            <td class ="calculated">106,8</td>
+            <td class ="calculated">104,3</td>
+            <td class ="calculated">104,3</td>
+            <td class ="calculated">104,4</td>
+            <td class ="calculated">750,0</td>
+        </tr>
+        <tr>
+            <td>30.09.97</td>
+            <td>103,6</td>
+            <td>442,0</td>
+            <td>109,5</td>
+            <td>1145,5</td>
+            <td class ="calculated">115,6</td>
+            <td class ="calculated">117,9</td>
+            <td class ="calculated">113,1</td>
+            <td class ="calculated">104,3</td>
+            <td class ="calculated">104,3</td>
+            <td class ="calculated">111,3</td>
+            <td class ="calculated">703,5</td>
+        </tr>
+        <tr>
+            <td>31.12.97</td>
+            <td>102,0</td>
+            <td>416,0</td>
+            <td>94,3</td>
+            <td>1096,5</td>
+            <td class ="calculated">113,8</td>
+            <td class ="calculated">101,5</td>
+            <td class ="calculated">97,4</td>
+            <td class ="calculated">104,3</td>
+            <td class ="calculated">104,3</td>
+            <td class ="calculated">85,7</td>
+            <td class ="calculated">680,5</td>
+        </tr>
+        <tr>
+            <td>31.03.98</td>
+            <td>107,4</td>
+            <td>411,1</td>
+            <td>96,6</td>
+            <td>1121,9</td>
+            <td class ="calculated">107,4</td>
+            <td class ="calculated">104,0</td>
+            <td class ="calculated">96,6</td>
+            <td class ="calculated">103,2</td>
+            <td class ="calculated">107,6</td>
+            <td class ="calculated">89,4</td>
+            <td class ="calculated">710,8</td>
+        </tr>
+        <tr>
+            <td>30.06.98</td>
+            <td>110,6</td>
+            <td>395,6</td>
+            <td>106,6</td>
+            <td>1306,6</td>
+            <td class ="calculated">110,6</td>
+            <td class ="calculated">114,7</td>
+            <td class ="calculated">106,6</td>
+            <td class ="calculated">103,2</td>
+            <td class ="calculated">107,6</td>
+            <td class ="calculated">103,9</td>
+            <td class ="calculated">911,1</td>
+        </tr>
+        <tr>
+            <td>30.09.98</td>
+            <td>113,9</td>
+            <td>379,0</td>
+            <td>112,1</td>
+            <td>1230,1</td>
+            <td class ="calculated">113,9</td>
+            <td class ="calculated">120,6</td>
+            <td class ="calculated">112,1</td>
+            <td class ="calculated">103,2</td>
+            <td class ="calculated">107,6</td>
+            <td class ="calculated">110,8</td>
+            <td class ="calculated">851,1</td>
+        </tr>
+        <tr>
+            <td>31.12.98</td>
+            <td>117,5</td>
+            <td>368,5</td>
+            <td>99,6</td>
+            <td>1176,5</td>
+            <td class ="calculated">117,5</td>
+            <td class ="calculated">107,2</td>
+            <td class ="calculated">99,6</td>
+            <td class ="calculated">103,2</td>
+            <td class ="calculated">107,6</td>
+            <td class ="calculated">87,8</td>
+            <td class ="calculated">808,0</td>
+        </tr>
+        <tr>
+            <td>31.03.99</td>
+            <td>121,1</td>
+            <td>342,0</td>
+            <td>99,9</td>
+            <td>1184,8</td>
+            <td class ="calculated">107,8</td>
+            <td class ="calculated">107,6</td>
+            <td class ="calculated">96,4</td>
+            <td class ="calculated">103,7</td>
+            <td class ="calculated">111,6</td>
+            <td class ="calculated">91,0</td>
+            <td class ="calculated">842,8</td>
+        </tr>
+        <tr>
+            <td>30.06.99</td>
+            <td>124,8</td>
+            <td>336,7</td>
+            <td>109,1</td>
+            <td>1386,9</td>
+            <td class ="calculated">111,1</td>
+            <td class ="calculated">117,4</td>
+            <td class ="calculated">105,2</td>
+            <td class ="calculated">103,7</td>
+            <td class ="calculated">111,6</td>
+            <td class ="calculated">102,4</td>
+            <td class ="calculated">1050,2</td>
+        </tr>
+        <tr>
+            <td>30.09.99</td>
+            <td>128,4</td>
+            <td>306,3</td>
+            <td>114,0</td>
+            <td>1260,4</td>
+            <td class ="calculated">114,3</td>
+            <td class ="calculated">122,7</td>
+            <td class ="calculated">109,9</td>
+            <td class ="calculated">103,7</td>
+            <td class ="calculated">111,6</td>
+            <td class ="calculated">107,8</td>
+            <td class ="calculated">954,1</td>
+        </tr>
+        <tr>
+            <td>31.12.99</td>
+            <td>132,4</td>
+            <td>290,9</td>
+            <td>101,9</td>
+            <td>1189,4</td>
+            <td class ="calculated">117,9</td>
+            <td class ="calculated">109,7</td>
+            <td class ="calculated">98,3</td>
+            <td class ="calculated">103,7</td>
+            <td class ="calculated">111,6</td>
+            <td class ="calculated">89,0</td>
+            <td class ="calculated">898,6</td>
+        </tr>
+        <tr>
+            <td>31.03.00</td>
+            <td>136,3</td>
+            <td>290,7</td>
+            <td>101,7</td>
+            <td>1205,7</td>
+            <td class ="calculated">107,5</td>
+            <td class ="calculated">109,5</td>
+            <td class ="calculated">95,8</td>
+            <td class ="calculated">102,4</td>
+            <td class ="calculated">114,3</td>
+            <td class ="calculated">91,8</td>
+            <td class ="calculated">915,0</td>
+        </tr>
+        <tr>
+            <td>30.06.00</td>
+            <td>140,6</td>
+            <td>273,4</td>
+            <td>110,6</td>
+            <td>1378,5</td>
+            <td class ="calculated">110,9</td>
+            <td class ="calculated">119,0</td>
+            <td class ="calculated">104,1</td>
+            <td class ="calculated">102,4</td>
+            <td class ="calculated">114,3</td>
+            <td class ="calculated">101,8</td>
+            <td class ="calculated">1105,1</td>
+        </tr>
+        <tr>
+            <td>30.09.00</td>
+            <td>144,7</td>
+            <td>254,2</td>
+            <td>115,1</td>
+            <td>1293,2</td>
+            <td class ="calculated">114,2</td>
+            <td class ="calculated">123,9</td>
+            <td class ="calculated">108,3</td>
+            <td class ="calculated">102,4</td>
+            <td class ="calculated">114,3</td>
+            <td class ="calculated">106,3</td>
+            <td class ="calculated">1039,0</td>
+        </tr>
+        <tr>
+            <td>31.12.00</td>
+            <td>149,0</td>
+            <td>252,5</td>
+            <td>103,3</td>
+            <td>1266,9</td>
+            <td class ="calculated">117,6</td>
+            <td class ="calculated">111,2</td>
+            <td class ="calculated">97,2</td>
+            <td class ="calculated">102,4</td>
+            <td class ="calculated">114,3</td>
+            <td class ="calculated">90,3</td>
+            <td class ="calculated">1014,4</td>
+        </tr>
+    </tbody>
+</table>
+<br/>
+
+
+<table> 
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>A-lag</th>
+            <th>A-lag<br>unch.</th>
+            <th>A-lag + iRes<br>unch.</th>
+            <th>A-lag + iRes</th>
+            <th>Lagdiff.<br>Total</th>
+            <th>Lagdiff.<br>A-lag + iRes</th>
+            <th>growth<br>contribution</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>31.03.95</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>30.06.95</td>
+            <td>78,1</td>
+            <td>98,0</td>
+            <td>103,5</td>
+            <td>103,5</td>
+            <td>12,81</td>
+            <td>11,86</td>
+            <td>0,95</td>
+        </tr>
+        <tr>
+            <td>30.09.95</td>
+            <td>79,7</td>
+            <td>100,0</td>
+            <td>109,5</td>
+            <td>109,5</td>
+            <td>4,94</td>
+            <td>4,94</td>
+            <td>0,00</td>
+        </tr>
+        <tr>
+            <td>31.12.95</td>
+            <td>79,7</td>
+            <td>100,0</td>
+            <td>92,7</td>
+            <td>92,7</td>
+            <td>-14,53</td>
+            <td>-15,33</td>
+            <td>0,80</td>
+        </tr>
+        <tr>
+            <td>31.03.96</td>
+            <td>81,3</td>
+            <td>102,0</td>
+            <td>93,3</td>
+            <td>93,3</td>
+            <td>2,46</td>
+            <td>-0,35</td>
+            <td>2,81</td>
+        </tr>
+        <tr>
+            <td>30.06.96</td>
+            <td>86,1</td>
+            <td>108,0</td>
+            <td>106,6</td>
+            <td>106,6</td>
+            <td>12,93</td>
+            <td>11,10</td>
+            <td>1,83</td>
+        </tr>
+        <tr>
+            <td>30.09.96</td>
+            <td>89,2</td>
+            <td>112,0</td>
+            <td>113,5</td>
+            <td>113,5</td>
+            <td>5,57</td>
+            <td>4,76</td>
+            <td>0,81</td>
+        </tr>
+        <tr>
+            <td>31.12.96</td>
+            <td>90,8</td>
+            <td>114,0</td>
+            <td>97,6</td>
+            <td>97,6</td>
+            <td>-13,92</td>
+            <td>-14,68</td>
+            <td>0,77</td>
+        </tr>
+        <tr>
+            <td>31.03.97</td>
+            <td>92,4</td>
+            <td>103,1</td>
+            <td>94,3</td>
+            <td>98,3</td>
+            <td>1,44</td>
+            <td>-0,13</td>
+            <td>1,57</td>
+        </tr>
+        <tr>
+            <td>30.06.97</td>
+            <td>95,6</td>
+            <td>106,7</td>
+            <td>105,3</td>
+            <td>109,8</td>
+            <td>11,51</td>
+            <td>9,96</td>
+            <td>1,54</td>
+        </tr>
+        <tr>
+            <td>30.09.97</td>
+            <td>98,8</td>
+            <td>110,2</td>
+            <td>110,8</td>
+            <td>115,5</td>
+            <td>5,86</td>
+            <td>3,78</td>
+            <td>2,08</td>
+        </tr>
+        <tr>
+            <td>31.12.97</td>
+            <td>103,6</td>
+            <td>115,6</td>
+            <td>98,1</td>
+            <td>102,3</td>
+            <td>-13,89</td>
+            <td>-13,23</td>
+            <td>-0,65</td>
+        </tr>
+        <tr>
+            <td>31.03.98</td>
+            <td>102,0</td>
+            <td>102,0</td>
+            <td>94,4</td>
+            <td>101,6</td>
+            <td>2,42</td>
+            <td>0,13</td>
+            <td>2,29</td>
+        </tr>
+        <tr>
+            <td>30.06.98</td>
+            <td>107,4</td>
+            <td>107,4</td>
+            <td>105,3</td>
+            <td>113,3</td>
+            <td>10,34</td>
+            <td>9,02</td>
+            <td>1,32</td>
+        </tr>
+        <tr>
+            <td>30.09.98</td>
+            <td>110,6</td>
+            <td>110,6</td>
+            <td>110,7</td>
+            <td>119,2</td>
+            <td>5,16</td>
+            <td>3,91</td>
+            <td>1,25</td>
+        </tr>
+        <tr>
+            <td>31.12.98</td>
+            <td>113,9</td>
+            <td>113,9</td>
+            <td>98,2</td>
+            <td>105,7</td>
+            <td>-11,12</td>
+            <td>-12,37</td>
+            <td>1,25</td>
+        </tr>
+        <tr>
+            <td>31.03.99</td>
+            <td>117,5</td>
+            <td>104,5</td>
+            <td>95,3</td>
+            <td>106,4</td>
+            <td>0,34</td>
+            <td>-0,75</td>
+            <td>1,09</td>
+        </tr>
+        <tr>
+            <td>30.06.99</td>
+            <td>121,1</td>
+            <td>107,8</td>
+            <td>104,1</td>
+            <td>116,2</td>
+            <td>9,14</td>
+            <td>8,05</td>
+            <td>1,09</td>
+        </tr>
+        <tr>
+            <td>30.09.99</td>
+            <td>124,8</td>
+            <td>111,1</td>
+            <td>108,8</td>
+            <td>121,5</td>
+            <td>4,47</td>
+            <td>3,48</td>
+            <td>1,00</td>
+        </tr>
+        <tr>
+            <td>31.12.99</td>
+            <td>128,4</td>
+            <td>114,3</td>
+            <td>97,1</td>
+            <td>108,4</td>
+            <td>-10,57</td>
+            <td>-11,61</td>
+            <td>1,04</td>
+        </tr>
+        <tr>
+            <td>31.03.00</td>
+            <td>132,4</td>
+            <td>104,5</td>
+            <td>95,0</td>
+            <td>108,6</td>
+            <td>-0,16</td>
+            <td>-0,96</td>
+            <td>0,80</td>
+        </tr>
+        <tr>
+            <td>30.06.00</td>
+            <td>136,3</td>
+            <td>107,5</td>
+            <td>103,2</td>
+            <td>118,0</td>
+            <td>8,67</td>
+            <td>7,77</td>
+            <td>0,90</td>
+        </tr>
+        <tr>
+            <td>30.09.00</td>
+            <td>140,6</td>
+            <td>110,9</td>
+            <td>107,5</td>
+            <td>122,9</td>
+            <td>4,07</td>
+            <td>3,27</td>
+            <td>0,80</td>
+        </tr>
+        <tr>
+            <td>31.12.00</td>
+            <td>144,7</td>
+            <td>114,2</td>
+            <td>96,4</td>
+            <td>110,2</td>
+            <td>-10,23</td>
+            <td>-11,03</td>
+            <td>0,80</td>
+        </tr>
+    </tbody>
+</table>
+<br/>
+<h3><i>Auxiliary functions</i></h3>
+<p><b><i>Normalising a time series to match a reference year</i></b></p>
+<p>	Normalising the average of the unadjusted data in the reference year to 100 yields the values<br/>
+    of the aggregate in the reference year as the weighted sum of the index values of the components, whereby the share of<br/>
+    the reference year volumes (valued at the average prices in the previous year) yields the weighting scheme.<br/>
+    However, as the volumes used as weights are not available directly, they are calculated as the product of the nominal<br/>
+    figures from the previous year and the change factor of the annual volumes.</p>
+<p><u>Example</u></p>
+<p>Aggregation of two calendar-adjusted time series A and B in the reference year</p>
+<table>
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>A</th>
+            <th>B</th>
+            <th>gewA</th>
+            <th>gewB</th>
+            <th class ="calculated">change factor of<br/>the annual<br/>chain index A</th>
+            <th class ="calculated">change factor of<br/>the annual<br/>chain index B</th>
+            <th class ="calculated">weight A for<br/>aggregation in<br/>base year</th>
+            <th class ="calculated">weight B for<br/>aggregation in<br/>base year</th>
+            <th class ="calculated">aggregate</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>31.03.04</td>
+            <td>89,78</td>
+            <td>81,19</td>
+            <td>175,09</td>
+            <td>25,15</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+        </tr>
+        <tr>
+            <td>30.06.04</td>
+            <td>93,71</td>
+            <td>93,96</td>
+            <td>184,14</td>
+            <td>29,51</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+        </tr>
+        <tr>
+            <td>30.09.04</td>
+            <td>90,85</td>
+            <td>95,71</td>
+            <td>178,95</td>
+            <td>30,30</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+        </tr>
+        <tr>
+            <td>31.12.04</td>
+            <td>95,20</td>
+            <td>97,31</td>
+            <td>187,45</td>
+            <td>30,85</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+        </tr>
+        <tr>
+            <td>31.03.05</td>
+            <td>95,47</td>
+            <td>89,17</td>
+            <td>188,09</td>
+            <td>28,51</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">94,60 </td>
+        </tr>
+        <tr>
+            <td>30.06.05</td>
+            <td>98,29</td>
+            <td>94,84</td>
+            <td>194,33</td>
+            <td>30,68</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">97,81 </td>
+        </tr>
+        <tr>
+            <td>30.09.05</td>
+            <td>100,15</td>
+            <td>104,22</td>
+            <td>197,97</td>
+            <td>32,95</td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated"></td>
+            <td class ="calculated">100,71 </td>
+        </tr>
+        <tr>
+            <td>31.12.05</td>
+            <td>104,76</td>
+            <td>111,00</td>
+            <td>207,50</td>
+            <td>36,13</td>
+            <td class ="calculated">1,078827732</td>
+            <td class ="calculated">1,084363202</td>
+            <td class ="calculated">782,83</td>
+            <td class ="calculated">125,58</td>
+            <td class ="calculated">105,62 </td>
+        </tr>
+    </tbody>
+</table>
+
+<br/>
+<p><b><i>Unchaining a series</i></b></p>
+<p>	Each value in the time series is divided by the respective <u>previous year average</u> then multiplied by 100.<br/>
+This can be achieved only if both the values themselves and their previous year averages are defined.<br/>
+This results in a series where each year refers to &quot;previous year=100&quot;.<br/>
+When calculating growth contributions steps may be applied where the previous year averages are not calculated<br/>
+on the basis of the actual time series but using a second, chain-linked time series instead.</p>
+<p><u>Example</u></p>
+<p>Unchaining series i1 and i2, using prev. year averages of i2</p>
+<table>
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>i1</th>
+            <th>i2</th>
+            <th class ="calculated">i1,<br/>unchained</th>
+            <th class ="calculated">i2,<br/>unchained</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>31.03.91</td>
+            <td>78,1</td>
+            <td>85,9</td>
+            <td class ="calculated">84,1</td>
+            <td class ="calculated">92,5</td>
+        </tr>
+        <tr>
+            <td>30.06.91</td>
+            <td>79,7</td>
+            <td>97,0</td>
+            <td class ="calculated">85,8</td>
+            <td class ="calculated">104,4</td>
+        </tr>
+        <tr>
+            <td>30.09.91</td>
+            <td>79,7</td>
+            <td>101,7</td>
+            <td class ="calculated">85,8</td>
+            <td class ="calculated">109,5</td>
+        </tr>
+        <tr>
+            <td>31.12.91</td>
+            <td>81,3</td>
+            <td>87,0</td>
+            <td class ="calculated">87,5</td>
+            <td class ="calculated">93,6</td>
+        </tr>
+        <tr>
+            <td>31.03.92</td>
+            <td>86,1</td>
+            <td>89,1</td>
+            <td class ="calculated">92,6</td>
+            <td class ="calculated">95,9</td>
+        </tr>
+        <tr>
+            <td>30.06.92</td>
+            <td>89,2</td>
+            <td>100,6</td>
+            <td class ="calculated">96,1</td>
+            <td class ="calculated">108,3</td>
+        </tr>
+        <tr>
+            <td>30.09.92</td>
+            <td>90,8</td>
+            <td>106,2</td>
+            <td class ="calculated">97,8</td>
+            <td class ="calculated">114,3</td>
+        </tr>
+        <tr>
+            <td>31.12.92</td>
+            <td>92,4</td>
+            <td>91,5</td>
+            <td class ="calculated">99,5</td>
+            <td class ="calculated">98,4</td>
+        </tr>
+        <tr>
+            <td>31.03.93</td>
+            <td>95,6</td>
+            <td>92,8</td>
+            <td class ="calculated">98,7</td>
+            <td class ="calculated">95,8</td>
+        </tr>
+        <tr>
+            <td>30.06.93</td>
+            <td>98,8</td>
+            <td>103,4</td>
+            <td class ="calculated">102,0</td>
+            <td class ="calculated">106,8</td>
+        </tr>
+        <tr>
+            <td>30.09.93</td>
+            <td>103,6</td>
+            <td>109,5</td>
+            <td class ="calculated">106,9</td>
+            <td class ="calculated">113,1</td>
+        </tr>
+        <tr>
+            <td>31.12.93</td>
+            <td>102,0</td>
+            <td>94,3</td>
+            <td class ="calculated">105,3</td>
+            <td class ="calculated">97,4</td>
+        </tr>
+        <tr>
+            <td>31.03.94</td>
+            <td>107,4</td>
+            <td>96,6</td>
+            <td class ="calculated">107,4</td>
+            <td class ="calculated">96,6</td>
+        </tr>
+        <tr>
+            <td>30.06.94</td>
+            <td>110,6</td>
+            <td>106,6</td>
+            <td class ="calculated">110,6</td>
+            <td class ="calculated">106,6</td>
+        </tr>
+        <tr>
+            <td>30.09.94</td>
+            <td>113,9</td>
+            <td>112,1</td>
+            <td class ="calculated">113,9</td>
+            <td class ="calculated">112,1</td>
+        </tr>
+        <tr>
+            <td>31.12.94</td>
+            <td>117,5</td>
+            <td>99,6</td>
+            <td class ="calculated">117,5</td>
+            <td class ="calculated">99,6</td>
+        </tr>
+    </tbody>
+</table>
+<br/>
+<p><b><i>Chain-linking a series</i></b></p>
+<p>	Each value in the series is multiplied by the cumulated <u>previous year averages</u> then divided by 100.<br/>
+This can be achieved only if both the value itself and all of the previous year averages(from the start of the series) are defined.<br/>
+This results in a series where each year refers to &quot;first year=100&quot;.<br/>
+When calculating growth contributions steps may be applied where the previous year averages are not calculated<br/>
+on the basis of the actual time series but using a second, unchained time series instead.</p>
+<p><u>Example</u></p>
+<p>Chain-linking series i1, using prev. year averages of i2</p>
+<table>
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>i1,<br/>unchained</th>
+            <th>i2,<br/>unchained</th>
+            <th>prev. y.<br/>avg. i2</th>
+            <th>prev. y.<br/>avg. i2 (cum.)</th>
+            <th>i1,<br>chain-linked</th>
+            <th></th>
+            <th>i1, norm. like<br>original series</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>31.03.91</td>
+            <td>84,1</td>
+            <td>92,5</td>
+            <td>100,0</td>
+            <td>100,0</td>
+            <td>84,1</td>
+            <td rowspan=16 style='vertical-align:middle'>normalised<br/>for &quot;first<br/>year of i2<br/>= 100&quot;</td>
+            <td>78,1</td>
+        </tr>
+        <tr>
+            <td>30.06.91</td>
+            <td>85,8</td>
+            <td>104,4</td>
+            <td>100,0</td>
+            <td>100,0</td>
+            <td>85,8</td>
+            <td>79,7</td>
+        </tr>
+        <tr>
+            <td>30.09.91</td>
+            <td>85,8</td>
+            <td>109,5</td>
+            <td>100,0</td>
+            <td>100,0</td>
+            <td>85,8</td>
+            <td>79,7</td>
+        </tr>
+        <tr>
+            <td>31.12.91</td>
+            <td>87,5</td>
+            <td>93,6</td>
+            <td>100,0</td>
+            <td>100,0</td>
+            <td>87,5</td>
+            <td>81,3</td>
+        </tr>
+        <tr>
+            <td>31.03.92</td>
+            <td>92,6</td>
+            <td>95,9</td>
+            <td>100,0</td>
+            <td>100,0</td>
+            <td>92,6</td>
+            <td>86,1</td>
+        </tr>
+        <tr>
+            <td>30.06.92</td>
+            <td>96,1</td>
+            <td>108,3</td>
+            <td>100,0</td>
+            <td>100,0</td>
+            <td>96,1</td>
+            <td>89,2</td>
+        </tr>
+        <tr>
+            <td>30.09.92</td>
+            <td>97,8</td>
+            <td>114,3</td>
+            <td>100,0</td>
+            <td>100,0</td>
+            <td>97,8</td>
+            <td>90,8</td>
+        </tr>
+        <tr>
+            <td>31.12.92</td>
+            <td>99,5</td>
+            <td>98,4</td>
+            <td>100,0</td>
+            <td>100,0</td>
+            <td>99,5</td>
+            <td>92,4</td>
+        </tr>
+        <tr>
+            <td>31.03.93</td>
+            <td>98,7</td>
+            <td>95,8</td>
+            <td>104,3</td>
+            <td>104,3</td>
+            <td>102,9</td>
+            <td>95,6</td>
+        </tr>
+        <tr>
+            <td>30.06.93</td>
+            <td>102,0</td>
+            <td>106,8</td>
+            <td>104,3</td>
+            <td>104,3</td>
+            <td>106,4</td>
+            <td>98,8</td>
+        </tr>
+        <tr>
+            <td>30.09.93</td>
+            <td>106,9</td>
+            <td>113,1</td>
+            <td>104,3</td>
+            <td>104,3</td>
+            <td>111,5</td>
+            <td>103,6</td>
+        </tr>
+        <tr>
+            <td>31.12.93</td>
+            <td>105,3</td>
+            <td>97,4</td>
+            <td>104,3</td>
+            <td>104,3</td>
+            <td>109,8</td>
+            <td>102,0</td>
+        </tr>
+        <tr>
+            <td>31.03.94</td>
+            <td>107,4</td>
+            <td>96,6</td>
+            <td>103,2</td>
+            <td>107,6</td>
+            <td>115,6</td>
+            <td>107,4</td>
+        </tr>
+        <tr>
+            <td>30.06.94</td>
+            <td>110,6</td>
+            <td>106,6</td>
+            <td>103,2</td>
+            <td>107,6</td>
+            <td>119,0</td>
+            <td>110,6</td>
+        </tr>
+        <tr>
+            <td>30.09.94</td>
+            <td>113,9</td>
+            <td>112,1</td>
+            <td>103,2</td>
+            <td>107,6</td>
+            <td>122,6</td>
+            <td>113,9</td>
+        </tr>
+        <tr>
+            <td>31.12.94</td>
+            <td>117,5</td>
+            <td>99,6</td>
+            <td>103,2</td>
+            <td>107,6</td>
+            <td>126,4</td>
+            <td>117,5</td>
+        </tr>
+    </tbody>
+</table>
+<br/>
+<p><b><i>Previous year averages</i></b></p>
+<p>	By previous year average we mean the unweighted average of all values recorded in the preceding year.<br/>
+    It is calculated only if all of the values for that year are available.<br/>
+    For the first defined year of a time series the previous year average is equal to the annual average.</p>
+<p><u>Example</u></p>
+<p>previous year average of series A</p>
+<table>
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>A</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>31.03.91</td>
+            <td>99,1</td>
+            <td rowspan=8 style='vertical-align:middle'>
+                prev. year<br/>avg. of 1992<br/>= avg. 1991<br/><br/>
+                prev. year<br/>avg. of 1991<br/>= avg. 1991<br/><br/><br/>
+                99,25
+            </td>
+        </tr>
+        <tr>
+            <td>30.06.91</td>
+            <td>99,2</td>
+        </tr>
+        <tr>
+            <td>30.09.91</td>
+            <td>99,3</td>
+        </tr>
+        <tr>
+            <td>31.12.91</td>
+            <td>99,4</td>
+        </tr>
+        <tr>
+            <td>31.03.92</td>
+            <td>99,5</td>
+        </tr>
+        <tr>
+            <td>30.06.92</td>
+            <td>99,6</td>
+        </tr>
+        <tr>
+            <td>30.09.92</td>
+            <td>99,7</td>
+        </tr>
+        <tr>
+            <td>31.12.92</td>
+            <td>99,8</td>
+        </tr>
+    </tbody>	
+</table>
+<br/>
+
+<p><b><i>Relative differences compared with the previous period</i></b></p>
+<p>	The relative differences between the current value of a series and that for the lag-th preceding period of the same series or a second series<br/>
+    are thus determined. The result can be determined only if both values are already defined and the second value is greater than zero. </p>
+<p><u>Example</u></p>
+<p>rel. diff. of i1, comp. with the lag-th preceding period of i2. Lag =1</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>i1</th>
+            <th>i2</th>
+            <th>rel. diff. (%)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>31.03.91</td>
+            <td>99,1</td>
+            <td>88,1</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>30.06.91</td>
+            <td>99,2</td>
+            <td>88,2</td>
+            <td>12,60 </td>
+        </tr>
+        <tr>
+            <td>30.09.91</td>
+            <td>99,3</td>
+            <td></td>
+            <td>12,59 </td>
+        </tr>
+        <tr>
+            <td>31.12.91</td>
+            <td>99,4</td>
+            <td>88,4</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>31.03.92</td>
+            <td>99,5</td>
+            <td>88,5</td>
+            <td>12,56 </td>
+        </tr>
+        <tr>
+            <td>30.06.92</td>
+            <td></td>
+            <td>88,6</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>30.09.92</td>
+            <td>99,7</td>
+            <td>88,7</td>
+            <td>12,53 </td>
+        </tr>
+        <tr>
+            <td>31.12.92</td>
+            <td>99,8</td>
+            <td>88,8</td>
+            <td>12,51</td>
+        </tr>
+    </tbody>
+</table>
+<br/>
+
+<p><b><i>Lagging a series</i></b></p>
+<p>The series values are pushed backwards by lag periods.</p>
+<p><u>Example</u></p>
+<p>Lagging the series A several periods</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>A</th>
+            <th>Lag1_A</th>
+            <th>Lag2_A</th>
+            <th>Lag3_A</th>
+            <th>Lag4_A</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>31.03.91</td>
+            <td>99,1</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>30.06.91</td>
+            <td>99,2</td>
+            <td>99,1</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>30.09.91</td>
+            <td>99,3</td>
+            <td>99,2</td>
+            <td>99,1</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>31.12.91</td>
+            <td>99,4</td>
+            <td>99,3</td>
+            <td>99,2</td>
+            <td>99,1</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>31.03.92</td>
+            <td>99,5</td>
+            <td>99,4</td>
+            <td>99,3</td>
+            <td>99,2</td>
+            <td>99,1</td>
+        </tr>
+        <tr>
+            <td>30.06.92</td>
+            <td>99,6</td>
+            <td>99,5</td>
+            <td>99,4</td>
+            <td>99,3</td>
+            <td>99,2</td>
+        </tr>
+        <tr>
+            <td>30.09.92</td>
+            <td>99,7</td>
+            <td>99,6</td>
+            <td>99,5</td>
+            <td>99,4</td>
+            <td>99,3</td>
+        </tr>
+        <tr>
+            <td>31.12.92</td>
+            <td>99,8</td>
+            <td>99,7</td>
+            <td>99,6</td>
+            <td>99,5</td>
+            <td>99,4</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Additional Features</h3>
+<ul>
+    <li><b>Naming Formulas</b>: You can name an resulting time series by writing "Your Name of choice"="Formula" into the text area.</li>
+    <li><b>Autocompleted weights</b>: If you don't choose a specific weight series for your aggregation, the weight
+        series with the same number will be taken.</li>
+</ul>
+</body>
 </html>

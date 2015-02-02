@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -37,7 +38,7 @@ import org.openide.util.NbBundle.Messages;
  * Top component which displays something.
  */
 @ConvertAsProperties(dtd = "-//ec.nbdemetra.kix//KIX//EN",
-        autostore = false)
+                     autostore = false)
 @TopComponent.Description(
         preferredID = "KIXTopComponent",
         persistenceType = TopComponent.PERSISTENCE_ALWAYS)
@@ -56,21 +57,22 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
     private static final String TOOL_TIP_TEXTAREA = "<html>"
             + "Enter formulas with the following syntax:"
             + "<br>"
-            + "KIX, i1, w1, +/-, i2, w2, …,refyr "
+            + "[Name=]KIX, i1, [w1,] +/-, i2, [w2,] …,refyr "
             + "<br>"
-            + "WBG, iContr, wContr, +/-, iTotal, wTotal, #ofLags"
+            + "[Name=]WBG, iContr, [wContr,] +/-, iTotal, [wTotal,] #ofLags"
             + "<br>"
             + "For more information, please consult the Help (F1)"
             + "</html>";
 
-    private JSplitPane mainPane,listPane,dataPane;
+    private JSplitPane mainPane, listPane, dataPane, indexDataPane, weightDataPane, resultPane;
     private JPanel textPanel;
-    private JTsVariableList indexDataList,weightsDataList;
-    private JTsGrid kixGrid;
+    private JTsVariableList indexDataList, weightsDataList;
+    private JTsGrid results;
     private JTextArea inputText;
     private JToolBar toolBarRepresentation;
     private JButton runButton;
-    private TsVariables indexData,weightsData;
+    private JLabel lblIndexData, lblWeightData, lblResults;
+    private TsVariables indexData, weightsData;
     private IKIXModel _KIX;
     private JScrollPane scrollpane;
 
@@ -114,27 +116,40 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
         weightsData = this.getDocument().getElement().getWeights();
         weightsDataList = new JTsVariableList(weightsData);
-        
+
         inputText = new JTextArea();
         inputText.setLineWrap(true);
         inputText.setWrapStyleWord(true);
-        
+
         inputText.setToolTipText(TOOL_TIP_TEXTAREA);
         ToolTipManager.sharedInstance().setDismissDelay(20000);
         ToolTipManager.sharedInstance().setInitialDelay(500);
         ToolTipManager.sharedInstance().setReshowDelay(500);
         ToolTipManager.sharedInstance().registerComponent(inputText);
-        
+
         inputText.setDocument(this.getDocument().getElement().getinput());
 
         scrollpane = new JScrollPane(inputText);
         textPanel = new JPanel(new BorderLayout());
         textPanel.add(scrollpane, BorderLayout.CENTER);
 
-        kixGrid = new JTsGrid();
-        kixGrid.setTsUpdateMode(ITsCollectionView.TsUpdateMode.None);
-        dataPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, indexDataList, weightsDataList);
-        listPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataPane, kixGrid);
+        results = new JTsGrid();
+        results.setTsUpdateMode(ITsCollectionView.TsUpdateMode.None);
+        
+        lblIndexData = new JLabel("Index Data",JLabel.CENTER);
+        indexDataPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, lblIndexData, indexDataList);
+        indexDataPane.setDividerSize(0);
+        
+        lblWeightData = new JLabel("Weight Data",JLabel.CENTER);
+        weightDataPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, lblWeightData, weightsDataList);
+        weightDataPane.setDividerSize(0);
+        
+        lblResults = new JLabel("Results",JLabel.CENTER);
+        resultPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, lblResults, results);
+        resultPane.setDividerSize(0);
+        
+        dataPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, indexDataPane, weightDataPane);        
+        listPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataPane, resultPane);
         mainPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, textPanel, listPane);
 
         setLayout(new BorderLayout());
@@ -174,7 +189,7 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
             @Override
             public void actionPerformed(ActionEvent e) {
                 run();
-                
+
             }
 
         }
@@ -182,15 +197,15 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
     }
 
     private void run() {
-        kixGrid.getTsCollection().clear();
+        results.getTsCollection().clear();
         addMissingWeights();
-        TsCollection data = _KIX.parser(inputText.getText(), indexData,weightsData);
+        TsCollection data = _KIX.parser(inputText.getText(), indexData, weightsData);
         if (data != null) {
-            kixGrid.getTsCollection().append(data);
+            results.getTsCollection().append(data);
         }
-        
+
     }
-    
+
     private void addMissingWeights() {
         String input = inputText.getText();
         input = input.replaceAll(" ", "");
@@ -199,5 +214,5 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
         inputText.setText(input);
     }
-    
+
 }

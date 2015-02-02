@@ -112,7 +112,7 @@ public class KIXModel implements IKIXModel {
 
         int refYear = Integer.parseInt(formula[formula.length - 1]);
 
-        for (int i = 1; i < formula.length; i = i + 3) {
+        for (int i = 1; i < formula.length; i += 3) {
 
             addData = extractData(indices.get(formula[i]));
             addWeights = extractData(weights.get(formula[i + 1]));
@@ -220,7 +220,7 @@ public class KIXModel implements IKIXModel {
         //Return
         return unchained;
     }
-
+    
     /**
      *
      * @param weightedSumD
@@ -267,17 +267,17 @@ public class KIXModel implements IKIXModel {
             for (int j = 0; j < frequence.intValue(); j++) {
                 if (i == 0) {
                     if (s.get(new TsPeriod(frequence, startYear, j)) != Double.NaN) {
-                        helper = helper + s.get(new TsPeriod(frequence, startYear, j));
+                        helper += s.get(new TsPeriod(frequence, startYear, j));
                         counter++;
                     }
                 } else {
                     if (s.get(new TsPeriod(frequence, startYear + i - lag, j)) != Double.NaN) {
-                        helper = helper + s.get(new TsPeriod(frequence, startYear + i - lag, j));
+                        helper += s.get(new TsPeriod(frequence, startYear + i - lag, j));
                         counter++;
                     }
                 }
             }
-            helper = helper / counter;
+            helper /= counter;
 
             if (i == endYear - startYear) {
                 for (int k = 0; k <= lastPeriodPosition; k++) {
@@ -366,16 +366,16 @@ public class KIXModel implements IKIXModel {
                 if (i == 0) {
                     if (addData.get(new TsPeriod(frequence, startYear, j)) != Double.NaN
                             && addWeights.get(new TsPeriod(frequence, startYear, j)) != Double.NaN) {
-                        helperCurr = helperCurr + addData.get(new TsPeriod(frequence, startYear, j));
-                        helperPrev = helperPrev + addData.get(new TsPeriod(frequence, startYear, j));
-                        helperWeight = helperWeight + addWeights.get(new TsPeriod(frequence, startYear, j));
+                        helperCurr += addData.get(new TsPeriod(frequence, startYear, j));
+                        helperPrev += addData.get(new TsPeriod(frequence, startYear, j));
+                        helperWeight += addWeights.get(new TsPeriod(frequence, startYear, j));
                     }
                 } else {
                     if (addData.get(new TsPeriod(frequence, startYear + i - 1, j)) != Double.NaN
                             && addWeights.get(new TsPeriod(frequence, startYear + i, j)) != Double.NaN) {
-                        helperCurr = helperCurr + addData.get(new TsPeriod(frequence, startYear + i, j));
-                        helperPrev = helperPrev + addData.get(new TsPeriod(frequence, startYear + i - 1, j));
-                        helperWeight = helperWeight + addWeights.get(new TsPeriod(frequence, startYear + i - 1, j));
+                        helperCurr += addData.get(new TsPeriod(frequence, startYear + i, j));
+                        helperPrev += addData.get(new TsPeriod(frequence, startYear + i - 1, j));
+                        helperWeight += addWeights.get(new TsPeriod(frequence, startYear + i - 1, j));
                     }
                 }
             }
@@ -465,7 +465,7 @@ public class KIXModel implements IKIXModel {
                 + " could not be found: ";
         StringBuilder errortext = new StringBuilder(start);
 
-        for (int i = 1; i < formula.length; i = i + 3) {
+        for (int i = 1; i < formula.length; i += 3) {
             if (!indices.contains(formula[i])) {
                 errortext.append(formula[i]).append(", ");
             }
@@ -488,7 +488,7 @@ public class KIXModel implements IKIXModel {
      */
     private void checkData(String[] formula, int j) throws InputException {
         StringBuilder errortext = new StringBuilder();
-        for (int i = 1; i < formula.length; i = i + 3) {
+        for (int i = 1; i < formula.length; i += 3) {
             if (!(indices.get(formula[i]).getDefinitionDomain().getStart().getPosition() == 0)
                     || !(weights.get(formula[i + 1]).getDefinitionDomain().getStart().getPosition() == 0)) {
                 //TODO Prüfung vervollständigen/verifizieren
