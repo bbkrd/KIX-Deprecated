@@ -18,10 +18,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
 @ActionID(category = "KIX",
-id = "ec.nbdemetra.kix.actions.OpenAction")
+          id = "ec.nbdemetra.kix.actions.OpenAction")
 @ActionRegistration(displayName = "#CTL_OpenAction")
 @ActionReferences({
-    @ActionReference(path=KIXDocumentManager.ITEMPATH, position = 1600, separatorBefore = 1590)
+    @ActionReference(path = KIXDocumentManager.ITEMPATH, position = 1600, separatorBefore = 1590)
 })
 @NbBundle.Messages("CTL_OpenAction=Open")
 public class OpenAction implements ActionListener {

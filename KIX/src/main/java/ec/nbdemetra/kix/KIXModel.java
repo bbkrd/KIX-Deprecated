@@ -47,7 +47,7 @@ public class KIXModel implements IKIXModel {
     public TsCollection parser(String inputString, TsVariables indices, TsVariables weights) {
         this.indices = indices;
         this.weights = weights;
-        formatinput(inputString);
+        formatInput(inputString);
         TsData[] outputTsData = new TsData[request.length];
         outputTsCollection = TsFactory.instance.createTsCollection();
 
@@ -206,7 +206,7 @@ public class KIXModel implements IKIXModel {
      * multiplyed by 100.
      *
      * @param inputTsData the time series to be unchained
-     * @param helper the time series used for the prior-year averages
+     * @param helper      the time series used for the prior-year averages
      * @return A new unchained time series is returned.
      */
     private TsData unchain(TsData inputTsData, TsData helper) {
@@ -220,7 +220,7 @@ public class KIXModel implements IKIXModel {
         //Return
         return unchained;
     }
-    
+
     /**
      *
      * @param weightedSumD
@@ -436,8 +436,8 @@ public class KIXModel implements IKIXModel {
      * (average of 100 in the reference year).
      *
      * @param indexData time series to normalize
-     * @param refyear reference year in which the new time series averages at
-     * 100
+     * @param refyear   reference year in which the new time series averages at
+     *                  100
      * @return A new time series with an average of 100 in <b>year</b>.
      */
     private TsData normalizeToYear(TsData indexData, Integer refyear) {
@@ -452,7 +452,7 @@ public class KIXModel implements IKIXModel {
      * data list and informs the user about formulas with missing data parts.
      *
      * @param formula String array with all parts of the requested formula
-     * @param j the count of the formula
+     * @param j       the count of the formula
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
     private void check(String[] formula, int j) throws InputException {
@@ -513,9 +513,9 @@ public class KIXModel implements IKIXModel {
      * year is 1950 or later.
      *
      * @param year the string representation of the year
-     * @param j the count of the formula
+     * @param j    the count of the formula
      * @throws ec.nbdemetra.kix.KIXModel.InputException exception message
-     * informs the user about the formula with the false year
+     *                                                  informs the user about the formula with the false year
      */
     private void checkYearKIX(String year, int j) throws InputException {
         if (!tryParseInt(year)) {
@@ -554,7 +554,7 @@ public class KIXModel implements IKIXModel {
      *
      * @param value String to test
      * @return <code>true</code> if value can be parsed to Integer;
-     * <code>false</code> otherwise.
+     *         <code>false</code> otherwise.
      */
     boolean tryParseInt(String value) {
         try {
@@ -572,13 +572,13 @@ public class KIXModel implements IKIXModel {
         return new TsData(input.getDefinitionDomain().getStart(), data.get(0));
     }
 
-    private void formatinput(String input) {
-        String[] tempInput = input.split("\n");
-        formulaNames = new String[tempInput.length][];
-        request = new String[tempInput.length][];
+    private void formatInput(String input) {
+        String[] splitInput = input.split("\n");
+        formulaNames = new String[splitInput.length][];
+        request = new String[splitInput.length][];
 
         int counter = 0;
-        for (String a : tempInput) {
+        for (String a : splitInput) {
             formulaNames[counter] = a.split("=", 2);
             if (formulaNames[counter].length == 2) {
                 request[counter] = formulaNames[counter][1].split(",");

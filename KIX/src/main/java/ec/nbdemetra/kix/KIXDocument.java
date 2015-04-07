@@ -6,6 +6,7 @@
 package ec.nbdemetra.kix;
 
 import ec.tstoolkit.timeseries.regression.TsVariables;
+import ec.tstoolkit.utilities.DefaultNameValidator;
 import ec.tstoolkit.utilities.IModifiable;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -17,15 +18,15 @@ import org.openide.util.Exceptions;
  * @author Thomas Witthohn
  */
 public class KIXDocument implements IModifiable {
-    
+
     private final String VALIDATOR = ",= +-";
-    private TsVariables indices,weights;
+    private TsVariables indices, weights;
     private final Document inputString;
     private String initial;
 
     public KIXDocument() {
-        indices = new TsVariables("i", new KIXNameValidator(VALIDATOR));
-        weights = new TsVariables("w", new KIXNameValidator(VALIDATOR));
+        indices = new TsVariables("i", new DefaultNameValidator(VALIDATOR));
+        weights = new TsVariables("w", new DefaultNameValidator(VALIDATOR));
         initial = "";
         inputString = new PlainDocument();
     }
@@ -47,7 +48,7 @@ public class KIXDocument implements IModifiable {
         //TODO better way
         boolean dirty = indices.isDirty();
         TsVariables temp = indices;
-        indices = new TsVariables("i", new KIXNameValidator(VALIDATOR));
+        indices = new TsVariables("i", new DefaultNameValidator(VALIDATOR));
         for (String name : temp.getNames()) {
             indices.set(name, temp.get(name));
         }
@@ -60,12 +61,12 @@ public class KIXDocument implements IModifiable {
     public void setIndices(TsVariables i) {
         this.indices = i;
     }
-    
+
     public TsVariables getWeights() {
         //TODO better way
         boolean dirty = weights.isDirty();
         TsVariables temp = weights;
-        weights = new TsVariables("w", new KIXNameValidator(VALIDATOR));
+        weights = new TsVariables("w", new DefaultNameValidator(VALIDATOR));
         for (String name : temp.getNames()) {
             weights.set(name, temp.get(name));
         }
@@ -82,7 +83,7 @@ public class KIXDocument implements IModifiable {
     @Override
     public boolean isDirty() {
         try {
-            return indices.isDirty() ||weights.isDirty() || !inputString.getText(0, inputString.getLength()).equals(initial);
+            return indices.isDirty() || weights.isDirty() || !inputString.getText(0, inputString.getLength()).equals(initial);
         } catch (BadLocationException ex) {
             return true;
         }

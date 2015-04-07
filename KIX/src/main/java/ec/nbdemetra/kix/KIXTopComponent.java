@@ -13,7 +13,6 @@ import ec.tss.TsCollection;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.ui.grid.JTsGrid;
 import ec.ui.interfaces.ITsCollectionView;
-import ec.ui.list.JTsVariableList;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -30,9 +29,8 @@ import javax.swing.ToolTipManager;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.util.ImageUtilities;
-import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
+import org.openide.windows.TopComponent;
 
 /**
  * Top component which displays something.
@@ -66,7 +64,7 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
     private JSplitPane mainPane, listPane, dataPane, indexDataPane, weightDataPane, resultPane;
     private JPanel textPanel;
-    private JTsVariableList indexDataList, weightsDataList;
+    private JTsKIXList indexDataList, weightsDataList;
     private JTsGrid results;
     private JTextArea inputText;
     private JToolBar toolBarRepresentation;
@@ -101,7 +99,6 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
         toolBarRepresentation = NbComponents.newInnerToolbar();
         runButton = new JButton(DemetraUiIcon.COMPILE_16);
-        runButton.setDisabledIcon(ImageUtilities.createDisabledIcon(runButton.getIcon()));
         runButton.setToolTipText("Run KIX");
 
         toolBarRepresentation.add(runButton);
@@ -112,10 +109,10 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
         toolBarRepresentation.addSeparator();
 
         indexData = this.getDocument().getElement().getIndices();
-        indexDataList = new JTsVariableList(indexData);
+        indexDataList = new JTsKIXList(indexData);
 
         weightsData = this.getDocument().getElement().getWeights();
-        weightsDataList = new JTsVariableList(weightsData);
+        weightsDataList = new JTsKIXList(weightsData);
 
         inputText = new JTextArea();
         inputText.setLineWrap(true);
@@ -135,20 +132,20 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
         results = new JTsGrid();
         results.setTsUpdateMode(ITsCollectionView.TsUpdateMode.None);
-        
-        lblIndexData = new JLabel("Index Data",JLabel.CENTER);
+
+        lblIndexData = new JLabel("Index Data", JLabel.CENTER);
         indexDataPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, lblIndexData, indexDataList);
         indexDataPane.setDividerSize(0);
-        
-        lblWeightData = new JLabel("Weight Data",JLabel.CENTER);
+
+        lblWeightData = new JLabel("Weight Data", JLabel.CENTER);
         weightDataPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, lblWeightData, weightsDataList);
         weightDataPane.setDividerSize(0);
-        
-        lblResults = new JLabel("Results",JLabel.CENTER);
+
+        lblResults = new JLabel("Results", JLabel.CENTER);
         resultPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, lblResults, results);
         resultPane.setDividerSize(0);
-        
-        dataPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, indexDataPane, weightDataPane);        
+
+        dataPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, indexDataPane, weightDataPane);
         listPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataPane, resultPane);
         mainPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, textPanel, listPane);
 
@@ -167,15 +164,9 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
     }
 
     void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
-        p.setProperty("version", "1.0");
-        // TODO store your settings
     }
 
     void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
-        // TODO read your settings according to their version
     }
 
     @Override
@@ -188,22 +179,14 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                run();
-
+                results.getTsCollection().clear();
+                addMissingWeights();
+                TsCollection data = _KIX.parser(inputText.getText(), indexData, weightsData);
+                if (data != null) {
+                    results.getTsCollection().append(data);
+                }
             }
-
-        }
-        );
-    }
-
-    private void run() {
-        results.getTsCollection().clear();
-        addMissingWeights();
-        TsCollection data = _KIX.parser(inputText.getText(), indexData, weightsData);
-        if (data != null) {
-            results.getTsCollection().append(data);
-        }
-
+        });
     }
 
     private void addMissingWeights() {

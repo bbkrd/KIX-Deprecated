@@ -5,8 +5,8 @@
 package ec.nbdemetra.kix.actions;
 
 import ec.nbdemetra.kix.KIXDocument;
-import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.kix.KIXDocumentManager;
+import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
@@ -18,15 +18,15 @@ import javax.swing.JComponent;
 import javax.swing.JTextField;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.awt.ActionRegistration;
+import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
-import org.openide.awt.ActionID;
+import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "KIX",
-        id = "ec.nbdemetra.kix.actions.RenameAction")
+          id = "ec.nbdemetra.kix.actions.RenameAction")
 @ActionRegistration(
         displayName = "#CTL_RenameAction", lazy = false)
 @ActionReferences({

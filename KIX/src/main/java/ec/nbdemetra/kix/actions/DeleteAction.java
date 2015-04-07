@@ -11,20 +11,20 @@ import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
-import org.openide.awt.ActionRegistration;
+import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
-import org.openide.awt.ActionID;
+import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "KIX",
-        id = "ec.nbdemetra.kix.actions.DeleteAction")
+          id = "ec.nbdemetra.kix.actions.DeleteAction")
 @ActionRegistration(
         displayName = "#CTL_DeleteAction", lazy = false)
 @ActionReferences({
     //    @ActionReference(path = "Menu/Edit"),
-    @ActionReference(path=KIXDocumentManager.ITEMPATH, position = 1100),
+    @ActionReference(path = KIXDocumentManager.ITEMPATH, position = 1100),
     @ActionReference(path = "Shortcuts", name = "DELETE")
 })
 @Messages("CTL_DeleteAction=Delete")
@@ -45,7 +45,6 @@ public final class DeleteAction extends SingleNodeAction<ItemWsNode> {
                 return;
             }
             context.getWorkspace().remove(cur);
-            //ProcessingContext.getActiveContext().getTsVariableManagers().remove(cur.getDisplayName());
         }
     }
 

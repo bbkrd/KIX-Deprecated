@@ -20,11 +20,11 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(
-    category = "KIX",
-id = "ec.nbdemetra.kix.actions.RefreshAllAction")
+        category = "KIX",
+        id = "ec.nbdemetra.kix.actions.RefreshAllAction")
 @ActionRegistration(displayName = "#CTL_RefreshAllAction")
 @ActionReferences({
-    @ActionReference(path=KIXDocumentManager.PATH, position = 1700, separatorBefore = 1699)
+    @ActionReference(path = KIXDocumentManager.PATH, position = 1700, separatorBefore = 1699)
 })
 @Messages("CTL_RefreshAllAction=Refresh all")
 public final class RefreshAllAction implements ActionListener {
