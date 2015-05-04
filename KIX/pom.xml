@@ -45,6 +45,18 @@
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-netbeans-modules-javahelp</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-util-lookup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-awt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-modules-settings</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -53,7 +65,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
-            </plugin>     
+            </plugin>
         </plugins>
     </build>
 </project>

@@ -5,15 +5,8 @@
  */
 package ec.nbdemetra.kix;
 
-import static ec.nbdemetra.kix.calculation.KIXCalc.aggregateOverTheYear;
-import static ec.nbdemetra.kix.calculation.KIXCalc.chainSum;
-import static ec.nbdemetra.kix.calculation.KIXCalc.checkWBG;
-import static ec.nbdemetra.kix.calculation.KIXCalc.checkYearKIX;
-import static ec.nbdemetra.kix.calculation.KIXCalc.mid;
-import static ec.nbdemetra.kix.calculation.KIXCalc.normalizeToYear;
-import static ec.nbdemetra.kix.calculation.KIXCalc.scaleToRefYear;
-import static ec.nbdemetra.kix.calculation.KIXCalc.unchain;
-import static ec.nbdemetra.kix.calculation.KIXCalc.weightsum;
+import ec.nbdemetra.kix.calculation.KIXCalc;
+import ec.nbdemetra.kix.calculation.KIXECalc;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
@@ -73,6 +66,9 @@ public class KIXModel implements IKIXModel {
                     case "WBG":
                         outputTsData[j] = doWBG(formula, j);
                         break;
+                    case "KIXE":
+                        outputTsData[j] = doKIXE(formula, j);
+                        break;
                     case "":
                         throw new InputException("No control character found in formula "
                                 + String.valueOf(j + 1)
@@ -101,7 +97,7 @@ public class KIXModel implements IKIXModel {
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
     private TsData doKIX(String[] formula, int j) throws InputException {
-        checkYearKIX(formula[formula.length - 1], j);
+        checkYear(formula[formula.length - 1], j);
         check(formula, j);
         checkData(formula, j);
 
@@ -121,28 +117,28 @@ public class KIXModel implements IKIXModel {
 
             if (i == 1) {
                 indexData = addData.clone();
-                indexWeights = aggregateOverTheYear(addData, addWeights);
+                indexWeights = KIXCalc.aggregateOverTheYear(addData, addWeights);
 
-                weightedSumData = unchain(addData);
-                weightedSumWeights = mid(addWeights, 1);
+                weightedSumData = KIXCalc.unchain(addData);
+                weightedSumWeights = KIXCalc.mid(addWeights, 1);
 
             } else {
                 TsData[] tempNewIndex;
-                tempNewIndex = weightsum(indexData, indexWeights, addData,
-                        aggregateOverTheYear(addData, addWeights), formula[i - 1]);
+                tempNewIndex = KIXCalc.weightsum(indexData, indexWeights, addData,
+                        KIXCalc.aggregateOverTheYear(addData, addWeights), formula[i - 1]);
                 indexData = tempNewIndex[0];
                 indexWeights = tempNewIndex[1];
 
                 TsData[] tempWeightSum;
-                tempWeightSum = weightsum(weightedSumData, weightedSumWeights,
-                        unchain(addData), mid(addWeights, 1), formula[i - 1]);
+                tempWeightSum = KIXCalc.weightsum(weightedSumData, weightedSumWeights,
+                        KIXCalc.unchain(addData), KIXCalc.mid(addWeights, 1), formula[i - 1]);
                 weightedSumData = tempWeightSum[0];
                 weightedSumWeights = tempWeightSum[1];
 
             }
 
         }
-        return scaleToRefYear(chainSum(weightedSumData), indexData, refYear);
+        return KIXCalc.scaleToRefYear(KIXCalc.chainSum(weightedSumData), indexData, refYear);
     }
 
     /**
@@ -163,30 +159,67 @@ public class KIXModel implements IKIXModel {
         TsData TsAllData = extractData(indices.get(formula[4]));
         TsData TsAllWeights = extractData(weights.get(formula[5]));
 
-        TsAllData = normalizeToYear(TsAllData, TsAllData.getStart().getYear());
+        TsAllData = KIXCalc.normalizeToYear(TsAllData, TsAllData.getStart().getYear());
         TsData TsRemainData;
         TsData TsRemainWeights;
         if (formula[3].equalsIgnoreCase("-")) {
-            TsData[] tempNewIndex = weightsum(unchain(TsAllData), mid(TsAllWeights, 1),
-                    unchain(TsWBTData), mid(TsWBTWeights, 1), "+");
+            TsData[] tempNewIndex = KIXCalc.weightsum(KIXCalc.unchain(TsAllData), KIXCalc.mid(TsAllWeights, 1),
+                    KIXCalc.unchain(TsWBTData), KIXCalc.mid(TsWBTWeights, 1), "+");
             TsRemainData = tempNewIndex[0];
             TsRemainWeights = TsAllWeights.plus(TsWBTWeights);
         } else {
-            TsData[] tempNewIndex = weightsum(unchain(TsAllData), mid(TsAllWeights, 1),
-                    unchain(TsWBTData), mid(TsWBTWeights, 1), "-");
+            TsData[] tempNewIndex = KIXCalc.weightsum(KIXCalc.unchain(TsAllData), KIXCalc.mid(TsAllWeights, 1),
+                    KIXCalc.unchain(TsWBTData), KIXCalc.mid(TsWBTWeights, 1), "-");
             TsRemainData = tempNewIndex[0];
             TsRemainWeights = TsAllWeights.minus(TsWBTWeights);
         }
 
-        TsData TsWBTDataLagDiff = weightsum(unchain(TsWBTData.lead(lag), TsWBTData),
-                mid(TsWBTWeights, 1), TsRemainData, mid(TsRemainWeights, 1), formula[3])[0];
-        TsWBTDataLagDiff = chainSum(TsWBTDataLagDiff, unchain(TsAllData));
+        TsData TsWBTDataLagDiff = KIXCalc.weightsum(KIXCalc.unchain(TsWBTData.lead(lag), TsWBTData),
+                KIXCalc.mid(TsWBTWeights, 1), TsRemainData, KIXCalc.mid(TsRemainWeights, 1), formula[3])[0];
+        TsWBTDataLagDiff = KIXCalc.chainSum(TsWBTDataLagDiff, KIXCalc.unchain(TsAllData));
 
         TsData TsAllDataLagDiff = ((TsAllData.lag(lag).minus(TsAllData)).div(TsAllData).times(100)).lead(lag);
         TsWBTDataLagDiff = ((TsWBTDataLagDiff.lag(lag).minus(TsAllData)).div(TsAllData).times(100)).lead(lag);
 
         TsData TsReturnData = TsAllDataLagDiff.minus(TsWBTDataLagDiff);
         return TsReturnData;
+    }
+
+    private TsData doKIXE(String[] formula, int j) {
+        checkYear(formula[formula.length - 1], j);
+        check(formula, j);
+//        checkData(formula, j);
+
+        int refYear = Integer.parseInt(formula[formula.length - 1]);
+        double factor = 0;
+        double factorWeight = 0;
+        TsData weightedIndex = null;
+        TsData weightedIndexWeights = null;
+        TsData addData;
+        TsData addWeights;
+
+        for (int i = 1; i < formula.length; i += 3) {
+
+            addData = extractData(indices.get(formula[i]));
+            addWeights = extractData(weights.get(formula[i + 1]));
+            factor = KIXECalc.addToFactor(factor, factorWeight, addData, KIXECalc.weightInRefYear(addData, addWeights, refYear), refYear);
+            factorWeight += KIXECalc.weightInRefYear(addData, addWeights, refYear);
+
+            if (i == 1) {
+                weightedIndex = KIXECalc.unchain(addData);
+                weightedIndexWeights = addWeights;
+            } else {
+                if ("-".equals(formula[i - 1])) {
+                    weightedIndex = KIXECalc.subtractFromWeightSum(weightedIndex, weightedIndexWeights, KIXECalc.unchain(addData), addWeights);
+                    weightedIndexWeights = KIXECalc.subtractFromWeight(weightedIndexWeights, addWeights);
+                } else {
+                    weightedIndex = KIXECalc.addToWeightSum(weightedIndex, weightedIndexWeights, KIXECalc.unchain(addData), addWeights);
+                    weightedIndexWeights = KIXECalc.addToWeight(weightedIndexWeights, addWeights);
+                }
+            }
+
+        }
+        return KIXECalc.scaleToRefYear(KIXECalc.chain(weightedIndex), factor, refYear);
     }
 
     /**
@@ -267,7 +300,7 @@ public class KIXModel implements IKIXModel {
     }
 
     private TsData extractData(ITsVariable input) {
-        ArrayList<DataBlock> data = new ArrayList();
+        ArrayList<DataBlock> data = new ArrayList<>();
         data.add(new DataBlock(input.getDefinitionDomain().getLength()));
         input.data(input.getDefinitionDomain(), data);
         return new TsData(input.getDefinitionDomain().getStart(), data.get(0));
@@ -294,6 +327,47 @@ public class KIXModel implements IKIXModel {
             }
         }
 
+    }
+
+    /**
+     * Checks if the parameter <b>year</b> can be parsed to Integer and if the
+     * year is 1950 or later.
+     *
+     * @param year the string representation of the year
+     * @param j    the count of the formula
+     * @throws ec.nbdemetra.kix.KIXModel.InputException exception message
+     *                                                  informs the user about the formula with the false year
+     */
+    public void checkYear(String year, int j) throws InputException {
+        if (!tryParseInt(year)) {
+            throw new InputException("The reference year (" + year + ") has to be numeric in formula " + String.valueOf(j + 1));
+        }
+        if (Integer.parseInt(year) < 1950) {
+            throw new InputException("The reference year (" + year + ") has to be after 1949 in formula " + String.valueOf(j + 1));
+        }
+    }
+
+    /**
+     *
+     * @param formula
+     * @param j
+     * @throws ec.nbdemetra.kix.KIXModel.InputException
+     */
+    public static void checkWBG(String[] formula, int j, TsVariables indices) throws InputException {
+        if (formula.length != 7) {
+            throw new InputException("Formula "
+                    + String.valueOf(j + 1) + " is not following the WBG syntax.");
+        }
+        if (Integer.parseInt(formula[6]) < 1 || Integer.parseInt(formula[6]) > indices.get(formula[1]).getDefinitionFrequency().intValue()) {
+            throw new InputException("The number of lags has to be at between 1 and "
+                    + indices.get(formula[1]).getDefinitionFrequency().intValue()
+                    + "(maximum lag one year) in formula "
+                    + String.valueOf(j + 1));
+        }
+        if (!(indices.get(formula[4]).getDefinitionDomain().getStart().isNotBefore(indices.get(formula[1]).getDefinitionDomain().getStart()))) {
+            throw new InputException("The contributing index series (iContr) should not begin after the total index series (iTotal) in formula "
+                    + String.valueOf(j + 1));
+        }
     }
 
     private void fillTsCollection(TsData[] outputTsData) {

@@ -5,9 +5,6 @@
  */
 package ec.nbdemetra.kix.calculation;
 
-import ec.nbdemetra.kix.InputException;
-import static ec.nbdemetra.kix.KIXModel.tryParseInt;
-import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
@@ -119,24 +116,6 @@ public class KIXCalc {
     }
 
     /**
-     * Checks if the parameter <b>year</b> can be parsed to Integer and if the
-     * year is 1950 or later.
-     *
-     * @param year the string representation of the year
-     * @param j    the count of the formula
-     * @throws ec.nbdemetra.kix.KIXModel.InputException exception message
-     *                                                  informs the user about the formula with the false year
-     */
-    public static void checkYearKIX(String year, int j) throws InputException {
-        if (!tryParseInt(year)) {
-            throw new InputException("The reference year (" + year + ") has to be numeric in formula " + String.valueOf(j + 1));
-        }
-        if (Integer.parseInt(year) < 1950) {
-            throw new InputException("The reference year (" + year + ") has to be after 1949 in formula " + String.valueOf(j + 1));
-        }
-    }
-
-    /**
      *
      * @param s
      * @param lag
@@ -197,8 +176,7 @@ public class KIXCalc {
     public static TsData normalizeToYear(TsData indexData, Integer refyear) {
         TsData returnData = indexData.clone();
         double factor = mid(indexData, 0).get(new TsPeriod(indexData.getFrequency(), refyear, 1));
-        returnData = returnData.div(factor).times(100);
-        return returnData;
+        return returnData.div(factor).times(100);
     }
 
     /**
@@ -260,15 +238,7 @@ public class KIXCalc {
      * @return A new unchained time series is returned.
      */
     public static TsData unchain(TsData inputTsData, TsData helper) {
-        //Declaration
-        TsData unchained;
-        helper = mid(helper, 1);
-
-        //Logic
-        unchained = inputTsData.times(100).div(helper);
-
-        //Return
-        return unchained;
+        return inputTsData.times(100).div(mid(helper, 1));
     }
 
     /**
@@ -295,26 +265,4 @@ public class KIXCalc {
         return tempWeightSum;
     }
 
-    /**
-     *
-     * @param formula
-     * @param j
-     * @throws ec.nbdemetra.kix.KIXModel.InputException
-     */
-    public static void checkWBG(String[] formula, int j, TsVariables indices) throws InputException {
-        if (formula.length != 7) {
-            throw new InputException("Formula "
-                    + String.valueOf(j + 1) + " is not following the WBG syntax.");
-        }
-        if (Integer.parseInt(formula[6]) < 1 || Integer.parseInt(formula[6]) > indices.get(formula[1]).getDefinitionFrequency().intValue()) {
-            throw new InputException("The number of lags has to be at between 1 and "
-                    + indices.get(formula[1]).getDefinitionFrequency().intValue()
-                    + "(maximum lag one year) in formula "
-                    + String.valueOf(j + 1));
-        }
-        if (!(indices.get(formula[4]).getDefinitionDomain().getStart().isNotBefore(indices.get(formula[1]).getDefinitionDomain().getStart()))) {
-            throw new InputException("The contributing index series (iContr) should not begin after the total index series (iTotal) in formula "
-                    + String.valueOf(j + 1));
-        }
-    }
 }
