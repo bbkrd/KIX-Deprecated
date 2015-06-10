@@ -13,6 +13,7 @@ package ec.nbdemetra.kix;
 public class InputException extends RuntimeException {
 
     public InputException() {
+        super();
     }
 
     public InputException(String s) {

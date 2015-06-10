@@ -14,10 +14,8 @@ import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.ui.grid.JTsGrid;
 import ec.ui.interfaces.ITsCollectionView;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -103,10 +101,6 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
         toolBarRepresentation.add(runButton);
         toolBarRepresentation.setFloatable(false);
-        toolBarRepresentation.addSeparator();
-        toolBarRepresentation.add(Box.createRigidArea(new Dimension(5, 0)));
-        toolBarRepresentation.add(Box.createHorizontalGlue());
-        toolBarRepresentation.addSeparator();
 
         indexData = this.getDocument().getElement().getIndices();
         indexDataList = new JTsKIXList(indexData);

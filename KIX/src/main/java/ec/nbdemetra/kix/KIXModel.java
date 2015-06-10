@@ -37,6 +37,24 @@ public class KIXModel implements IKIXModel {
     private String[][] formulaNames;
     private TsCollection outputTsCollection;
 
+    private TsData doWBGE(String[] formula, int j) {
+//        check(formula, j);
+//        checkData(formula, j);
+
+        int lag = Integer.parseInt(formula[formula.length - 1]);
+        TsData TsWBTData = extractData(indices.get(formula[1]));
+        TsData TsWBTWeights = extractData(weights.get(formula[2]));
+        TsData TsAllData = extractData(indices.get(formula[3]));
+        TsData TsAllWeights = extractData(weights.get(formula[4]));
+
+        KIXECalc.checkLag(TsWBTData, lag);
+
+        TsWBTWeights = KIXECalc.prepareWeight(TsWBTWeights, lag);
+        TsAllWeights = KIXECalc.prepareWeight(TsAllWeights, lag);
+
+        return KIXECalc.contributionToGrowth(KIXECalc.unchain(TsWBTData), TsWBTWeights, KIXECalc.unchain(TsAllData), TsAllWeights, lag);
+    }
+
     /**
      *
      * @param inputuser
@@ -68,6 +86,9 @@ public class KIXModel implements IKIXModel {
                         break;
                     case "KIXE":
                         outputTsData[j] = doKIXE(formula, j);
+                        break;
+                    case "WBGE":
+                        outputTsData[j] = doWBGE(formula, j);
                         break;
                     case "":
                         throw new InputException("No control character found in formula "

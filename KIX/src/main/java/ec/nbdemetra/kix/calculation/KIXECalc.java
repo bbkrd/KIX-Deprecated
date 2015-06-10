@@ -5,9 +5,11 @@
  */
 package ec.nbdemetra.kix.calculation;
 
+import ec.nbdemetra.kix.InputException;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
+import ec.tstoolkit.timeseries.simplets.TsObservation;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 
 /**
@@ -15,6 +17,46 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
  * @author Thomas Witthohn
  */
 public class KIXECalc {
+
+    public static TsData contributionToGrowth(TsData uA, TsData wA, TsData uTotal, TsData wTotal, int lag) {
+
+        if (lag == 1) {
+            TsData retVal = (uA.lag(lag).minus(uA)).div(uTotal).times(wA.div(wTotal)).times(100).lead(lag);
+            for (TsObservation tsObservation : retVal) {
+                TsPeriod period = tsObservation.getPeriod();
+                if (period.getPosition() == 0) {
+                    double value = (uA.get(period) - 100) * (wA.get(period) / wTotal.get(period));
+                    retVal.set(period, value);
+                }
+            }
+            return retVal;
+        } else {
+            TsPeriod startPeriod = uA.getStart();
+            TsDomain domain = uA.getDomain().move(uA.getFrequency().intValue() - startPeriod.getPosition()).intersection(uA.getDomain());
+            TsData retVal = new TsData(domain, 0);
+            TsData uALastYearEndValue = prepareWeight(uA, 1);
+            TsData uTotalLastYearEndValue = prepareWeight(uTotal, 1);
+            for (TsObservation tsObservation : retVal) {
+                TsPeriod period = tsObservation.getPeriod();
+                double value = (uA.get(period) - 100) + (wA.get(period) / wTotal.get(period));
+                retVal.set(period, value);
+            }
+            return retVal;
+        }
+    }
+
+    public static TsData prepareWeight(TsData weight, int lag) {
+        TsData retVal = weight.lead(lag);
+        for (TsObservation tsObservation : retVal) {
+            TsPeriod period = tsObservation.getPeriod();
+            if (period.getPosition() != 0) {
+                double value = retVal.get(new TsPeriod(retVal.getFrequency(), period.getYear(), 0));
+                retVal.set(period, value);
+            }
+        }
+        return retVal;
+
+    }
 
     /**
      *
@@ -249,6 +291,15 @@ public class KIXECalc {
             }
         }
         return sum / counter;
+    }
+
+    public static void checkLag(TsData data, int lag) throws InputException {
+        if (data.getFrequency() == TsFrequency.Monthly && lag != 1 && lag != 3 && lag != 6 && lag != 12) {
+            throw new InputException("Only lag 1,3,6 or 12 allowed for monthly data");
+        }
+        if (data.getFrequency() == TsFrequency.Quarterly && lag != 1 && lag != 2 && lag != 4) {
+            throw new InputException("Only lag 1,2 or 4 allowed for quarterly data");
+        }
     }
 
 }
