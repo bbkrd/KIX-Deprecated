@@ -19,43 +19,55 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
 public class KIXECalc {
 
     public static TsData contributionToGrowth(TsData uA, TsData wA, TsData uTotal, TsData wTotal, int lag) {
+        TsDomain domain = uA.lead(lag).getDomain().intersection(uA.getDomain());
+        TsData retVal = new TsData(domain, 0);
+        TsFrequency frequency = retVal.getFrequency();
+        switch (lag) {
+            case 1:
+                for (TsObservation tsObservation : retVal) {
+                    double value;
+                    TsPeriod period = tsObservation.getPeriod();
+                    int year = period.getYear();
+                    TsPeriod lastPeriodOneYearAgo = new TsPeriod(frequency, year - 1, frequency.intValue() - 1);
 
-        if (lag == 1) {
-            TsData retVal = (uA.lag(lag).minus(uA)).div(uTotal).times(wA.div(wTotal)).times(100).lead(lag);
-            for (TsObservation tsObservation : retVal) {
-                TsPeriod period = tsObservation.getPeriod();
-                if (period.getPosition() == 0) {
-                    double value = (uA.get(period) - 100) * (wA.get(period) / wTotal.get(period));
+                    if (period.getPosition() == 0) {
+                        value = (uA.get(period) - 100) * (wA.get(lastPeriodOneYearAgo) / wTotal.get(lastPeriodOneYearAgo));
+                    } else {
+                        TsPeriod previousPeriod = new TsPeriod(frequency, year, period.getPosition() - 1);
+                        value = ((uA.get(period) - uA.get(previousPeriod)) / uTotal.get(previousPeriod)) * (wA.get(lastPeriodOneYearAgo) / wTotal.get(lastPeriodOneYearAgo)) * 100;
+                    }
                     retVal.set(period, value);
                 }
-            }
-            return retVal;
-        } else {
-            TsPeriod startPeriod = uA.getStart();
-            TsDomain domain = uA.getDomain().move(uA.getFrequency().intValue() - startPeriod.getPosition()).intersection(uA.getDomain());
-            TsData retVal = new TsData(domain, 0);
-            TsData uALastYearEndValue = prepareWeight(uA, 1);
-            TsData uTotalLastYearEndValue = prepareWeight(uTotal, 1);
-            for (TsObservation tsObservation : retVal) {
-                TsPeriod period = tsObservation.getPeriod();
-                double value = (uA.get(period) - 100) + (wA.get(period) / wTotal.get(period));
-                retVal.set(period, value);
-            }
-            return retVal;
-        }
-    }
+                break;
 
-    public static TsData prepareWeight(TsData weight, int lag) {
-        TsData retVal = weight.lead(lag);
-        for (TsObservation tsObservation : retVal) {
-            TsPeriod period = tsObservation.getPeriod();
-            if (period.getPosition() != 0) {
-                double value = retVal.get(new TsPeriod(retVal.getFrequency(), period.getYear(), 0));
-                retVal.set(period, value);
-            }
+            case 2:
+            case 6:
+                break;
+
+            case 3:
+                break;
+
+            case 4:
+            case 12:
+                for (TsObservation tsObservation : retVal) {
+                    TsPeriod period = tsObservation.getPeriod();
+                    int year = period.getYear();
+                    TsPeriod samePeriodOneYearAgo = new TsPeriod(frequency, year - 1, period.getPosition());
+                    TsPeriod lastPeriodOneYearAgo = new TsPeriod(frequency, year - 1, frequency.intValue() - 1);
+                    TsPeriod lastPeriodTwoYearsAgo = new TsPeriod(frequency, year - 2, frequency.intValue() - 1);
+
+                    double value = (wA.get(lastPeriodOneYearAgo) / wTotal.get(lastPeriodOneYearAgo))
+                            * (uTotal.get(lastPeriodOneYearAgo) / uTotal.get(samePeriodOneYearAgo))
+                            * (uA.get(period) - 100)
+                            + (uA.get(lastPeriodOneYearAgo) - uA.get(samePeriodOneYearAgo)) / uTotal.get(samePeriodOneYearAgo)
+                            * (wA.get(lastPeriodTwoYearsAgo) / wTotal.get(lastPeriodTwoYearsAgo)) * 100;
+
+                    retVal.set(period, value);
+                }
+                break;
         }
+
         return retVal;
-
     }
 
     /**
@@ -108,9 +120,6 @@ public class KIXECalc {
 
         for (int i = 1; i <= endYear - startYear; ++i) {
             chainingFactor *= weightSum.get(new TsPeriod(frequency, startYear + i - 1, frequency.intValue() - 1)) / 100;
-            if (Double.isNaN(chainingFactor)) {
-                chainingFactor = 100;
-            }
             if (i == endYear - startYear) {
                 for (int k = 0; k <= retVal.getLastPeriod().getPosition(); ++k) {
                     double chainedValue = retVal.get(new TsPeriod(frequency, startYear + i, k)) * chainingFactor / 100;
@@ -164,16 +173,8 @@ public class KIXECalc {
      * @return new TsData
      */
     public static TsData addToWeightSum(TsData index1, TsData weight1, TsData index2, TsData weight2) {
-        TsDomain domain = index1.getDomain().union(index2.getDomain());
-        index1 = index1.fittoDomain(domain);
-        index2 = index2.fittoDomain(domain);
-        weight1 = transform(weight1).fittoDomain(domain);
-        weight2 = transform(weight2).fittoDomain(domain);
-
-        index1.getValues().setMissingValues(0);
-        index2.getValues().setMissingValues(0);
-        weight1.getValues().setMissingValues(0);
-        weight2.getValues().setMissingValues(0);
+        weight1 = transform(weight1);
+        weight2 = transform(weight2);
 
         return (index1.times(weight1).plus(index2.times(weight2))).div(weight1.plus(weight2));
 
@@ -189,13 +190,6 @@ public class KIXECalc {
      * @return new TsData, sum of the input series
      */
     public static TsData addToWeight(TsData weight1, TsData weight2) {
-        TsDomain domain = weight1.getDomain().union(weight2.getDomain());
-        weight1 = weight1.fittoDomain(domain);
-        weight2 = weight2.fittoDomain(domain);
-
-        weight1.getValues().setMissingValues(0);
-        weight2.getValues().setMissingValues(0);
-
         return weight1.plus(weight2);
 
     }
@@ -212,16 +206,8 @@ public class KIXECalc {
      * @return new TsData
      */
     public static TsData subtractFromWeightSum(TsData index1, TsData weight1, TsData index2, TsData weight2) {
-        TsDomain domain = index1.getDomain().union(index2.getDomain());
-        index1 = index1.fittoDomain(domain);
-        index2 = index2.fittoDomain(domain);
-        weight1 = transform(weight1).fittoDomain(domain);
-        weight2 = transform(weight2).fittoDomain(domain);
-
-        index1.getValues().setMissingValues(0);
-        index2.getValues().setMissingValues(0);
-        weight1.getValues().setMissingValues(0);
-        weight2.getValues().setMissingValues(0);
+        weight1 = transform(weight1);
+        weight2 = transform(weight2);
 
         return (index1.times(weight1).minus(index2.times(weight2))).div(weight1.minus(weight2));
 
@@ -237,12 +223,6 @@ public class KIXECalc {
      * @return new TsData, difference of the input series
      */
     public static TsData subtractFromWeight(TsData weight1, TsData weight2) {
-        TsDomain domain = weight1.getDomain().union(weight2.getDomain());
-        weight1 = weight1.fittoDomain(domain);
-        weight2 = weight2.fittoDomain(domain);
-        weight1.getValues().setMissingValues(0);
-        weight2.getValues().setMissingValues(0);
-
         return weight1.minus(weight2);
 
     }
@@ -281,16 +261,11 @@ public class KIXECalc {
      */
     private static double meanInRefYear(TsData data, int refYear) {
         double sum = 0;
-        double counter = 0;
         TsFrequency frequency = data.getFrequency();
         for (int i = 0; i < frequency.intValue(); i++) {
-            double value = data.get(new TsPeriod(frequency, refYear, i));
-            if (!Double.isNaN(value)) {
-                sum += data.get(new TsPeriod(frequency, refYear, i));
-                counter++;
-            }
+            sum += data.get(new TsPeriod(frequency, refYear, i));
         }
-        return sum / counter;
+        return sum / frequency.intValue();
     }
 
     public static void checkLag(TsData data, int lag) throws InputException {
@@ -301,5 +276,4 @@ public class KIXECalc {
             throw new InputException("Only lag 1,2 or 4 allowed for quarterly data");
         }
     }
-
 }

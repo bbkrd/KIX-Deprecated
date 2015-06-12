@@ -16,7 +16,6 @@ import ec.tstoolkit.timeseries.TsException;
 import ec.tstoolkit.timeseries.regression.ITsVariable;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.timeseries.simplets.TsData;
-import java.awt.HeadlessException;
 import java.util.ArrayList;
 import java.util.Locale;
 import org.openide.DialogDisplayer;
@@ -38,7 +37,7 @@ public class KIXModel implements IKIXModel {
     private TsCollection outputTsCollection;
 
     private TsData doWBGE(String[] formula, int j) {
-//        check(formula, j);
+        check(formula, j);
 //        checkData(formula, j);
 
         int lag = Integer.parseInt(formula[formula.length - 1]);
@@ -47,10 +46,12 @@ public class KIXModel implements IKIXModel {
         TsData TsAllData = extractData(indices.get(formula[3]));
         TsData TsAllWeights = extractData(weights.get(formula[4]));
 
-        KIXECalc.checkLag(TsWBTData, lag);
+        checkNaN(TsWBTData, formula[1]);
+        checkNaN(TsWBTWeights, formula[2]);
+        checkNaN(TsAllData, formula[3]);
+        checkNaN(TsAllWeights, formula[4]);
 
-        TsWBTWeights = KIXECalc.prepareWeight(TsWBTWeights, lag);
-        TsAllWeights = KIXECalc.prepareWeight(TsAllWeights, lag);
+        KIXECalc.checkLag(TsWBTData, lag);
 
         return KIXECalc.contributionToGrowth(KIXECalc.unchain(TsWBTData), TsWBTWeights, KIXECalc.unchain(TsAllData), TsAllWeights, lag);
     }
@@ -99,7 +100,7 @@ public class KIXModel implements IKIXModel {
                                 + String.valueOf(j + 1)
                                 + " is an invalid control character. Please use the syntax described in the tooltip or the help.");
                 }
-            } catch (InputException | NumberFormatException | HeadlessException | TsException e) {
+            } catch (InputException | TsException e) {
                 NotifyDescriptor nd = new NotifyDescriptor.Message(e.getMessage());
                 DialogDisplayer.getDefault().notify(nd);
             }
@@ -209,7 +210,6 @@ public class KIXModel implements IKIXModel {
     private TsData doKIXE(String[] formula, int j) {
         checkYear(formula[formula.length - 1], j);
         check(formula, j);
-//        checkData(formula, j);
 
         int refYear = Integer.parseInt(formula[formula.length - 1]);
         double factor = 0;
@@ -223,6 +223,10 @@ public class KIXModel implements IKIXModel {
 
             addData = extractData(indices.get(formula[i]));
             addWeights = extractData(weights.get(formula[i + 1]));
+
+            checkNaN(addData, formula[i]);
+            checkNaN(addWeights, formula[i + 1]);
+
             factor = KIXECalc.addToFactor(factor, factorWeight, addData, KIXECalc.weightInRefYear(addData, addWeights, refYear), refYear);
             factorWeight += KIXECalc.weightInRefYear(addData, addWeights, refYear);
 
@@ -252,9 +256,9 @@ public class KIXModel implements IKIXModel {
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
     private void check(String[] formula, int j) throws InputException {
-        if (formula.length % 3 != 1) {
+        if (formula.length % 3 != 1 || (formula[0].equalsIgnoreCase("WBGE") && formula.length == 6)) {
             throw new InputException("Formula "
-                    + String.valueOf(j + 1) + " is not following the KIX syntax.");
+                    + String.valueOf(j + 1) + " is not following the correct syntax.");
         }
 
         String start = "The following data of formula " + String.valueOf(j + 1)
@@ -388,6 +392,12 @@ public class KIXModel implements IKIXModel {
         if (!(indices.get(formula[4]).getDefinitionDomain().getStart().isNotBefore(indices.get(formula[1]).getDefinitionDomain().getStart()))) {
             throw new InputException("The contributing index series (iContr) should not begin after the total index series (iTotal) in formula "
                     + String.valueOf(j + 1));
+        }
+    }
+
+    public void checkNaN(TsData data, String name) throws InputException {
+        if (data.getValues().hasMissingValues()) {
+            throw new InputException("Missing values in " + name);
         }
     }
 

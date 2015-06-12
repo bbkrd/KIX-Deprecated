@@ -94,10 +94,8 @@ public class KIXModelTest {
         weights.set("w1", new TsVariable(new TsData(TsFrequency.Quarterly, 2004, 0, w1Data, true)));
         weights.set("w2", new TsVariable(new TsData(TsFrequency.Quarterly, 2006, 1, w2Data, true)));
 
-        double[] expResult = {93.18165, 95.93406, 97.74947, 102.24898, 105.10875, 106.54351, 109.70585, 119.32951,
-                              117.35039, 117.19164, 119.37548, 125.53398, 126.74698, 124.38076, 124.47468,
-                              118.38063, 107.10292, 103.05270, 107.68883, 112.16246, 121.23252, 111.70111,
-                              112.16246, 115.60410, 128.63251, 118.16919, 119.16569, 115.76096, 125.25546};
+        double[] expResult = {117.35039, 117.19164, 119.37548, 125.53398, 126.74698, 124.38076,
+                              124.47468, 118.38063, 107.10292, 103.05270, 107.68883, 112.16246};
         TsCollection result = instance.parser(inputString, indices, weights);
         double[] resultDouble = result.get(0).getTsData().getValues().internalStorage();
         assertEquals(expResult.length, resultDouble.length);

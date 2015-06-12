@@ -8,7 +8,6 @@ package ec.nbdemetra.kix.calculation;
 import ec.nbdemetra.kix.InputException;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -151,10 +150,9 @@ public class KIXECalcTest {
 
         TsData result = KIXECalc.addToWeightSum(KIXECalc.unchain(a), wA, KIXECalc.unchain(b), wB);
 
-        double[] expResultData = {103.994674, 106.391478, 106.125166, 108.255659, 104.01901, 106.735785, 107.581984,
-                                  108.533926, 101.450541, 102.901082, 105.322301, 103.731382, 102.33165, 103.58943,
-                                  103.782699, 105.058273, 101.579168, 102.588462, 103.447755, 104.353303, 100.497129,
-                                  100.941098, 101.307421, 101.656023, 99.339207, 98.348018, 97.246696, 97.026432};
+        double[] expResultData = {104.01901, 106.735785, 107.581984, 108.533926, 101.450541, 102.901082, 105.322301,
+                                  103.731382, 102.33165, 103.58943, 103.782699, 105.058273, 101.579168, 102.588462,
+                                  103.447755, 104.353303, 100.497129, 100.941098, 101.307421, 101.656023};
         assertEquals(expResultData, result.getValues().internalStorage());
     }
 
@@ -333,104 +331,9 @@ public class KIXECalcTest {
 
         TsData result = KIXECalc.scaleToRefYear(chainedAggregate, factor, refYear);
 
-        double[] expResultData = {93.18165, 95.93406, 97.74947, 102.24898, 105.10875, 106.54351, 109.70585, 119.32951,
-                                  117.35039, 117.19164, 119.37548, 125.53398, 126.74698, 124.38076, 124.47468,
-                                  118.38063, 107.10292, 103.05270, 107.68883, 112.16246, 121.23252, 111.70111,
-                                  112.16246, 115.60410, 128.63251, 118.16919, 119.16569, 115.76096, 125.25546};
+        double[] expResultData = {117.35039, 117.19164, 119.37548, 125.53398, 126.74698, 124.38076, 124.47468,
+                                  118.38063, 107.10292, 103.05270, 107.68883, 112.16246};
         assertEquals(expResultData, result.getValues().internalStorage());
-    }
-
-    @Test
-    @Ignore
-    /**
-     * No verified expected result
-     */
-    public void TestAllTogetherAddAToB_Q42005InANan_BStartQ12004() {
-        double[] data1 = {89.78, 93.71, 90.85, 95.20, 95.47, 98.29, 100.15, Double.NaN, 107.69, 109.16, 112.40, 122.26,
-                          119.73, 120.83, 122.45, 128.06, 128.39, 127.53, 125.12, 118.38, 102.32, 100.80, 105.21, 109.90};
-        TsData a = new TsData(TsFrequency.Quarterly, 2004, 0, data1, true);
-
-        double[] weight1 = {175.09, 184.14, 178.95, 187.45, 188.09, 194.33, 197.97, 207.50, 214.56, 219.10, 225.54, 245.62,
-                            241.17, 244.79, 247.22, 257.58, 259.71, 260.26, 256.27, 240.33, 204.06, 199.94, 208.43, 218.29};
-        TsData wA = new TsData(TsFrequency.Quarterly, 2004, 0, weight1, true);
-
-        double[] data2 = {81.19, 93.96, 95.71, 97.31, 89.17, 94.84, 104.22, 111.00, 99.15, 115.17, 113.44, 132.40, 112.77,
-                          118.62, 121.56, 131.39, 121.06, 121.56, 125.29, 139.41, 128.07, 129.15, 125.46, 135.75};
-        TsData b = new TsData(TsFrequency.Quarterly, 2004, 0, data2, true);
-
-        double[] weight2 = {25.15, 29.51, 30.30, 30.85, 28.51, 30.68, 32.95, 36.13, 31.86, 37.94, 37.00, 42.43, 36.29,
-                            38.60, 40.18, 43.60, 40.62, 40.57, 42.46, 46.63, 40.28, 39.44, 39.73, 44.00};
-        TsData wB = new TsData(TsFrequency.Quarterly, 2004, 0, weight2, true);
-
-        int refYear = 2007;
-
-        TsData chainedAggregate = KIXECalc.chain(KIXECalc.addToWeightSum(KIXECalc.unchain(a), wA, KIXECalc.unchain(b), wB));
-
-        double factor = KIXECalc.addToFactor(KIXECalc.addToFactor(0, 0, a, KIXECalc.weightInRefYear(a, wA, refYear), refYear),
-                KIXECalc.weightInRefYear(a, wA, refYear), b, KIXECalc.weightInRefYear(b, wB, refYear), refYear);
-
-        TsData result = KIXECalc.scaleToRefYear(chainedAggregate, factor, refYear);
-
-        double[] expResultData = {90.03166, 93.09175, 95.85454, 103.67077, 92.60321, 107.56542, 105.94965, 123.65774,
-                                  118.77516, 120.52866, 122.33030, 128.52099, 127.34147, 126.67412, 125.13377,
-                                  121.34816, 105.95664, 104.80447, 108.06854, 113.55037};
-        assertEquals(expResultData, result.getValues().internalStorage());
-    }
-
-    @Test
-    @Ignore
-    /**
-     * No verified expected result
-     */
-    public void TestAllTogetherAddAToB_Q42005InANan_BStartQ22006() {
-        double[] data1 = {89.78, 93.71, 90.85, 95.20, 95.47, 98.29, 100.15, Double.NaN, 107.69, 109.16, 112.40, 122.26,
-                          119.73, 120.83, 122.45, 128.06, 128.39, 127.53, 125.12, 118.38, 102.32, 100.80, 105.21, 109.90};
-        TsData a = new TsData(TsFrequency.Quarterly, 2004, 0, data1, true);
-
-        double[] weight1 = {175.09, 184.14, 178.95, 187.45, 188.09, 194.33, 197.97, 207.50, 214.56, 219.10, 225.54, 245.62,
-                            241.17, 244.79, 247.22, 257.58, 259.71, 260.26, 256.27, 240.33, 204.06, 199.94, 208.43, 218.29};
-        TsData wA = new TsData(TsFrequency.Quarterly, 2004, 0, weight1, true);
-
-        double[] data2 = {81.19, 93.96, 95.71, 97.31, 89.17, 94.84, 104.22, 111.00, 99.15, 115.17, 113.44, 132.40, 112.77,
-                          118.62, 121.56, 131.39, 121.06, 121.56, 125.29, 139.41, 128.07, 129.15, 125.46, 135.75};
-        TsData b = new TsData(TsFrequency.Quarterly, 2006, 1, data2, true);
-
-        double[] weight2 = {25.15, 29.51, 30.30, 30.85, 28.51, 30.68, 32.95, 36.13, 31.86, 37.94, 37.00, 42.43, 36.29,
-                            38.60, 40.18, 43.60, 40.62, 40.57, 42.46, 46.63, 40.28, 39.44, 39.73, 44.00};
-        TsData wB = new TsData(TsFrequency.Quarterly, 2006, 1, weight2, true);
-
-        int refYear = 2007;
-
-        TsData chainedAggregate = KIXECalc.chain(KIXECalc.addToWeightSum(KIXECalc.unchain(a), wA, KIXECalc.unchain(b), wB));
-
-        double factor = KIXECalc.addToFactor(KIXECalc.addToFactor(0, 0, a, KIXECalc.weightInRefYear(a, wA, refYear), refYear),
-                KIXECalc.weightInRefYear(a, wA, refYear), b, KIXECalc.weightInRefYear(b, wB, refYear), refYear);
-
-        TsData result = KIXECalc.scaleToRefYear(chainedAggregate, factor, refYear);
-
-        double[] expResultData = {119.66795, 123.20271, 125.53415, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN,
-                                  117.35039, 117.19164, 119.37548, 125.53398, 126.74698, 124.38076, 124.47468, 118.38063,
-                                  107.10292, 103.05270, 107.68883, 112.16246, 121.23252, 111.70111, 112.16246, 115.60410,
-                                  128.63251, 118.16919, 119.16569, 115.76096, 125.25546};
-        assertEquals(expResultData, result.getValues().internalStorage());
-    }
-
-    @Test
-    public void TestWBGE_PrepareWeight_LagOne() {
-        double[] weightA = {455.0, 456.0, 457.0, 458.0, 408.0, 409.0, 410.0, 411.0, 290.0, 291.0, 292.0, 293.0, 395.6, 394.6,
-                            393.6, 392.6, 368.5, 367.5, 366.5, 365.5, 290.9, 291.9, 292.9, 293.9};
-        TsData wA = new TsData(TsFrequency.Quarterly, 2007, 3, weightA, true);
-
-        int lag = 1;
-
-        TsData result = KIXECalc.prepareWeight(wA, lag);
-
-        double[] expResultData = {455.0, 455.0, 455.0, 455.0, 408.0, 408.0, 408.0, 408.0, 290.0, 290.0, 290.0, 290.0, 395.6, 395.6,
-                                  395.6, 395.6, 368.5, 368.5, 368.5, 368.5, 290.9, 290.9, 290.9, 290.9};
-
-        TsData expResult = new TsData(TsFrequency.Quarterly, 2008, 0, expResultData, true);
-
-        org.junit.Assert.assertEquals(expResult, result);
     }
 
     @Test
@@ -442,7 +345,7 @@ public class KIXECalcTest {
 
         double[] weightA = {455.0, 455.0, 455.0, 455.0, 408.0, 408.0, 408.0, 408.0, 290.0, 290.0, 290.0, 290.0, 395.6, 395.6,
                             395.6, 395.6, 368.5, 368.5, 368.5, 368.5, 290.9, 290.9, 290.9, 290.9};
-        TsData wA = new TsData(TsFrequency.Quarterly, 2008, 0, weightA, true);
+        TsData wA = new TsData(TsFrequency.Quarterly, 2007, 3, weightA, true);
 
         double[] unchainedTotal = {102.78260, 104.55982, 103.87845, 105.02323, 103.49592, 105.57703, 106.40975, 107.24248, 101.04537,
                                    102.14469, 102.66667, 101.30152, 102.69590, 103.76980, 104.78351, 105.83097, 100.77294, 101.38873,
@@ -451,7 +354,7 @@ public class KIXECalcTest {
 
         double[] weightTotal = {631.0, 631.0, 631.0, 631.0, 603.0, 603.0, 603.0, 603.0, 656.0, 656.0, 656.0, 656.0, 826.1,
                                 826.1, 826.1, 826.1, 926.5, 926.5, 926.5, 926.5, 939.5, 939.5, 939.5, 939.5};
-        TsData wTotal = new TsData(TsFrequency.Quarterly, 2008, 0, weightTotal, true);
+        TsData wTotal = new TsData(TsFrequency.Quarterly, 2007, 3, weightTotal, true);
 
         int lag = 1;
 
@@ -486,7 +389,7 @@ public class KIXECalcTest {
 
         int lag = 1;
 
-        TsData result = KIXECalc.contributionToGrowth(uA, KIXECalc.prepareWeight(wA, lag), uTotal, KIXECalc.prepareWeight(wTotal, lag), lag);
+        TsData result = KIXECalc.contributionToGrowth(uA, wA, uTotal, wTotal, lag);
 
         double[] expResultData = {1.681493, -0.183657, 1.478893, 3.994786, 2.492819, 1.261255, 1.251385, 1.530989, 1.515150,
                                   2.201427, -0.699011, 2.535229, 1.462919, 1.493023, 1.612995, 1.218587, 1.242831, 1.201896,
@@ -504,7 +407,7 @@ public class KIXECalcTest {
 
         double[] weightA = {455.0, 455.0, 455.0, 455.0, 408.0, 408.0, 408.0, 408.0, 290.0, 290.0, 290.0, 290.0, 395.6, 395.6,
                             395.6, 395.6, 368.5, 368.5, 368.5, 368.5, 290.9, 290.9, 290.9, 290.9};
-        TsData wA = new TsData(TsFrequency.Quarterly, 2008, 0, weightA, true);
+        TsData wA = new TsData(TsFrequency.Quarterly, 2007, 3, weightA, true);
 
         double[] unchainedTotal = {102.78260, 104.55982, 103.87845, 105.02323, 103.49592, 105.57703, 106.40975, 107.24248, 101.04537,
                                    102.14469, 102.66667, 101.30152, 102.69590, 103.76980, 104.78351, 105.83097, 100.77294, 101.38873,
@@ -513,7 +416,7 @@ public class KIXECalcTest {
 
         double[] weightTotal = {631.0, 631.0, 631.0, 631.0, 603.0, 603.0, 603.0, 603.0, 656.0, 656.0, 656.0, 656.0, 826.1,
                                 826.1, 826.1, 826.1, 926.5, 926.5, 926.5, 926.5, 939.5, 939.5, 939.5, 939.5};
-        TsData wTotal = new TsData(TsFrequency.Quarterly, 2008, 0, weightTotal, true);
+        TsData wTotal = new TsData(TsFrequency.Quarterly, 2007, 3, weightTotal, true);
 
         int lag = 4;
 
