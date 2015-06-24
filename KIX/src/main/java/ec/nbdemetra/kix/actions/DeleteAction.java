@@ -23,7 +23,6 @@ import org.openide.util.NbBundle.Messages;
 @ActionRegistration(
         displayName = "#CTL_DeleteAction", lazy = false)
 @ActionReferences({
-    //    @ActionReference(path = "Menu/Edit"),
     @ActionReference(path = KIXDocumentManager.ITEMPATH, position = 1100),
     @ActionReference(path = "Shortcuts", name = "DELETE")
 })
@@ -38,7 +37,7 @@ public final class DeleteAction extends SingleNodeAction<ItemWsNode> {
 
     @Override
     protected void performAction(ItemWsNode context) {
-        WorkspaceItem<KIXDocument> cur = (WorkspaceItem<KIXDocument>) context.getItem();
+        WorkspaceItem<?> cur = context.getItem();
         if (cur != null && !cur.isReadOnly()) {
             NotifyDescriptor nd = new NotifyDescriptor.Confirmation(DELETE_MESSAGE, NotifyDescriptor.OK_CANCEL_OPTION);
             if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
@@ -51,7 +50,7 @@ public final class DeleteAction extends SingleNodeAction<ItemWsNode> {
     @Override
     protected boolean enable(ItemWsNode context) {
         WorkspaceItem<?> cur = context.getItem();
-        return cur != null && !cur.isReadOnly();
+        return cur != null && !cur.isReadOnly() && cur.getElement() instanceof KIXDocument;
     }
 
     @Override

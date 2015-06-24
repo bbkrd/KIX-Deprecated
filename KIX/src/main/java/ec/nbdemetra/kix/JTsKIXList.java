@@ -137,7 +137,7 @@ public class JTsKIXList extends JComponent {
                 variables.set(variables.nextName(), new DynamicTsVariable(s.getName(), s.getMoniker(), s.getTsData()));
             }
         }
-        ((KIXTableModel) table.getModel()).fireTableStructureChanged();
+        ((AbstractTableModel) table.getModel()).fireTableStructureChanged();
     }
 
     private class KIXTableModel extends AbstractTableModel {
@@ -151,7 +151,7 @@ public class JTsKIXList extends JComponent {
             updateMenus();
         }
 
-        public KIXTableModel() {
+        KIXTableModel() {
             names = variables.getNames();
         }
 
@@ -240,7 +240,7 @@ public class JTsKIXList extends JComponent {
 
         public static final String DELETE_MESSAGE = "Are you sure you want to delete the selected items?";
 
-        public DeleteAction() {
+        DeleteAction() {
             super(DELETE_ACTION);
             enabled = false;
         }
@@ -260,7 +260,7 @@ public class JTsKIXList extends JComponent {
             for (int i = 0; i < n.length; ++i) {
                 variables.remove(n[i]);
             }
-            ((KIXTableModel) table.getModel()).fireTableStructureChanged();
+            ((AbstractTableModel) table.getModel()).fireTableStructureChanged();
             this.firePropertyChange(DELETE_ACTION, null, null);
         }
 
@@ -270,7 +270,7 @@ public class JTsKIXList extends JComponent {
 
         public static final String DELETE_MESSAGE = "Are you sure you want to delete the selected items?";
 
-        public ClearAction() {
+        ClearAction() {
             super(CLEAR_ACTION);
             enabled = false;
         }
@@ -282,7 +282,7 @@ public class JTsKIXList extends JComponent {
                 return;
             }
             variables.clear();
-            ((KIXTableModel) table.getModel()).fireTableStructureChanged();
+            ((AbstractTableModel) table.getModel()).fireTableStructureChanged();
             this.firePropertyChange(CLEAR_ACTION, null, null);
         }
     }

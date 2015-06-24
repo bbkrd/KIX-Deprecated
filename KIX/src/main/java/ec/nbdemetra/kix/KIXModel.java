@@ -37,10 +37,10 @@ public class KIXModel implements IKIXModel {
     private TsCollection outputTsCollection;
 
     private TsData doWBGE(String[] formula, int j) {
-        check(formula, j);
+//        check(formula, j);
 //        checkData(formula, j);
 
-        int lag = Integer.parseInt(formula[formula.length - 1]);
+        int lag = Integer.parseInt(formula[5]);
         TsData TsWBTData = extractData(indices.get(formula[1]));
         TsData TsWBTWeights = extractData(weights.get(formula[2]));
         TsData TsAllData = extractData(indices.get(formula[3]));
@@ -256,7 +256,7 @@ public class KIXModel implements IKIXModel {
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
     private void check(String[] formula, int j) throws InputException {
-        if (formula.length % 3 != 1 || (formula[0].equalsIgnoreCase("WBGE") && formula.length == 6)) {
+        if (formula.length % 3 != 1) {
             throw new InputException("Formula "
                     + String.valueOf(j + 1) + " is not following the correct syntax.");
         }

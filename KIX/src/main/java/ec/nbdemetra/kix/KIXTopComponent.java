@@ -174,7 +174,7 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
             @Override
             public void actionPerformed(ActionEvent e) {
                 results.getTsCollection().clear();
-                addMissingWeights();
+                inputText.setText(addMissingWeights(inputText.getText()));
                 TsCollection data = _KIX.parser(inputText.getText(), indexData, weightsData);
                 if (data != null) {
                     results.getTsCollection().append(data);
@@ -183,13 +183,12 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
         });
     }
 
-    private void addMissingWeights() {
-        String input = inputText.getText();
+    private String addMissingWeights(String input) {
         input = input.replaceAll(" ", "");
         input = input.replaceAll("i((?:\\d)+)(?=(?: )*,(?: )*([\\+\\-]){1}(?: )*,)", "i$1,w$1");
         input = input.replaceAll("i((?:\\d)+)(?=(?: )*,(?: )*((?:\\d)+))", "i$1,w$1");
 
-        inputText.setText(input);
+        return input;
     }
 
 }

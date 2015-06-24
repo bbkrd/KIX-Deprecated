@@ -18,56 +18,36 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
  */
 public class KIXECalc {
 
-    public static TsData contributionToGrowth(TsData uA, TsData wA, TsData uTotal, TsData wTotal, int lag) {
-        TsDomain domain = uA.lead(lag).getDomain().intersection(uA.getDomain());
-        TsData retVal = new TsData(domain, 0);
-        TsFrequency frequency = retVal.getFrequency();
-        switch (lag) {
-            case 1:
-                for (TsObservation tsObservation : retVal) {
-                    double value;
-                    TsPeriod period = tsObservation.getPeriod();
-                    int year = period.getYear();
-                    TsPeriod lastPeriodOneYearAgo = new TsPeriod(frequency, year - 1, frequency.intValue() - 1);
+    public static TsData contributionToGrowth(TsData unchainedContributor, TsData weightsContributor, TsData unchainedTotal, TsData weightsTotal, int lag) {
+        TsDomain domain = unchainedContributor.lead(lag).getDomain().intersection(unchainedContributor.getDomain());
+        TsData returnValue = new TsData(domain, 0);
+        TsFrequency frequency = returnValue.getFrequency();
 
-                    if (period.getPosition() == 0) {
-                        value = (uA.get(period) - 100) * (wA.get(lastPeriodOneYearAgo) / wTotal.get(lastPeriodOneYearAgo));
-                    } else {
-                        TsPeriod previousPeriod = new TsPeriod(frequency, year, period.getPosition() - 1);
-                        value = ((uA.get(period) - uA.get(previousPeriod)) / uTotal.get(previousPeriod)) * (wA.get(lastPeriodOneYearAgo) / wTotal.get(lastPeriodOneYearAgo)) * 100;
-                    }
-                    retVal.set(period, value);
-                }
-                break;
+        for (TsObservation tsObservation : returnValue) {
+            double value;
+            TsPeriod period = tsObservation.getPeriod();
+            int year = period.getYear();
+            TsPeriod lastPeriodOneYearAgo = new TsPeriod(frequency, year - 1, frequency.intValue() - 1);
+            TsPeriod lastPeriodTwoYearsAgo = new TsPeriod(frequency, year - 2, frequency.intValue() - 1);
 
-            case 2:
-            case 6:
-                break;
-
-            case 3:
-                break;
-
-            case 4:
-            case 12:
-                for (TsObservation tsObservation : retVal) {
-                    TsPeriod period = tsObservation.getPeriod();
-                    int year = period.getYear();
-                    TsPeriod samePeriodOneYearAgo = new TsPeriod(frequency, year - 1, period.getPosition());
-                    TsPeriod lastPeriodOneYearAgo = new TsPeriod(frequency, year - 1, frequency.intValue() - 1);
-                    TsPeriod lastPeriodTwoYearsAgo = new TsPeriod(frequency, year - 2, frequency.intValue() - 1);
-
-                    double value = (wA.get(lastPeriodOneYearAgo) / wTotal.get(lastPeriodOneYearAgo))
-                            * (uTotal.get(lastPeriodOneYearAgo) / uTotal.get(samePeriodOneYearAgo))
-                            * (uA.get(period) - 100)
-                            + (uA.get(lastPeriodOneYearAgo) - uA.get(samePeriodOneYearAgo)) / uTotal.get(samePeriodOneYearAgo)
-                            * (wA.get(lastPeriodTwoYearsAgo) / wTotal.get(lastPeriodTwoYearsAgo)) * 100;
-
-                    retVal.set(period, value);
-                }
-                break;
+            if (period.getPosition() < lag) {
+                TsPeriod laggedPeriod = new TsPeriod(frequency, year - 1, period.getPosition() + frequency.intValue() - lag);
+                value = ((weightsContributor.get(lastPeriodOneYearAgo) / weightsTotal.get(lastPeriodOneYearAgo))
+                         * (unchainedTotal.get(lastPeriodOneYearAgo) / unchainedTotal.get(laggedPeriod))
+                         * (unchainedContributor.get(period) - 100))
+                        + ((weightsContributor.get(lastPeriodTwoYearsAgo) / weightsTotal.get(lastPeriodTwoYearsAgo))
+                           * (100 / unchainedTotal.get(laggedPeriod))
+                           * (unchainedContributor.get(lastPeriodOneYearAgo) - unchainedContributor.get(laggedPeriod)));
+            } else {
+                TsPeriod laggedPeriod = new TsPeriod(frequency, year, period.getPosition() - lag);
+                value = (weightsContributor.get(lastPeriodOneYearAgo) / weightsTotal.get(lastPeriodOneYearAgo))
+                        * (100 / unchainedTotal.get(laggedPeriod))
+                        * (unchainedContributor.get(period) - unchainedContributor.get(laggedPeriod));
+            }
+            returnValue.set(period, value);
         }
 
-        return retVal;
+        return returnValue;
     }
 
     /**
