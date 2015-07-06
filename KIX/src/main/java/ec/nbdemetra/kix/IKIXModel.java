@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ec.nbdemetra.kix;
 
 import ec.tss.TsCollection;
@@ -15,6 +14,6 @@ import ec.tstoolkit.timeseries.regression.TsVariables;
  */
 public interface IKIXModel {
 
-    public TsCollection parser (String inputString ,TsVariables indices,TsVariables weights);
-    
+    public TsCollection parser(String inputString, TsVariables indices, TsVariables weights);
+
 }

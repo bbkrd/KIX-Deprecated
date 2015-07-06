@@ -23,8 +23,7 @@ import org.openide.util.NbBundle.Messages;
 @ActionRegistration(
         displayName = "#CTL_DeleteAction", lazy = false)
 @ActionReferences({
-    @ActionReference(path = KIXDocumentManager.ITEMPATH, position = 1100),
-    @ActionReference(path = "Shortcuts", name = "DELETE")
+    @ActionReference(path = KIXDocumentManager.ITEMPATH, position = 1100)
 })
 @Messages("CTL_DeleteAction=Delete")
 public final class DeleteAction extends SingleNodeAction<ItemWsNode> {

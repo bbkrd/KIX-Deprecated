@@ -31,7 +31,7 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 
 /**
- * Top component which displays something.
+ * Top component which displays the KIX UI.
  */
 @ConvertAsProperties(dtd = "-//ec.nbdemetra.kix//KIX//EN",
                      autostore = false)
@@ -56,6 +56,10 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
             + "[Name=]KIX, i1, [w1,] +/-, i2, [w2,] …,refyr "
             + "<br>"
             + "[Name=]WBG, iContr, [wContr,] +/-, iTotal, [wTotal,] #ofLags"
+            + "<br>"
+            + "[Name=]KIXE, i1, [w1,] +/-, i2, [w2,] …,refyr "
+            + "<br>"
+            + "[Name=]WBGE, iContr, [wContr,] iTotal, [wTotal,] #ofLags"
             + "<br>"
             + "For more information, please consult the Help (F1)"
             + "</html>";
@@ -97,16 +101,18 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
         toolBarRepresentation = NbComponents.newInnerToolbar();
         runButton = new JButton(DemetraUiIcon.COMPILE_16);
-        runButton.setToolTipText("Run KIX");
+        runButton.setToolTipText("Start calculation");
 
         toolBarRepresentation.add(runButton);
         toolBarRepresentation.setFloatable(false);
 
         indexData = this.getDocument().getElement().getIndices();
         indexDataList = new JTsKIXList(indexData);
+        indexDataList.setToolTipText("Drop your index times series into this list");
 
         weightsData = this.getDocument().getElement().getWeights();
         weightsDataList = new JTsKIXList(weightsData);
+        weightsDataList.setToolTipText("Drop your weight times series into this list");
 
         inputText = new JTextArea();
         inputText.setLineWrap(true);
@@ -163,6 +169,9 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
     void readProperties(java.util.Properties p) {
     }
 
+    /**
+     * Returns {@link KIXDocumentManager#CONTEXTPATH}
+     */
     @Override
     protected String getContextPath() {
         return KIXDocumentManager.CONTEXTPATH;
@@ -173,11 +182,13 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                results.getTsCollection().clear();
-                inputText.setText(addMissingWeights(inputText.getText()));
-                TsCollection data = _KIX.parser(inputText.getText(), indexData, weightsData);
-                if (data != null) {
-                    results.getTsCollection().append(data);
+                if (!inputText.getText().trim().isEmpty()) {
+                    results.getTsCollection().clear();
+                    inputText.setText(addMissingWeights(inputText.getText()));
+                    TsCollection data = _KIX.parser(inputText.getText(), indexData, weightsData);
+                    if (data != null) {
+                        results.getTsCollection().append(data);
+                    }
                 }
             }
         });
@@ -185,8 +196,10 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
     private String addMissingWeights(String input) {
         input = input.replaceAll(" ", "");
-        input = input.replaceAll("i((?:\\d)+)(?=(?: )*,(?: )*([\\+\\-]){1}(?: )*,)", "i$1,w$1");
-        input = input.replaceAll("i((?:\\d)+)(?=(?: )*,(?: )*((?:\\d)+))", "i$1,w$1");
+//        input = input.replaceAll("i((?:\\d)+)(?=(?: )*,(?: )*(?:[\\+\\-]){1}(?: )*,)", "i$1,w$1");
+//        input = input.replaceAll("i((?:\\d)+)(?=(?: )*,(?: )*i((?:\\d)+)(?: )*,)", "i$1,w$1");
+//        input = input.replaceAll("i((?:\\d)+)(?=(?: )*,(?: )*((?:\\d)+))", "i$1,w$1");
+        input = input.replaceAll("i((?:\\d)+)(?=,(((([\\+\\-]){1}|i(\\d)+),)|(\\d)+))", "i$1,w$1");
 
         return input;
     }

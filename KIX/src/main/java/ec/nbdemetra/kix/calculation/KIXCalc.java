@@ -37,15 +37,15 @@ public class KIXCalc {
 
             for (int j = 0; j < frequence.intValue(); j++) {
                 if (i == 0) {
-                    if (addData.get(new TsPeriod(frequence, startYear, j)) != Double.NaN
-                            && addWeights.get(new TsPeriod(frequence, startYear, j)) != Double.NaN) {
+                    if (!Double.isNaN(addData.get(new TsPeriod(frequence, startYear, j)))
+                            && !Double.isNaN(addWeights.get(new TsPeriod(frequence, startYear, j)))) {
                         helperCurr += addData.get(new TsPeriod(frequence, startYear, j));
                         helperPrev += addData.get(new TsPeriod(frequence, startYear, j));
                         helperWeight += addWeights.get(new TsPeriod(frequence, startYear, j));
                     }
                 } else {
-                    if (addData.get(new TsPeriod(frequence, startYear + i - 1, j)) != Double.NaN
-                            && addWeights.get(new TsPeriod(frequence, startYear + i, j)) != Double.NaN) {
+                    if (!Double.isNaN(addData.get(new TsPeriod(frequence, startYear + i - 1, j)))
+                            && !Double.isNaN(addWeights.get(new TsPeriod(frequence, startYear + i, j)))) {
                         helperCurr += addData.get(new TsPeriod(frequence, startYear + i, j));
                         helperPrev += addData.get(new TsPeriod(frequence, startYear + i - 1, j));
                         helperWeight += addWeights.get(new TsPeriod(frequence, startYear + i - 1, j));
@@ -94,7 +94,7 @@ public class KIXCalc {
 
             if (i == endYear - startYear) {
                 for (int j = 0; j <= lastPeriodPosition; j++) {
-                    if (retVal.get(new TsPeriod(frequence, startYear + i - 1, j)) != Double.NaN) {
+                    if (!Double.isNaN(retVal.get(new TsPeriod(frequence, startYear + i - 1, j)))) {
                         double prevyearval = retVal.get(new TsPeriod(frequence, startYear + i - 1, j));
                         double thisyearval = retVal.get(new TsPeriod(frequence, startYear + i, j));
                         double result = (thisyearval * prevyearval / 100);
@@ -103,7 +103,7 @@ public class KIXCalc {
                 }
             } else {
                 for (int j = 0; j < frequence.intValue(); j++) {
-                    if (retVal.get(new TsPeriod(frequence, startYear + i - 1, j)) != Double.NaN) {
+                    if (!Double.isNaN(retVal.get(new TsPeriod(frequence, startYear + i - 1, j)))) {
                         double prevyearval = retVal.get(new TsPeriod(frequence, startYear + i - 1, j));
                         double thisyearval = retVal.get(new TsPeriod(frequence, startYear + i, j));
                         double result = (thisyearval * prevyearval / 100);
@@ -136,12 +136,12 @@ public class KIXCalc {
 
             for (int j = 0; j < frequence.intValue(); j++) {
                 if (i == 0) {
-                    if (s.get(new TsPeriod(frequence, startYear, j)) != Double.NaN) {
+                    if (!Double.isNaN(s.get(new TsPeriod(frequence, startYear, j)))) {
                         helper += s.get(new TsPeriod(frequence, startYear, j));
                         counter++;
                     }
                 } else {
-                    if (s.get(new TsPeriod(frequence, startYear + i - lag, j)) != Double.NaN) {
+                    if (!Double.isNaN(s.get(new TsPeriod(frequence, startYear + i - lag, j)))) {
                         helper += s.get(new TsPeriod(frequence, startYear + i - lag, j));
                         counter++;
                     }

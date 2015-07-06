@@ -16,8 +16,10 @@ import ec.tstoolkit.timeseries.TsException;
 import ec.tstoolkit.timeseries.regression.ITsVariable;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.timeseries.simplets.TsData;
+import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import java.util.ArrayList;
 import java.util.Locale;
+import javax.annotation.Nonnull;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 
@@ -36,34 +38,15 @@ public class KIXModel implements IKIXModel {
     private String[][] formulaNames;
     private TsCollection outputTsCollection;
 
-    private TsData doWBGE(String[] formula, int j) {
-//        check(formula, j);
-//        checkData(formula, j);
-
-        int lag = Integer.parseInt(formula[5]);
-        TsData TsWBTData = extractData(indices.get(formula[1]));
-        TsData TsWBTWeights = extractData(weights.get(formula[2]));
-        TsData TsAllData = extractData(indices.get(formula[3]));
-        TsData TsAllWeights = extractData(weights.get(formula[4]));
-
-        checkNaN(TsWBTData, formula[1]);
-        checkNaN(TsWBTWeights, formula[2]);
-        checkNaN(TsAllData, formula[3]);
-        checkNaN(TsAllWeights, formula[4]);
-
-        KIXECalc.checkLag(TsWBTData, lag);
-
-        return KIXECalc.contributionToGrowth(KIXECalc.unchain(TsWBTData), TsWBTWeights, KIXECalc.unchain(TsAllData), TsAllWeights, lag);
-    }
-
     /**
      *
-     * @param inputuser
-     * @param vars
+     * @param inputString
+     * @param indices
+     * @param weights
      * @return
      */
     @Override
-    public TsCollection parser(String inputString, TsVariables indices, TsVariables weights) {
+    public TsCollection parser(@Nonnull String inputString, @Nonnull TsVariables indices, @Nonnull TsVariables weights) {
         this.indices = indices;
         this.weights = weights;
         formatInput(inputString);
@@ -92,11 +75,12 @@ public class KIXModel implements IKIXModel {
                         outputTsData[j] = doWBGE(formula, j);
                         break;
                     case "":
-                        throw new InputException("No control character found in formula "
-                                + String.valueOf(j + 1)
-                                + ". Please use the syntax described in the tooltip or the help.");
+//                        throw new InputException("No control character found in formula "
+//                                + String.valueOf(j + 1)
+//                                + ". Please use the syntax described in the tooltip or the help.");
+                        break;
                     default:
-                        throw new InputException(formula[0].toUpperCase() + " in formula "
+                        throw new InputException(formula[0].toUpperCase(Locale.ENGLISH) + " in formula "
                                 + String.valueOf(j + 1)
                                 + " is an invalid control character. Please use the syntax described in the tooltip or the help.");
                 }
@@ -236,15 +220,35 @@ public class KIXModel implements IKIXModel {
             } else {
                 if ("-".equals(formula[i - 1])) {
                     weightedIndex = KIXECalc.subtractFromWeightSum(weightedIndex, weightedIndexWeights, KIXECalc.unchain(addData), addWeights);
-                    weightedIndexWeights = KIXECalc.subtractFromWeight(weightedIndexWeights, addWeights);
+                    weightedIndexWeights = weightedIndexWeights.minus(addWeights);
                 } else {
                     weightedIndex = KIXECalc.addToWeightSum(weightedIndex, weightedIndexWeights, KIXECalc.unchain(addData), addWeights);
-                    weightedIndexWeights = KIXECalc.addToWeight(weightedIndexWeights, addWeights);
+                    weightedIndexWeights = weightedIndexWeights.plus(addWeights);
                 }
             }
 
         }
         return KIXECalc.scaleToRefYear(KIXECalc.chain(weightedIndex), factor, refYear);
+    }
+
+    private TsData doWBGE(String[] formula, int j) {
+//        check(formula, j);
+//        checkData(formula, j);
+
+        int lag = Integer.parseInt(formula[5]);
+        TsData TsWBTData = extractData(indices.get(formula[1]));
+        TsData TsWBTWeights = extractData(weights.get(formula[2]));
+        TsData TsAllData = extractData(indices.get(formula[3]));
+        TsData TsAllWeights = extractData(weights.get(formula[4]));
+
+        checkNaN(TsWBTData, formula[1]);
+        checkNaN(TsWBTWeights, formula[2]);
+        checkNaN(TsAllData, formula[3]);
+        checkNaN(TsAllWeights, formula[4]);
+
+        checkLag(TsWBTData, lag);
+
+        return KIXECalc.contributionToGrowth(KIXECalc.unchain(TsWBTData), TsWBTWeights, KIXECalc.unchain(TsAllData), TsAllWeights, lag);
     }
 
     /**
@@ -315,7 +319,7 @@ public class KIXModel implements IKIXModel {
      * @return <code>true</code> if value can be parsed to Integer;
      *         <code>false</code> otherwise.
      */
-    public static boolean tryParseInt(String value) {
+    private boolean tryParseInt(String value) {
         try {
             Integer.parseInt(value);
             return true;
@@ -363,7 +367,7 @@ public class KIXModel implements IKIXModel {
      * @throws ec.nbdemetra.kix.KIXModel.InputException exception message
      *                                                  informs the user about the formula with the false year
      */
-    public void checkYear(String year, int j) throws InputException {
+    private void checkYear(String year, int j) throws InputException {
         if (!tryParseInt(year)) {
             throw new InputException("The reference year (" + year + ") has to be numeric in formula " + String.valueOf(j + 1));
         }
@@ -378,7 +382,7 @@ public class KIXModel implements IKIXModel {
      * @param j
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
-    public static void checkWBG(String[] formula, int j, TsVariables indices) throws InputException {
+    private void checkWBG(String[] formula, int j, TsVariables indices) throws InputException {
         if (formula.length != 7) {
             throw new InputException("Formula "
                     + String.valueOf(j + 1) + " is not following the WBG syntax.");
@@ -395,9 +399,18 @@ public class KIXModel implements IKIXModel {
         }
     }
 
-    public void checkNaN(TsData data, String name) throws InputException {
+    private void checkNaN(TsData data, String name) throws InputException {
         if (data.getValues().hasMissingValues()) {
             throw new InputException("Missing values in " + name);
+        }
+    }
+
+    private void checkLag(TsData data, int lag) throws InputException {
+        if (data.getFrequency() == TsFrequency.Monthly && lag != 1 && lag != 3 && lag != 6 && lag != 12) {
+            throw new InputException("Only lag 1,3,6 or 12 allowed for monthly data");
+        }
+        if (data.getFrequency() == TsFrequency.Quarterly && lag != 1 && lag != 2 && lag != 4) {
+            throw new InputException("Only lag 1,2 or 4 allowed for quarterly data");
         }
     }
 

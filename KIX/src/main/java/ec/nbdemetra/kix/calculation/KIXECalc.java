@@ -5,7 +5,6 @@
  */
 package ec.nbdemetra.kix.calculation;
 
-import ec.nbdemetra.kix.InputException;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
@@ -52,9 +51,10 @@ public class KIXECalc {
 
     /**
      *
-     * @param chainedTs the value of chainedTs
-     * @param factor    the value of factor
-     * @param refYear   the value of refYear
+     * @param chainedTs
+     * @param factor
+     * @param refYear
+     * @return
      */
     public static TsData scaleToRefYear(TsData chainedTs, double factor, int refYear) {
         return chainedTs.times(factor).div(meanInRefYear(chainedTs, refYear));
@@ -119,7 +119,7 @@ public class KIXECalc {
      * Each value in the time series is divided by the respective previous year final value (month or quarter) then multiplied by 100.
      *
      * @param index
-     * @return
+     * @return new TsData
      */
     public static TsData unchain(TsData index) {
         return index.times(100).div(transform(index));
@@ -143,8 +143,7 @@ public class KIXECalc {
 
     /**
      * Returns a weighted sum defined with the formula (index1 * weight1 + index2 * weight2 ) / (weight1 + weight2).
-     * The new domain is the union of the input domains.
-     * Missing values are set to Zero.
+     * The new domain is the intersection of the input domains.
      *
      * @param index1
      * @param weight1
@@ -161,23 +160,8 @@ public class KIXECalc {
     }
 
     /**
-     * Returns the sum of two time series.
-     * The new domain is the union of the input domains.
-     * Missing values are set to Zero.
-     *
-     * @param weight1 first summand
-     * @param weight2 second summand
-     * @return new TsData, sum of the input series
-     */
-    public static TsData addToWeight(TsData weight1, TsData weight2) {
-        return weight1.plus(weight2);
-
-    }
-
-    /**
      * Returns a weighted sum defined with the formula (index1 * weight1 - index2 * weight2 ) / (weight1 - weight2).
-     * The new domain is the union of the input domains.
-     * Missing values are set to Zero.
+     * The new domain is the intersection of the input domains.
      *
      * @param index1
      * @param weight1
@@ -190,20 +174,6 @@ public class KIXECalc {
         weight2 = transform(weight2);
 
         return (index1.times(weight1).minus(index2.times(weight2))).div(weight1.minus(weight2));
-
-    }
-
-    /**
-     * Returns the difference of two time series.
-     * The new domain is the union of the input domains.
-     * Missing values are set to Zero.
-     *
-     * @param weight1 minuend
-     * @param weight2 subtrahend
-     * @return new TsData, difference of the input series
-     */
-    public static TsData subtractFromWeight(TsData weight1, TsData weight2) {
-        return weight1.minus(weight2);
 
     }
 
@@ -246,14 +216,5 @@ public class KIXECalc {
             sum += data.get(new TsPeriod(frequency, refYear, i));
         }
         return sum / frequency.intValue();
-    }
-
-    public static void checkLag(TsData data, int lag) throws InputException {
-        if (data.getFrequency() == TsFrequency.Monthly && lag != 1 && lag != 3 && lag != 6 && lag != 12) {
-            throw new InputException("Only lag 1,3,6 or 12 allowed for monthly data");
-        }
-        if (data.getFrequency() == TsFrequency.Quarterly && lag != 1 && lag != 2 && lag != 4) {
-            throw new InputException("Only lag 1,2 or 4 allowed for quarterly data");
-        }
     }
 }

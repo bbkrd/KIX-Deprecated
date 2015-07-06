@@ -5,7 +5,6 @@
  */
 package ec.nbdemetra.kix.calculation;
 
-import ec.nbdemetra.kix.InputException;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import org.junit.Test;
@@ -426,50 +425,6 @@ public class KIXECalcTest {
                                   4.813595, 7.277047, 5.873127, 5.641882, 5.339490, 5.043598, 4.700673, 4.478372, 4.222756, 3.882103};
 
         assertEquals(expResultData, result.getValues().internalStorage());
-    }
-
-    @Test(expected = InputException.class)
-    public void Test_CheckLag_MonthlyData_LagFive_ExpectedInputException() {
-        double[] data = {631.0, 631.0, 631.0, 631.0, 603.0, 603.0, 603.0, 603.0, 656.0, 656.0, 656.0, 656.0, 826.1,
-                         826.1, 826.1, 826.1, 926.5, 926.5, 926.5, 926.5, 939.5, 939.5, 939.5, 939.5};
-        TsData ts = new TsData(TsFrequency.Monthly, 2008, 0, data, true);
-
-        int lag = 5;
-
-        KIXECalc.checkLag(ts, lag);
-    }
-
-    @Test
-    public void Test_CheckLag_MonthlyData_LagThree() {
-        double[] data = {631.0, 631.0, 631.0, 631.0, 603.0, 603.0, 603.0, 603.0, 656.0, 656.0, 656.0, 656.0, 826.1,
-                         826.1, 826.1, 826.1, 926.5, 926.5, 926.5, 926.5, 939.5, 939.5, 939.5, 939.5};
-        TsData ts = new TsData(TsFrequency.Monthly, 2008, 0, data, true);
-
-        int lag = 3;
-
-        KIXECalc.checkLag(ts, lag);
-    }
-
-    @Test(expected = InputException.class)
-    public void Test_CheckLag_QuarterlyData_LagFive_ExpectedInputException() {
-        double[] data = {631.0, 631.0, 631.0, 631.0, 603.0, 603.0, 603.0, 603.0, 656.0, 656.0, 656.0, 656.0, 826.1,
-                         826.1, 826.1, 826.1, 926.5, 926.5, 926.5, 926.5, 939.5, 939.5, 939.5, 939.5};
-        TsData ts = new TsData(TsFrequency.Quarterly, 2008, 0, data, true);
-
-        int lag = 5;
-
-        KIXECalc.checkLag(ts, lag);
-    }
-
-    @Test
-    public void Test_CheckLag_QuarterlyData_LagFour() {
-        double[] data = {631.0, 631.0, 631.0, 631.0, 603.0, 603.0, 603.0, 603.0, 656.0, 656.0, 656.0, 656.0, 826.1,
-                         826.1, 826.1, 826.1, 926.5, 926.5, 926.5, 926.5, 939.5, 939.5, 939.5, 939.5};
-        TsData ts = new TsData(TsFrequency.Quarterly, 2008, 0, data, true);
-
-        int lag = 4;
-
-        KIXECalc.checkLag(ts, lag);
     }
 
     private void assertEquals(double[] expected, double[] actual) {

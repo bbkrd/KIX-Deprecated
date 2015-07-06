@@ -7,6 +7,6 @@ and open the template in the editor.
 <!DOCTYPE toc PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 2.0//EN" "http://java.sun.com/products/javahelp/toc_2_0.dtd">
 <toc version="2.0">
     <tocitem text="NbDemetra - KIX">
-        <tocitem text="Method of Calculation" target="eu.europa.ec.joinup.sat.nbdemetra.kix.methofcal"/>
+        <tocitem text="KIX 2.0 - Method of Calculation" target="kix.2.methofcal"/>
     </tocitem>
 </toc>

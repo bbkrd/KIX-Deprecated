@@ -31,7 +31,6 @@ import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
 import static javax.swing.TransferHandler.COPY;
 import javax.swing.event.ListSelectionEvent;
@@ -52,9 +51,9 @@ public class JTsKIXList extends JComponent {
     public static final String CLEAR_ACTION = "clear";
     public static final String SELECT_ALL_ACTION = "selectAll";
     public static final String RENAME_ACTION = "rename";
-    private final ListTableSelectionListener listTableListener;
+    private transient final ListTableSelectionListener listTableListener;
     private final XTable table;
-    private final TsVariables variables;
+    private transient final TsVariables variables;
     private final ClearAction clear;
     private final DeleteAction remove;
 
@@ -298,7 +297,7 @@ public class JTsKIXList extends JComponent {
         @Override
         public void valueChanged(ListSelectionEvent e) {
             if (!e.getValueIsAdjusting()) {
-                ListSelectionModel model = (ListSelectionModel) e.getSource();
+//                ListSelectionModel model = (ListSelectionModel) e.getSource();
                 updateMenus();
             }
         }

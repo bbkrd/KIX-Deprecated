@@ -21,8 +21,7 @@ import org.openide.util.NbBundle.Messages;
           id = "ec.nbdemetra.kix.actions.NewAction")
 @ActionRegistration(displayName = "#CTL_NewAction")
 @ActionReferences({
-    @ActionReference(path = KIXDocumentManager.PATH, position = 1000),
-    @ActionReference(path = "Shortcuts", name = "D-N")
+    @ActionReference(path = KIXDocumentManager.PATH, position = 1000)
 })
 @Messages("CTL_NewAction=New")
 public class NewAction implements ActionListener {

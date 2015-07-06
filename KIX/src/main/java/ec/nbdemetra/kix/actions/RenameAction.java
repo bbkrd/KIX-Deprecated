@@ -10,12 +10,6 @@ import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
-import ec.tstoolkit.utilities.Id;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import javax.swing.InputVerifier;
-import javax.swing.JComponent;
-import javax.swing.JTextField;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionID;
@@ -30,9 +24,7 @@ import org.openide.util.NbBundle.Messages;
 @ActionRegistration(
         displayName = "#CTL_RenameAction", lazy = false)
 @ActionReferences({
-    //    @ActionReference(path = "Menu/Edit"),
-    @ActionReference(path = KIXDocumentManager.ITEMPATH, position = 1100),
-    @ActionReference(path = "Shortcuts", name = "D-R")
+    @ActionReference(path = KIXDocumentManager.ITEMPATH, position = 1100)
 })
 @Messages("CTL_RenameAction=Rename...")
 public final class RenameAction extends SingleNodeAction<ItemWsNode> {
@@ -50,25 +42,22 @@ public final class RenameAction extends SingleNodeAction<ItemWsNode> {
         if (cur != null && !cur.isReadOnly()) {
             // create the input dialog
             String oldName = cur.getDisplayName(), newName;
-            KIXName nd = new KIXName(cur.getFamily(), NAME_MESSAGE, RENAME_TITLE, oldName);
-            nd.addPropertyChangeListener(new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    if (evt.getPropertyName().equals(NotifyDescriptor.PROP_DETAIL)) {
-                    }
-                }
-            });
+            KIXName nd = new KIXName(NAME_MESSAGE, RENAME_TITLE, oldName);
+
             if (DialogDisplayer.getDefault().notify(nd) != NotifyDescriptor.OK_OPTION) {
                 return;
             }
             newName = nd.getInputText();
             if (newName.equals(oldName)) {
-                return;
+
+            } else if (null != WorkspaceFactory.getInstance().getActiveWorkspace().searchDocumentByName(cur.getFamily(), newName)) {
+                NotifyDescriptor descriptor = new NotifyDescriptor.Message(newName + " is in use. You should choose another name!");
+                DialogDisplayer.getDefault().notify(descriptor);
+            } else {
+                cur.setDisplayName(newName);
+                WorkspaceFactory.Event ev = new WorkspaceFactory.Event(cur.getOwner(), cur.getId(), WorkspaceFactory.Event.ITEMRENAMED);
+                WorkspaceFactory.getInstance().notifyEvent(ev);
             }
-//            ProcessingContext.getActiveContext().getTsVariableManagers().rename(oldName, newName);
-            cur.setDisplayName(newName);
-            WorkspaceFactory.Event ev = new WorkspaceFactory.Event(cur.getOwner(), cur.getId(), WorkspaceFactory.Event.ITEMRENAMED);
-            WorkspaceFactory.getInstance().notifyEvent(ev);
         }
     }
 
@@ -91,25 +80,8 @@ public final class RenameAction extends SingleNodeAction<ItemWsNode> {
 
 class KIXName extends NotifyDescriptor.InputLine {
 
-    KIXName(final Id id, String title, final String text, String input) {
+    KIXName(String title, String text, String oldName) {
         super(title, text);
-        setInputText(input);
-        textField.setInputVerifier(new InputVerifier() {
-
-            @Override
-            public boolean verify(JComponent input) {
-                JTextField txt = (JTextField) input;
-                String name = txt.getText();
-                if (name.equals(text)) {
-                    return true;
-                }
-                if (null != WorkspaceFactory.getInstance().getActiveWorkspace().searchDocumentByName(id, name)) {
-                    NotifyDescriptor nd = new NotifyDescriptor.Message(name + " is in use. You should choose another name!");
-                    DialogDisplayer.getDefault().notify(nd);
-                    return false;
-                }
-                return true;
-            }
-        });
+        setInputText(oldName);
     }
 }
