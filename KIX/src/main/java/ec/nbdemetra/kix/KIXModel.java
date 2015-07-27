@@ -17,6 +17,7 @@ import ec.tstoolkit.timeseries.regression.ITsVariable;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
+import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import java.util.ArrayList;
 import java.util.Locale;
 import javax.annotation.Nonnull;
@@ -68,17 +69,22 @@ public class KIXModel implements IKIXModel {
                     case "WBG":
                         outputTsData[j] = doWBG(formula, j);
                         break;
+                    case "UNC":
+                        outputTsData[j] = doUNC(formula, j);
+                        break;
                     case "KIXE":
                         outputTsData[j] = doKIXE(formula, j);
                         break;
                     case "WBGE":
                         outputTsData[j] = doWBGE(formula, j);
                         break;
-                    case "":
-//                        throw new InputException("No control character found in formula "
-//                                + String.valueOf(j + 1)
-//                                + ". Please use the syntax described in the tooltip or the help.");
+                    case "UNCE":
+                        outputTsData[j] = doUNCE(formula, j);
                         break;
+                    case "":
+                        throw new InputException("No control character found in formula "
+                                + String.valueOf(j + 1)
+                                + ". Please use the syntax described in the tooltip or the help.");
                     default:
                         throw new InputException(formula[0].toUpperCase(Locale.ENGLISH) + " in formula "
                                 + String.valueOf(j + 1)
@@ -191,6 +197,18 @@ public class KIXModel implements IKIXModel {
         return TsReturnData;
     }
 
+    private TsData doUNC(String[] formula, int j) {
+        TsData TsToUnchain;
+        if (indices.contains(formula[1])) {
+            TsToUnchain = extractData(indices.get(formula[1]));
+        } else if (weights.contains(formula[1])) {
+            TsToUnchain = extractData(weights.get(formula[1]));
+        } else {
+            throw new InputException(formula[1] + "in formula " + j + " doesn't exist");
+        }
+        return KIXCalc.unchain(TsToUnchain);
+    }
+
     private TsData doKIXE(String[] formula, int j) {
         checkYear(formula[formula.length - 1], j);
         check(formula, j);
@@ -214,7 +232,7 @@ public class KIXModel implements IKIXModel {
             factor = KIXECalc.addToFactor(factor, factorWeight, addData, KIXECalc.weightInRefYear(addData, addWeights, refYear), refYear);
             factorWeight += KIXECalc.weightInRefYear(addData, addWeights, refYear);
 
-            if (i == 1) {
+            if (weightedIndex == null || weightedIndexWeights == null) {
                 weightedIndex = KIXECalc.unchain(addData);
                 weightedIndexWeights = addWeights;
             } else {
@@ -249,6 +267,19 @@ public class KIXModel implements IKIXModel {
         checkLag(TsWBTData, lag);
 
         return KIXECalc.contributionToGrowth(KIXECalc.unchain(TsWBTData), TsWBTWeights, KIXECalc.unchain(TsAllData), TsAllWeights, lag);
+    }
+
+    private TsData doUNCE(String[] formula, int j) {
+        TsData TsToUnchain;
+        if (indices.contains(formula[1])) {
+            TsToUnchain = extractData(indices.get(formula[1]));
+        } else if (weights.contains(formula[1])) {
+            TsToUnchain = extractData(weights.get(formula[1]));
+        } else {
+            throw new InputException(formula[1] + "in formula " + j + " doesn't exist");
+
+        }
+        return KIXECalc.unchain(TsToUnchain);
     }
 
     /**
@@ -293,14 +324,16 @@ public class KIXModel implements IKIXModel {
     private void checkData(String[] formula, int j) throws InputException {
         StringBuilder errortext = new StringBuilder();
         for (int i = 1; i < formula.length; i += 3) {
-            if (!(indices.get(formula[i]).getDefinitionDomain().getStart().getPosition() == 0)
-                    || !(weights.get(formula[i + 1]).getDefinitionDomain().getStart().getPosition() == 0)) {
+            TsPeriod indexStart = indices.get(formula[i]).getDefinitionDomain().getStart();
+            TsPeriod weightStart = weights.get(formula[i + 1]).getDefinitionDomain().getStart();
+            if (!(indexStart.getPosition() == 0)
+                    || !(weightStart.getPosition() == 0)) {
                 //TODO Prüfung vervollständigen/verifizieren
                 errortext.append("Some data of formula ")
                         .append(String.valueOf(j + 1))
                         .append(" is not defined from their first period onward.");
             }
-            if (indices.get(formula[i]).getDefinitionDomain().getStart().isBefore(weights.get(formula[i + 1]).getDefinitionDomain().getStart())) {
+            if (indexStart.isBefore(weightStart)) {
                 errortext.append("The index series ")
                         .append(formula[i]).append("begins before the corresponding weight series ")
                         .append(formula[i + 1]).append("in formula ")
@@ -336,6 +369,10 @@ public class KIXModel implements IKIXModel {
     }
 
     private void formatInput(String input) {
+        input = input.replaceAll("[\n]+", "\n");
+        if (input.startsWith("\n")) {
+            input = input.replaceFirst("\n", "");
+        }
         String[] splitInput = input.split("\n");
         formulaNames = new String[splitInput.length][];
         request = new String[splitInput.length][];

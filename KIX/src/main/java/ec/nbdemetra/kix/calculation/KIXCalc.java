@@ -253,12 +253,14 @@ public class KIXCalc {
     public static TsData[] weightsum(TsData weightedSumD, TsData weightedSumW, TsData addD, TsData addW, String operation) {
         TsData[] tempWeightSum = new TsData[2];
         if (operation.equalsIgnoreCase("-")) {
-            tempWeightSum[0] = TsData.multiply(weightedSumD, weightedSumW).
-                    minus(TsData.multiply(addD, addW)).div(TsData.subtract(weightedSumW, addW));
+            tempWeightSum[0] = (TsData.multiply(weightedSumD, weightedSumW)
+                                .minus(TsData.multiply(addD, addW)))
+                    .div(TsData.subtract(weightedSumW, addW));
             tempWeightSum[1] = weightedSumW.minus(addW);
         } else {
-            tempWeightSum[0] = TsData.multiply(weightedSumD, weightedSumW).
-                    plus(TsData.multiply(addD, addW)).div(TsData.add(weightedSumW, addW));
+            tempWeightSum[0] = (TsData.multiply(weightedSumD, weightedSumW)
+                                .plus(TsData.multiply(addD, addW)))
+                    .div(TsData.add(weightedSumW, addW));
             tempWeightSum[1] = weightedSumW.plus(addW);
         }
 
