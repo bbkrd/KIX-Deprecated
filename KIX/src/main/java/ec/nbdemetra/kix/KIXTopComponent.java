@@ -24,7 +24,6 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.ToolTipManager;
-import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.NbBundle.Messages;
@@ -33,11 +32,9 @@ import org.openide.windows.TopComponent;
 /**
  * Top component which displays the KIX UI.
  */
-@ConvertAsProperties(dtd = "-//ec.nbdemetra.kix//KIX//EN",
-                     autostore = false)
 @TopComponent.Description(
         preferredID = "KIXTopComponent",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS)
+        persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Window", id = "ec.nbdemetra.kix.KIXTopComponent")
 @ActionReference(path = "Menu/Tools", position = 336)
@@ -161,12 +158,6 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
         initbutton();
         _KIX = new KIXModel();
-    }
-
-    void writeProperties(java.util.Properties p) {
-    }
-
-    void readProperties(java.util.Properties p) {
     }
 
     /**

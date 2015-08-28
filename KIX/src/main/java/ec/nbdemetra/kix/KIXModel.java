@@ -229,19 +229,22 @@ public class KIXModel implements IKIXModel {
             checkNaN(addData, formula[i]);
             checkNaN(addWeights, formula[i + 1]);
 
-            factor = KIXECalc.addToFactor(factor, factorWeight, addData, KIXECalc.weightInRefYear(addData, addWeights, refYear), refYear);
-            factorWeight += KIXECalc.weightInRefYear(addData, addWeights, refYear);
-
             if (weightedIndex == null || weightedIndexWeights == null) {
                 weightedIndex = KIXECalc.unchain(addData);
                 weightedIndexWeights = addWeights;
+                factor = KIXECalc.addToFactor(factor, factorWeight, addData, KIXECalc.weightInRefYear(addData, addWeights, refYear), refYear);
+                factorWeight += KIXECalc.weightInRefYear(addData, addWeights, refYear);
             } else {
                 if ("-".equals(formula[i - 1])) {
                     weightedIndex = KIXECalc.subtractFromWeightSum(weightedIndex, weightedIndexWeights, KIXECalc.unchain(addData), addWeights);
                     weightedIndexWeights = weightedIndexWeights.minus(addWeights);
+                    factor = KIXECalc.subtractFromFactor(factor, factorWeight, addData, KIXECalc.weightInRefYear(addData, addWeights, refYear), refYear);
+                    factorWeight -= KIXECalc.weightInRefYear(addData, addWeights, refYear);
                 } else {
                     weightedIndex = KIXECalc.addToWeightSum(weightedIndex, weightedIndexWeights, KIXECalc.unchain(addData), addWeights);
                     weightedIndexWeights = weightedIndexWeights.plus(addWeights);
+                    factor = KIXECalc.addToFactor(factor, factorWeight, addData, KIXECalc.weightInRefYear(addData, addWeights, refYear), refYear);
+                    factorWeight += KIXECalc.weightInRefYear(addData, addWeights, refYear);
                 }
             }
 
@@ -287,7 +290,7 @@ public class KIXModel implements IKIXModel {
      * data list and informs the user about formulas with missing data parts.
      *
      * @param formula String array with all parts of the requested formula
-     * @param j       the count of the formula
+     * @param j the count of the formula
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
     private void check(String[] formula, int j) throws InputException {
@@ -350,7 +353,7 @@ public class KIXModel implements IKIXModel {
      *
      * @param value String to test
      * @return <code>true</code> if value can be parsed to Integer;
-     *         <code>false</code> otherwise.
+     * <code>false</code> otherwise.
      */
     private boolean tryParseInt(String value) {
         try {
@@ -400,9 +403,9 @@ public class KIXModel implements IKIXModel {
      * year is 1950 or later.
      *
      * @param year the string representation of the year
-     * @param j    the count of the formula
+     * @param j the count of the formula
      * @throws ec.nbdemetra.kix.KIXModel.InputException exception message
-     *                                                  informs the user about the formula with the false year
+     * informs the user about the formula with the false year
      */
     private void checkYear(String year, int j) throws InputException {
         if (!tryParseInt(year)) {
