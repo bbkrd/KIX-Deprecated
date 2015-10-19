@@ -5,6 +5,10 @@
  */
 package de.bundesbank.kix;
 
+import de.bundesbank.kix.options.KIXOptionsPanelController;
+import static de.bundesbank.kix.options.KIXOptionsPanelController.KIX2_DEFAULT_METHOD;
+import static de.bundesbank.kix.options.KIXOptionsPanelController.KIXE_DEFAULT_METHOD;
+import de.bundesbank.kix.options.UnchainingMethod;
 import ec.tss.TsCollection;
 import ec.tstoolkit.timeseries.regression.TsVariable;
 import ec.tstoolkit.timeseries.regression.TsVariables;
@@ -12,7 +16,9 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.utilities.DefaultNameValidator;
 import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.openide.util.NbPreferences;
 
 /**
  *
@@ -44,8 +50,13 @@ public class KIXModelTest {
         weights.set("w2", new TsVariable(new TsData(TsFrequency.Quarterly, 2004, 0, w2Data, true)));
     }
 
+    private void setMethod(String method, UnchainingMethod unchainingMethod) {
+        NbPreferences.forModule(KIXOptionsPanelController.class).put(method, unchainingMethod.toString());
+    }
+
     @Test
-    public void TestKIX_Add2Ts() {
+    public void TestKIX_Add2TsPragmatic() {
+        setMethod(KIX2_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC);
         String inputString = "KIX,i1,w1,+,i2,w2,2005";
         quarterlyData();
         double[] expResult = {88.59, 93.74, 91.52, 95.49, 94.60, 97.81, 100.71, 105.62, 106.50, 110.00, 112.55, 123.68,
@@ -58,7 +69,22 @@ public class KIXModelTest {
     }
 
     @Test
-    public void TestKIX_Subtract2Ts() {
+    public void TestKIX_Add2TsPuristic() {
+        setMethod(KIX2_DEFAULT_METHOD, UnchainingMethod.PURISTIC);
+        String inputString = "KIX,i1,w1,+,i2,w2,2005";
+        quarterlyData();
+        double[] expResult = {94.60, 97.81, 100.71, 105.62, 106.50, 110.00, 112.55, 123.68,
+            118.76, 120.52, 122.33, 128.52, 127.37, 126.70, 125.15, 121.32, 105.96, 104.81, 108.07, 113.56};
+        TsCollection result = instance.parser(inputString, indices, weights);
+
+        for (int i = 0; i < expResult.length; i++) {
+            assertEquals(expResult[i], result.get(0).getTsData().getValues().internalStorage()[i], 0.005);
+        }
+    }
+
+    @Test
+    public void TestKIX_Subtract2TsPragmatic() {
+        setMethod(KIX2_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC);
         String inputString = "KIX,i1,w1,-,i2,w2,2005";
         quarterlyData();
         double[] expResult = {91.42, 93.66, 89.92, 94.8, 96.67, 98.95, 99.37, 103.57, 109.35, 107.99, 112.2, 120.29, 121.07,
@@ -71,7 +97,50 @@ public class KIXModelTest {
     }
 
     @Test
-    public void TestKIXE_Add2Ts() {
+    public void TestKIX_Subtract2TsPuristic() {
+        setMethod(KIX2_DEFAULT_METHOD, UnchainingMethod.PURISTIC);
+        String inputString = "KIX,i1,w1,-,i2,w2,2005";
+        quarterlyData();
+        double[] expResult = {96.67, 98.95, 99.37, 103.57, 109.35, 107.99, 112.2, 120.29, 121.07,
+            121.25, 122.62, 127.42, 129.81, 128.68, 125.08, 114.3, 97.24, 95.21, 101.21, 104.8};
+        TsCollection result = instance.parser(inputString, indices, weights);
+
+        for (int i = 0; i < expResult.length; i++) {
+            assertEquals(expResult[i], result.get(0).getTsData().getValues().internalStorage()[i], 0.005);
+        }
+    }
+
+    @Test
+    public void TestKIX_NullTestPragmatic() {
+        setMethod(KIX2_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC);
+        String inputString = "KIX,i1,w1,+,i2,w2,-,i2,w2,2005";
+        quarterlyData();
+        double[] expResult = {89.78, 93.71, 90.85, 95.20, 95.47, 98.29, 100.15, 104.76, 107.69, 109.16, 112.40, 122.26,
+            119.73, 120.83, 122.45, 128.06, 128.39, 127.53, 125.12, 118.38, 102.32, 100.80, 105.21, 109.90};
+        TsCollection result = instance.parser(inputString, indices, weights);
+
+        for (int i = 0; i < expResult.length; i++) {
+            assertEquals(expResult[i], result.get(0).getTsData().getValues().internalStorage()[i], 0.005);
+        }
+    }
+
+    @Test
+    public void TestKIX_NullTestPuristic() {
+        setMethod(KIX2_DEFAULT_METHOD, UnchainingMethod.PURISTIC);
+        String inputString = "KIX,i1,w1,+,i2,w2,-,i2,w2,2005";
+        quarterlyData();
+        double[] expResult = {95.47, 98.29, 100.15, 104.76, 107.69, 109.16, 112.40, 122.26,
+            119.73, 120.83, 122.45, 128.06, 128.39, 127.53, 125.12, 118.38, 102.32, 100.80, 105.21, 109.90};
+        TsCollection result = instance.parser(inputString, indices, weights);
+
+        for (int i = 0; i < expResult.length; i++) {
+            assertEquals(expResult[i], result.get(0).getTsData().getValues().internalStorage()[i], 0.005);
+        }
+    }
+
+    @Test
+    public void TestKIXE_Add2TsPuristic() {
+        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PURISTIC);
         String inputString = "KIXE,i1,w1,+,i2,w2,2005";
         quarterlyData();
         double[] expResult = {94.59634, 97.81158, 100.71445, 105.62539, 106.46924, 109.99229, 112.53047, 123.67321, 118.79002, 120.54374,
@@ -85,7 +154,8 @@ public class KIXModelTest {
     }
 
     @Test
-    public void TestKIXE_Add2Ts2() {
+    public void TestKIXE_Add2Ts2Puristic() {
+        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PURISTIC);
         String inputString = "KIXE,i1,w1,+,i2,w2,2007";
 
         indices.clear();
@@ -106,7 +176,8 @@ public class KIXModelTest {
     }
 
     @Test
-    public void TestKIXE_Add3Ts() {
+    public void TestKIXE_Add3TsPuristic() {
+        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PURISTIC);
         String inputString = "KIXE,i1,w1,+,i2,w2,+,i2,w2,2007";
 
         indices.clear();
@@ -128,7 +199,8 @@ public class KIXModelTest {
     }
 
     @Test
-    public void TestKIXE_AddAndSubtractTs() {
+    public void TestKIXE_AddAndSubtractTsPuristic() {
+        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PURISTIC);
         String inputString = "KIXE,i1,w1,+,i2,w2,-,i2,w2,2007";
 
         indices.clear();
@@ -140,6 +212,93 @@ public class KIXModelTest {
 
         double[] expResult = {95.47, 98.29, 100.15, 104.76, 107.69, 109.16, 112.40, 122.26,
             119.73, 120.83, 122.45, 128.06, 128.39, 127.53, 125.12, 118.38, 102.32, 100.80, 105.21, 109.90};
+        TsCollection result = instance.parser(inputString, indices, weights);
+        double[] resultDouble = result.get(0).getTsData().getValues().internalStorage();
+        assertEquals(expResult.length, resultDouble.length);
+        for (int i = 0; i < expResult.length; i++) {
+            org.junit.Assert.assertEquals(expResult[i], resultDouble[i], 0.000005);
+        }
+    }
+
+    @Ignore
+    @Test
+    //TODO: Complet test (expected results)
+    public void TestKIXE_Add2TsPragmatic() {
+        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC);
+        String inputString = "KIXE,i1,w1,+,i2,w2,2005";
+        quarterlyData();
+        double[] expResult = {};
+
+        TsCollection result = instance.parser(inputString, indices, weights);
+        double[] resultDouble = result.get(0).getTsData().getValues().internalStorage();
+        assertEquals(expResult.length, resultDouble.length);
+        for (int i = 0; i < expResult.length; i++) {
+            org.junit.Assert.assertEquals(expResult[i], resultDouble[i], 0.005);
+        }
+    }
+
+    @Ignore
+    @Test
+    //TODO: Complet test (expected results)
+    public void TestKIXE_Add2Ts2Pragmatic() {
+        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC);
+        String inputString = "KIXE,i1,w1,+,i2,w2,2007";
+
+        indices.clear();
+        weights.clear();
+        indices.set("i1", new TsVariable(new TsData(TsFrequency.Quarterly, 2004, 0, i1Data, true)));
+        indices.set("i2", new TsVariable(new TsData(TsFrequency.Quarterly, 2006, 1, i2Data, true)));
+        weights.set("w1", new TsVariable(new TsData(TsFrequency.Quarterly, 2004, 0, w1Data, true)));
+        weights.set("w2", new TsVariable(new TsData(TsFrequency.Quarterly, 2006, 1, w2Data, true)));
+
+        double[] expResult = {};
+
+        TsCollection result = instance.parser(inputString, indices, weights);
+        double[] resultDouble = result.get(0).getTsData().getValues().internalStorage();
+        assertEquals(expResult.length, resultDouble.length);
+        for (int i = 0; i < expResult.length; i++) {
+            org.junit.Assert.assertEquals(expResult[i], resultDouble[i], 0.005);
+        }
+    }
+
+    @Ignore
+    @Test
+    //TODO: Complet test (expected results)
+    public void TestKIXE_Add3TsPragmatic() {
+        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC);
+        String inputString = "KIXE,i1,w1,+,i2,w2,+,i2,w2,2007";
+
+        indices.clear();
+        weights.clear();
+        indices.set("i1", new TsVariable(new TsData(TsFrequency.Quarterly, 2004, 0, i1Data, true)));
+        indices.set("i2", new TsVariable(new TsData(TsFrequency.Quarterly, 2004, 0, i2Data, true)));
+        weights.set("w1", new TsVariable(new TsData(TsFrequency.Quarterly, 2004, 0, w1Data, true)));
+        weights.set("w2", new TsVariable(new TsData(TsFrequency.Quarterly, 2004, 0, w2Data, true)));
+
+        double[] expResult = {};
+        TsCollection result = instance.parser(inputString, indices, weights);
+        double[] resultDouble = result.get(0).getTsData().getValues().internalStorage();
+        assertEquals(expResult.length, resultDouble.length);
+        for (int i = 0; i < expResult.length; i++) {
+            org.junit.Assert.assertEquals(expResult[i], resultDouble[i], 0.000005);
+        }
+    }
+
+    @Ignore
+    @Test
+    //TODO: Complet test (expected results)
+    public void TestKIXE_AddAndSubtractTsPragmatic() {
+        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC);
+        String inputString = "KIXE,i1,w1,+,i2,w2,-,i2,w2,2007";
+
+        indices.clear();
+        weights.clear();
+        indices.set("i1", new TsVariable(new TsData(TsFrequency.Quarterly, 2004, 0, i1Data, true)));
+        indices.set("i2", new TsVariable(new TsData(TsFrequency.Quarterly, 2004, 0, i2Data, true)));
+        weights.set("w1", new TsVariable(new TsData(TsFrequency.Quarterly, 2004, 0, w1Data, true)));
+        weights.set("w2", new TsVariable(new TsData(TsFrequency.Quarterly, 2004, 0, w2Data, true)));
+
+        double[] expResult = {};
         TsCollection result = instance.parser(inputString, indices, weights);
         double[] resultDouble = result.get(0).getTsData().getValues().internalStorage();
         assertEquals(expResult.length, resultDouble.length);

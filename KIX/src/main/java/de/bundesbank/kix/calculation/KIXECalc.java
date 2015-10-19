@@ -32,11 +32,11 @@ public class KIXECalc {
             if (period.getPosition() < lag) {
                 TsPeriod laggedPeriod = new TsPeriod(frequency, year - 1, period.getPosition() + frequency.intValue() - lag);
                 value = ((weightsContributor.get(lastPeriodOneYearAgo) / weightsTotal.get(lastPeriodOneYearAgo))
-                         * (unchainedTotal.get(lastPeriodOneYearAgo) / unchainedTotal.get(laggedPeriod))
-                         * (unchainedContributor.get(period) - 100))
+                        * (unchainedTotal.get(lastPeriodOneYearAgo) / unchainedTotal.get(laggedPeriod))
+                        * (unchainedContributor.get(period) - 100))
                         + ((weightsContributor.get(lastPeriodTwoYearsAgo) / weightsTotal.get(lastPeriodTwoYearsAgo))
-                           * (100 / unchainedTotal.get(laggedPeriod))
-                           * (unchainedContributor.get(lastPeriodOneYearAgo) - unchainedContributor.get(laggedPeriod)));
+                        * (100 / unchainedTotal.get(laggedPeriod))
+                        * (unchainedContributor.get(lastPeriodOneYearAgo) - unchainedContributor.get(laggedPeriod)));
             } else {
                 TsPeriod laggedPeriod = new TsPeriod(frequency, year, period.getPosition() - lag);
                 value = (weightsContributor.get(lastPeriodOneYearAgo) / weightsTotal.get(lastPeriodOneYearAgo))
@@ -116,7 +116,8 @@ public class KIXECalc {
     }
 
     /**
-     * Each value in the time series is divided by the respective previous year final value (month or quarter) then multiplied by 100.
+     * Each value in the time series is divided by the respective previous year
+     * final value (month or quarter) then multiplied by 100.
      *
      * @param index
      * @return new TsData
@@ -142,8 +143,9 @@ public class KIXECalc {
     }
 
     /**
-     * Returns a weighted sum defined with the formula (index1 * weight1 + index2 * weight2 ) / (weight1 + weight2).
-     * The new domain is the intersection of the input domains.
+     * Returns a weighted sum defined with the formula (index1 * weight1 +
+     * index2 * weight2 ) / (weight1 + weight2). The new domain is the
+     * intersection of the input domains.
      *
      * @param index1
      * @param weight1
@@ -160,8 +162,9 @@ public class KIXECalc {
     }
 
     /**
-     * Returns a weighted sum defined with the formula (index1 * weight1 - index2 * weight2 ) / (weight1 - weight2).
-     * The new domain is the intersection of the input domains.
+     * Returns a weighted sum defined with the formula (index1 * weight1 -
+     * index2 * weight2 ) / (weight1 - weight2). The new domain is the
+     * intersection of the input domains.
      *
      * @param index1
      * @param weight1
@@ -185,13 +188,22 @@ public class KIXECalc {
      */
     private static TsData transform(TsData index) {
         int startYear = index.getStart().getYear();
+        int startPosition = index.getStart().getPosition();
         int endYear = index.getLastPeriod().getYear();
         TsFrequency frequency = index.getFrequency();
 
-        int count = frequency.intValue() * (index.getEnd().getYear() - startYear);
-        TsData retVal = new TsData(new TsDomain(frequency, startYear + 1, 0, count));
+        int count = frequency.intValue() * (index.getEnd().getYear() - startYear) + (frequency.intValue() - startPosition);
+        TsData retVal = new TsData(new TsDomain(frequency, startYear, startPosition, count));
 
-        //Logic
+        //First year
+        {
+            double lastValueThisYear = index.get(new TsPeriod(frequency, startYear, frequency.intValue() - 1));
+            for (int i = startPosition; i < frequency.intValue(); ++i) {
+                retVal.set(new TsPeriod(frequency, startYear, i), lastValueThisYear);
+            }
+        }
+
+        //all other years
         for (int i = 1; i <= endYear - startYear; ++i) {
             double lastValuePreviousYear = index.get(new TsPeriod(frequency, startYear + i - 1, frequency.intValue() - 1));
 

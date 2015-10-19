@@ -22,6 +22,8 @@ import org.openide.util.Lookup;
 @org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_KIX=KIX", "AdvancedOption_Keywords_KIX=KIX"})
 public final class KIXOptionsPanelController extends OptionsPanelController {
 
+    public static final String KIX2_DEFAULT_METHOD = "kix2_default_method";
+    public static final String KIXE_DEFAULT_METHOD = "kixe_default_method";
     public static final String ID = "Demetra/KIX";
 
     private KIXPanel panel;

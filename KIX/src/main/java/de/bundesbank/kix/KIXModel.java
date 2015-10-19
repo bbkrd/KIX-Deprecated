@@ -7,6 +7,8 @@ package de.bundesbank.kix;
 
 import de.bundesbank.kix.calculation.KIXCalc;
 import de.bundesbank.kix.calculation.KIXECalc;
+import de.bundesbank.kix.options.KIXOptionsPanelController;
+import de.bundesbank.kix.options.UnchainingMethod;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
@@ -23,6 +25,8 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
+import org.openide.util.NbBundle;
+import org.openide.util.NbPreferences;
 
 /**
  * Implementation of the IKIXModel interface <br>
@@ -150,7 +154,13 @@ public class KIXModel implements IKIXModel {
             }
 
         }
-        return KIXCalc.scaleToRefYear(KIXCalc.chainSum(weightedSumData), indexData, refYear);
+        TsData returnValue = KIXCalc.scaleToRefYear(KIXCalc.chainSum(weightedSumData), indexData, refYear);
+        String unchainingMethod = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIXOptionsPanelController.KIX2_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC.toString());
+        if (UnchainingMethod.valueOf(unchainingMethod) == UnchainingMethod.PURISTIC) {
+
+            return returnValue.drop(returnValue.getFrequency().intValue() - returnValue.getStart().getPosition(), 0);
+        }
+        return returnValue;
     }
 
     /**
@@ -249,7 +259,13 @@ public class KIXModel implements IKIXModel {
             }
 
         }
-        return KIXECalc.scaleToRefYear(KIXECalc.chain(weightedIndex), factor, refYear);
+        TsData returnValue = KIXECalc.scaleToRefYear(KIXECalc.chain(weightedIndex), factor, refYear);
+        String unchainingMethod = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIXOptionsPanelController.KIXE_DEFAULT_METHOD, UnchainingMethod.PURISTIC.toString());
+        if (UnchainingMethod.valueOf(unchainingMethod) == UnchainingMethod.PURISTIC) {
+
+            return returnValue.drop(returnValue.getFrequency().intValue() - returnValue.getStart().getPosition(), 0);
+        }
+        return returnValue;
     }
 
     private TsData doWBGE(String[] formula, int j) {
@@ -318,6 +334,14 @@ public class KIXModel implements IKIXModel {
     }
 
     //TODO komplette Implementierung
+    @NbBundle.Messages({
+        "# {0} - formula number",
+        "ERR_CHECKDATA_NotDefinedFirstPeriod=Some data of formula {0} is not defined from their first period onward.",
+        "# {0} - index series name",
+        "# {1} - weighted series name",
+        "# {2} - formula number",
+        "ERR_CHECKDATA_IndexStartsBeforeWeights=The index series {0} begins before the corresponding weight series {1} in formula {2}."
+    })
     /**
      *
      * @param formula
@@ -332,15 +356,10 @@ public class KIXModel implements IKIXModel {
             if (!(indexStart.getPosition() == 0)
                     || !(weightStart.getPosition() == 0)) {
                 //TODO Prüfung vervollständigen/verifizieren
-                errortext.append("Some data of formula ")
-                        .append(String.valueOf(j + 1))
-                        .append(" is not defined from their first period onward.");
+                errortext.append(Bundle.ERR_CHECKDATA_NotDefinedFirstPeriod(j + 1));
             }
             if (indexStart.isBefore(weightStart)) {
-                errortext.append("The index series ")
-                        .append(formula[i]).append("begins before the corresponding weight series ")
-                        .append(formula[i + 1]).append("in formula ")
-                        .append(String.valueOf(j + 1)).append(".");
+                errortext.append(Bundle.ERR_CHECKDATA_IndexStartsBeforeWeights(formula[i], formula[i + 1], j + 1));
             }
         }
         if (errortext.length() > 0) {

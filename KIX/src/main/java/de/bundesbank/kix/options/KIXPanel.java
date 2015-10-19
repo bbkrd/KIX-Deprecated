@@ -5,13 +5,12 @@
  */
 package de.bundesbank.kix.options;
 
+import static de.bundesbank.kix.options.KIXOptionsPanelController.KIX2_DEFAULT_METHOD;
+import static de.bundesbank.kix.options.KIXOptionsPanelController.KIXE_DEFAULT_METHOD;
 import javax.swing.DefaultComboBoxModel;
 import org.openide.util.NbPreferences;
 
 final class KIXPanel extends javax.swing.JPanel {
-
-    public static final String KIX2_DEFAULT_METHOD = "kix2_default_method";
-    public static final String KIXE_DEFAULT_METHOD = "kixe_default_method";
 
     private final KIXOptionsPanelController controller;
 
@@ -74,16 +73,16 @@ final class KIXPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     void load() {
-        String kix2_method = NbPreferences.forModule(KIXPanel.class).get(KIX2_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC.toString());
+        String kix2_method = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIX2_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC.toString());
         kix2DefaultMethod.setSelectedItem(UnchainingMethod.valueOf(kix2_method));
 
-        String kixe_method = NbPreferences.forModule(KIXPanel.class).get(KIXE_DEFAULT_METHOD, UnchainingMethod.PURISTIC.toString());
+        String kixe_method = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIXE_DEFAULT_METHOD, UnchainingMethod.PURISTIC.toString());
         kixeDefaultMethod.setSelectedItem(UnchainingMethod.valueOf(kixe_method));
     }
 
     void store() {
-        NbPreferences.forModule(KIXPanel.class).put(KIX2_DEFAULT_METHOD, kix2DefaultMethod.getSelectedItem().toString());
-        NbPreferences.forModule(KIXPanel.class).put(KIXE_DEFAULT_METHOD, kixeDefaultMethod.getSelectedItem().toString());
+        NbPreferences.forModule(KIXOptionsPanelController.class).put(KIX2_DEFAULT_METHOD, kix2DefaultMethod.getSelectedItem().toString());
+        NbPreferences.forModule(KIXOptionsPanelController.class).put(KIXE_DEFAULT_METHOD, kixeDefaultMethod.getSelectedItem().toString());
     }
 
     boolean valid() {
