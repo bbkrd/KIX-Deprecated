@@ -26,6 +26,7 @@ import javax.swing.JToolBar;
 import javax.swing.ToolTipManager;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
 import org.openide.windows.TopComponent;
 
@@ -47,18 +48,8 @@ import org.openide.windows.TopComponent;
 })
 public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
-    private static final String TOOL_TIP_TEXTAREA = "<html>"
-            + "Enter formulas with the following syntax:"
-            + "<br>"
-            + "[Name=]KIX, i1, [w1,] +/-, i2, [w2,] …,refyr "
-            + "<br>"
-            + "[Name=]WBG, iContr, [wContr,] +/-, iTotal, [wTotal,] #ofLags"
-            + "<br>"
-            + "[Name=]KIXE, i1, [w1,] +/-, i2, [w2,] …,refyr "
-            + "<br>"
-            + "[Name=]WBGE, iContr, [wContr,] iTotal, [wTotal,] #ofLags"
-            + "<br>"
-            + "For more information, please consult the Help (F1)"
+    private static final String TOOL_TIP_TEXTAREA = "<html>"        
+            + "For information about the available formulas, please consult the Help (F1)"
             + "</html>";
 
     private JSplitPane mainPane, listPane, dataPane, indexDataPane, weightDataPane, resultPane;
@@ -116,9 +107,6 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
         inputText.setWrapStyleWord(true);
 
         inputText.setToolTipText(TOOL_TIP_TEXTAREA);
-        ToolTipManager.sharedInstance().setDismissDelay(20000);
-        ToolTipManager.sharedInstance().setInitialDelay(500);
-        ToolTipManager.sharedInstance().setReshowDelay(500);
         ToolTipManager.sharedInstance().registerComponent(inputText);
 
         inputText.setDocument(this.getDocument().getElement().getinput());
@@ -168,6 +156,13 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
         return KIXDocumentManager.CONTEXTPATH;
     }
 
+    @Override
+    public HelpCtx getHelpCtx() {
+        return new HelpCtx("kix.possible_commands"); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
+
     private void initbutton() {
         runButton.addActionListener(new ActionListener() {
 
@@ -175,7 +170,6 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
             public void actionPerformed(ActionEvent e) {
                 if (!inputText.getText().trim().isEmpty()) {
                     results.getTsCollection().clear();
-                    inputText.setText(addMissingWeights(inputText.getText()));
                     TsCollection data = _KIX.parser(inputText.getText(), indexData, weightsData);
                     if (data != null) {
                         results.getTsCollection().append(data);
@@ -184,15 +178,4 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
             }
         });
     }
-
-    private String addMissingWeights(String input) {
-        input = input.replaceAll(" ", "");
-//        input = input.replaceAll("i((?:\\d)+)(?=(?: )*,(?: )*(?:[\\+\\-]){1}(?: )*,)", "i$1,w$1");
-//        input = input.replaceAll("i((?:\\d)+)(?=(?: )*,(?: )*i((?:\\d)+)(?: )*,)", "i$1,w$1");
-//        input = input.replaceAll("i((?:\\d)+)(?=(?: )*,(?: )*((?:\\d)+))", "i$1,w$1");
-        input = input.replaceAll("i((?:\\d)+)(?=,(((([\\+\\-]){1}|i(\\d)+),)|(\\d)+))", "i$1,w$1");
-
-        return input;
-    }
-
 }

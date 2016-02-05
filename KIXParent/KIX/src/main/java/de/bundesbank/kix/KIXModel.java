@@ -76,6 +76,9 @@ public class KIXModel implements IKIXModel {
                     case "UNC":
                         outputTsData[j] = doUNC(formula, j);
                         break;
+                    case "CHA":
+                        outputTsData[j] = doCHA(formula, j);
+                        break;
                     case "KIXE":
                         outputTsData[j] = doKIXE(formula, j);
                         break;
@@ -84,6 +87,9 @@ public class KIXModel implements IKIXModel {
                         break;
                     case "UNCE":
                         outputTsData[j] = doUNCE(formula, j);
+                        break;
+                    case "CHAE":
+                        outputTsData[j] = doCHAE(formula, j);
                         break;
                     case "":
                         throw new InputException("No control character found in formula "
@@ -219,6 +225,21 @@ public class KIXModel implements IKIXModel {
         return KIXCalc.unchain(TsToUnchain);
     }
 
+    private TsData doCHA(String[] formula, int j) {
+        TsData TsToChain;
+        if (indices.contains(formula[1])) {
+            TsToChain = extractData(indices.get(formula[1]));
+        } else if (weights.contains(formula[1])) {
+            TsToChain = extractData(weights.get(formula[1]));
+        } else {
+            throw new InputException(formula[1] + "in formula " + j + " doesn't exist");
+        }
+        if (formula.length > 2 && tryParseInt(formula[2])) {
+            return KIXCalc.normalizeToYear(KIXCalc.chainSum(TsToChain), Integer.parseInt(formula[2]));
+        }
+        return KIXCalc.chainSum(TsToChain);
+    }
+
     private TsData doKIXE(String[] formula, int j) {
         checkYear(formula[formula.length - 1], j);
         check(formula, j);
@@ -299,6 +320,21 @@ public class KIXModel implements IKIXModel {
 
         }
         return KIXECalc.unchain(TsToUnchain);
+    }
+
+    private TsData doCHAE(String[] formula, int j) {
+        TsData TsToChain;
+        if (indices.contains(formula[1])) {
+            TsToChain = extractData(indices.get(formula[1]));
+        } else if (weights.contains(formula[1])) {
+            TsToChain = extractData(weights.get(formula[1]));
+        } else {
+            throw new InputException(formula[1] + "in formula " + j + " doesn't exist");
+        }
+        if (formula.length > 2 && tryParseInt(formula[2])) {
+            return KIXCalc.normalizeToYear(KIXECalc.chain(TsToChain), Integer.parseInt(formula[2]));
+        }
+        return KIXECalc.chain(TsToChain);
     }
 
     /**
@@ -400,8 +436,12 @@ public class KIXModel implements IKIXModel {
         request = new String[splitInput.length][];
 
         int counter = 0;
-        for (String a : splitInput) {
-            formulaNames[counter] = a.split("=", 2);
+        for (String line : splitInput) {
+            line = line.replaceAll("\\s*", "");
+            if (line.startsWith("KIX") || line.startsWith("WBG")) {
+                line = addMissingWeights(line);
+            }
+            formulaNames[counter] = line.split("=", 2);
             if (formulaNames[counter].length == 2) {
                 request[counter] = formulaNames[counter][1].split(",");
             } else {
@@ -490,5 +530,10 @@ public class KIXModel implements IKIXModel {
                 outputTsCollection.add(t);
             }
         }
+    }
+
+    private String addMissingWeights(String input) {
+        input = input.replaceAll("i((?:\\d)+)(?=,(((([\\+\\-]){1}|i(\\d)+),)|(\\d)+))", "i$1,w$1");
+        return input;
     }
 }

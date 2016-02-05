@@ -83,7 +83,7 @@ public final class KIXOptionsPanelController extends OptionsPanelController {
 
     private KIXPanel getPanel() {
         if (panel == null) {
-            panel = new KIXPanel(this);
+            panel = new KIXPanel();
         }
         return panel;
     }

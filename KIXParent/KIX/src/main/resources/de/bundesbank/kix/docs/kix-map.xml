@@ -7,4 +7,14 @@ and open the template in the editor.
 <!DOCTYPE map PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Map Version 2.0//EN" "http://java.sun.com/products/javahelp/map_2_0.dtd">
 <map version="2.0">
     <mapID target="kix.2.methofcal" url="kix2-methodofcalculation.html"/>
+    <mapID target="kix.e.methofcal" url="kixe-methodofcalculation.html"/>
+    <mapID target="kix.possible_commands" url="kix-possible_commands.html"/>
+    <mapID target="kix.possible_commands#KIX" url="kix-possible_commands.html#KIX"/>
+    <mapID target="kix.possible_commands#WBG" url="kix-possible_commands.html#WBG"/>
+    <mapID target="kix.possible_commands#UNC" url="kix-possible_commands.html#UNC"/>
+    <mapID target="kix.possible_commands#CHA" url="kix-possible_commands.html#CHA"/>
+    <mapID target="kix.possible_commands#KIXE" url="kix-possible_commands.html#KIXE"/>
+    <mapID target="kix.possible_commands#WBGE" url="kix-possible_commands.html#WBGE"/>  
+    <mapID target="kix.possible_commands#UNCE" url="kix-possible_commands.html#UNCE"/>
+    <mapID target="kix.possible_commands#CHAE" url="kix-possible_commands.html#CHAE"/>    
 </map>

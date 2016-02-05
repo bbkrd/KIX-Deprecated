@@ -6,7 +6,18 @@ and open the template in the editor.
 -->
 <!DOCTYPE toc PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 2.0//EN" "http://java.sun.com/products/javahelp/toc_2_0.dtd">
 <toc version="2.0">
-    <tocitem text="NbDemetra - KIX">
+    <tocitem text="KIX">
+        <tocitem text="Possible commands with Examples" target="kix.possible_commands">
+            <tocitem text="KIX" target="kix.possible_commands#KIX"/>
+            <tocitem text="WBG" target="kix.possible_commands#WBG"/>
+            <tocitem text="UNC" target="kix.possible_commands#UNC"/>
+            <tocitem text="CHA" target="kix.possible_commands#CHA"/>   
+            <tocitem text="KIXE" target="kix.possible_commands#KIXE"/>
+            <tocitem text="WBGE" target="kix.possible_commands#WBGE"/>  
+            <tocitem text="UNCE" target="kix.possible_commands#UNCE"/>
+            <tocitem text="CHAE" target="kix.possible_commands#CHAE"/>           
+        </tocitem>
         <tocitem text="KIX 2.0 - Method of Calculation" target="kix.2.methofcal"/>
+        <tocitem text="KIXE - Method of Calculation" target="kix.e.methofcal"/>
     </tocitem>
 </toc>

@@ -12,12 +12,8 @@ import org.openide.util.NbPreferences;
 
 final class KIXPanel extends javax.swing.JPanel {
 
-    private final KIXOptionsPanelController controller;
-
-    KIXPanel(KIXOptionsPanelController controller) {
-        this.controller = controller;
+    KIXPanel() {
         initComponents();
-        // TODO listen to changes in form fields and call controller.changed()
     }
 
     /**

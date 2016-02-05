@@ -1,67 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang ="en-US">
     <head>
         <meta charset="UTF-8" />
         <title>KIX 2.0 - Method of calculation</title>
-        <style>
-            h1, h2, h3 {
-                color:blue;
-                background: lightblue;
-            }
-
-            h1 {font-size: 28px;}
-
-            h2 {font-size: 18px;}
-
-            h3 {font-size: 16px;}
-
+        <style>  
             table {
-                margin-left:1.0cm;
-                border-collapse: collapse;
+                border-spacing: 0;
             }
 
             td, th {
-                border:solid black 1.0pt;
-                padding: 4.0pt;
+                border:solid black 1pt;
+                padding: 3.0pt;
             }
 
             td {
-                vertical-align:text-bottom;
                 text-align:right;
             }
 
             .calculated {background: yellow;}
-
-            body {
-                font-family: "Arial", Helvetica, sans-serif;
-                font-size: 14px;
-                color: black;
-            }
-
-            p {margin-left:1.0cm;}
-
-            ul {margin-left:1.5cm;}
         </style>
+        <link rel="StyleSheet"
+              href="nbdocs://org.netbeans.modules.usersguide/org/netbeans/modules/usersguide/ide.css"
+              type="text/css">
     </head>
-    <body lang=DE>
+    <body lang="en-US">
         <h1>KIX 2.0 - Method of calculation</h1>
-        <p>Version:2015-06-24</p>
+        <p>Version: 2.0.2-beta (2016-01-26)</p>
         <h2>Aggregation of chain indices with plus and minus</h2>
         <p><b>Enter: [Name=]KIX,i1,w1,+/-,i2,w2,...,refyr</b></p>
         <p>Execution of the calculation loops: </p>
 
         <ul>
-            <li>Entries are read into the system and evaluated from left to right, ie starting with i1, w1.<br/>
+            <li>Entries are read into the system and evaluated from left to right, i.e. starting with i1, w1.<br/>
                 Each loop operation produces two interim values in the form of an aggregated index and a </li>
 
             <li>weight (simple +/-) which can then be used for the next addition or subtraction. </li>
             <li>As a final step the last calculated index is normalised to match with the reference year (refyr).</li>
         </ul>
 
-        <p><b>Note:</b>If you use different starting years for the KIX formula this may cause the entry sequence to <br/>
-            influence the first year of the final result wherever more than two input indices exist.<br/>
-            This effect stems from the fact that interim results contain starting years that are sequentially dependent.</p>
-        <h3>Aggregating two indices (i1, w1) +/- (i2, w2)</h3>
+        
+        <h2>Aggregating two indices (i1, w1) +/- (i2, w2)</h2>
         <p>Firstly, a check is made for the following conditions:</p>
 
         <ul>
@@ -1145,7 +1123,7 @@
     </tbody>
 </table>
 <br/>
-<h3><i>Auxiliary functions</i></h3>
+<h2><i>Auxiliary functions</i></h2>
 <p><b><i>Normalising a time series to match a reference year</i></b></p>
 <p>	Normalising the average of the unadjusted data in the reference year to 100 yields the values<br/>
     of the aggregate in the reference year as the weighted sum of the index values of the components, whereby the share of<br/>
@@ -1782,7 +1760,7 @@ on the basis of the actual time series but using a second, unchained time series
     </tbody>
 </table>
 
-<h3>Additional Features</h3>
+<h2>Additional Features</h2>
 <ul>
     <li><b>Naming Formulas</b>: You can name an resulting time series by writing "Your Name of choice"="Formula" into the text area.</li>
     <li><b>Autocompleted weights</b>: If you don't choose a specific weight series for your aggregation, the weight
