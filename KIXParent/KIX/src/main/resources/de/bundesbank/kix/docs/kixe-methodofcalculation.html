@@ -3,23 +3,38 @@
     <head>
         <meta charset="UTF-8" />
         <title>KIXE - Method of calculation</title> 
+        <style>
+            h1 {font-size: 28px;}
 
-        <link rel="StyleSheet"
-              href="nbdocs://org.netbeans.modules.usersguide/org/netbeans/modules/usersguide/ide.css"
-              type="text/css">
-        <style> 
+            h2 {font-size: 18px;}
+
+            h3 {font-size: 16px;}
+
             table {
-			border-spacing: 0;
+                margin-left:1.0cm;
+                border-collapse: collapse;
             }
 
             td, th {
-			border:solid black 1pt;
-			padding: 3.0pt;
+                border:solid black 1pt;
+                padding: 3.0pt;
             }
 
             td {
-			text-align:right;
+                text-align:right;
             }
+
+            .calculated {background: yellow;}
+
+            body {
+                font-family: "Arial", Helvetica, sans-serif;
+                font-size: 14px;
+                color: black;
+            }
+
+            p {margin-left:1.0cm;}
+
+            ul {margin-left:1.5cm;}
         </style>
     </head>
     <body>
@@ -27,8 +42,8 @@
         <p>Version: 2.0.2-beta (2016-02-01)</p>
 
         <p>The KIX-E program can be used for the aggregation of chained Laspeyres price indices of the monthly/quarterly overlap type (price reference period is<br/>
-			December / 4th quarter of the previous year) with annually updated weights. Additionally, Ribe's contribution of a component series to the growth of an<br/>
-			aggregate can be calculated. For the sake of simplicity, the indices presented in the examples are of the quarterly overlap type with the 4th quarter of the<br/>
+            December / 4th quarter of the previous year) with annually updated weights. Additionally, Ribe's contribution of a component series to the growth of an<br/>
+            aggregate can be calculated. For the sake of simplicity, the indices presented in the examples are of the quarterly overlap type with the 4th quarter of the<br/>
             previous year as the price reference period.</p>
 
         <h2>1. Aggregation of chain indices with plus and minus</h2>
@@ -64,7 +79,7 @@
 
         <p><b><i>d. Normalising a time series to match a reference year</i></b></p>
         <p>In order to  normalise  the chain-linked index, the monthly/quarterly values of the reference year have to be calculated as the<br/>
-			weighted sum of the components series, whereby the weights are the previous year's weights projected to the reference year.<br/>
+            weighted sum of the components series, whereby the weights are the previous year's weights projected to the reference year.<br/>
             The projection for each weight is based on the change of a respective component from the end-month/end-quarter of the previous year to the annual average of the current year.<br/>
             Normalising the aggregate to &quot;reference year = 100&quot; results only if all the component indices are normalised as &quot;reference year = 100&quot;<br/>
             (see Example 1, with the weights for component series A and B in Col. L and M and the normalised series in Col. N).</p>
@@ -72,18 +87,18 @@
         <p><u>Example 1</u><br/>
     KIXE, A, wA, +, B, wB, 2010<br/>
     where A and B are indices (2010 = 100) and wA and wB the respective weights</p>
-<table>  
+<table>
     <tr>
         <td>Time</td>
         <td>A</td>
         <td>wA</td>
         <td>B</td>
-        <td>wB</td> 
-        <td>A unchained</td> 
+        <td>wB</td>
+        <td>A unchained</td>
         <td>B unchained</td>
-        <td>Weighted sum <br/> unchained</td> 
+        <td>Weighted sum <br/> unchained</td>
         <td>Chain-linked aggregate<br/> (Q4 2007 = 100)</td>
-        <td>Weight of A in<br/> reference year 2010</td> 
+        <td>Weight of A in<br/> reference year 2010</td>
         <td>Weight of B in<br/> reference year 2010</td>
         <td>Scaling factor of<br/> reference year 2010</td>
         <td>Chain-linked aggregate <br/> (2010 = 100)</td>
@@ -118,26 +133,26 @@
 <br/>
 
 
-<h2>2. Calculating growth contributions</h2> 
+<h2>2. Calculating growth contributions</h2>
 <p><b>Enter: [Name=]WBGE,iContr,[wContr,]iTotal,[wTotal,]#ofLags</b></p>
-    <p>The &quot;WBG&quot; procedure (in line with M.Ribes method) measures the impact of the growth of a component (Contr) series on the growth of its aggregate (Total).<br/>
-		The growth contribution can be calculated for year-on-year changes or for month-on-month/quarter-on-quarter changes. The growth contribution is expressed in %.<br/>
-		Firstly, a check is made for the following conditions:</p>
-		<ul>
-			<li>
-			weight series must not start later than corresponding index series
-			</li>
-			<li>
-			the iContr series must not start later than iTotal
-			</li>
-		</ul>
-   
-    <p><u>Example 2</u></p>
-    <p>WBGE, A, wA, Total, wTotal, 4 or<br/>
+<p>The &quot;WBG&quot; procedure (in line with M.Ribes method) measures the impact of the growth of a component (Contr) series on the growth of its aggregate (Total).<br/>
+    The growth contribution can be calculated for year-on-year changes or for month-on-month/quarter-on-quarter changes. The growth contribution is expressed in %.<br/>
+    Firstly, a check is made for the following conditions:</p>
+<ul>
+    <li>
+        weight series must not start later than corresponding index series
+    </li>
+    <li>
+        the iContr series must not start later than iTotal
+    </li>
+</ul>
+
+<p><u>Example 2</u></p>
+<p>WBGE, A, wA, Total, wTotal, 4 or<br/>
     WBGE, A, wA, Total, wTotal, 1<br/>
 
     where A and Total are indices (2010 = 100) and wA and wTotal the respective weights.<br/>
-	The arguments 4 and 1 define lag 4 (change from previous year's period) and lag 1 (change from previous period) respectively.</p>
+    The arguments 4 and 1 define lag 4 (change from previous year's period) and lag 1 (change from previous period) respectively.</p>
 
 
 

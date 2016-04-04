@@ -57,6 +57,7 @@ public class KIXModel implements IKIXModel {
         formatInput(inputString);
         TsData[] outputTsData = new TsData[request.length];
         outputTsCollection = TsFactory.instance.createTsCollection();
+        StringBuilder errorMessage = new StringBuilder();
 
         for (int j = 0; j < request.length; j++) {
             try {
@@ -101,9 +102,13 @@ public class KIXModel implements IKIXModel {
                                 + " is an invalid control character. Please use the syntax described in the tooltip or the help.");
                 }
             } catch (InputException | TsException e) {
-                NotifyDescriptor nd = new NotifyDescriptor.Message(e.getMessage());
-                DialogDisplayer.getDefault().notify(nd);
+                errorMessage.append(e.getMessage()).append("\n");
             }
+        }
+
+        if (errorMessage.length() > 0) {
+            NotifyDescriptor nd = new NotifyDescriptor.Message(errorMessage.toString());
+            DialogDisplayer.getDefault().notify(nd);
         }
 
         fillTsCollection(outputTsData);
@@ -119,8 +124,8 @@ public class KIXModel implements IKIXModel {
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
     private TsData doKIX(String[] formula, int j) throws InputException {
-        checkYear(formula[formula.length - 1], j);
-        check(formula, j);
+        yearCheck(formula[formula.length - 1], j);
+        dataAvailabilityCheck(formula, j);
         checkData(formula, j);
 
         TsData weightedSumData = null;
@@ -177,7 +182,7 @@ public class KIXModel implements IKIXModel {
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
     private TsData doWBG(String[] formula, int j) throws InputException {
-        check(formula, j);
+        dataAvailabilityCheck(formula, j);
         checkData(formula, j);
         checkWBG(formula, j, indices);
 
@@ -241,8 +246,8 @@ public class KIXModel implements IKIXModel {
     }
 
     private TsData doKIXE(String[] formula, int j) {
-        checkYear(formula[formula.length - 1], j);
-        check(formula, j);
+        yearCheck(formula[formula.length - 1], j);
+        dataAvailabilityCheck(formula, j);
 
         int refYear = Integer.parseInt(formula[formula.length - 1]);
         double factor = 0;
@@ -345,7 +350,7 @@ public class KIXModel implements IKIXModel {
      * @param j the count of the formula
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
-    private void check(String[] formula, int j) throws InputException {
+    private void dataAvailabilityCheck(String[] formula, int j) throws InputException {
         if (formula.length % 3 != 1) {
             throw new InputException("Formula "
                     + String.valueOf(j + 1) + " is not following the correct syntax.");
@@ -459,19 +464,19 @@ public class KIXModel implements IKIXModel {
 
     /**
      * Checks if the parameter <b>year</b> can be parsed to Integer and if the
-     * year is 1950 or later.
+     * year is 1900 or later.
      *
      * @param year the string representation of the year
      * @param j the count of the formula
      * @throws ec.nbdemetra.kix.KIXModel.InputException exception message
      * informs the user about the formula with the false year
      */
-    private void checkYear(String year, int j) throws InputException {
+    private void yearCheck(String year, int j) throws InputException {
         if (!tryParseInt(year)) {
             throw new InputException("The reference year (" + year + ") has to be numeric in formula " + String.valueOf(j + 1));
         }
-        if (Integer.parseInt(year) < 1950) {
-            throw new InputException("The reference year (" + year + ") has to be after 1949 in formula " + String.valueOf(j + 1));
+        if (Integer.parseInt(year) < 1900) {
+            throw new InputException("The reference year (" + year + ") has to be after 1899 in formula " + String.valueOf(j + 1));
         }
     }
 

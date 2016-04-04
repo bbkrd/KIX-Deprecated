@@ -169,8 +169,8 @@ public class KIXCalc {
      * (average of 100 in the reference year).
      *
      * @param indexData time series to normalize
-     * @param refyear   reference year in which the new time series averages at
-     *                  100
+     * @param refyear reference year in which the new time series averages at
+     * 100
      * @return A new time series with an average of 100 in <b>year</b>.
      */
     public static TsData normalizeToYear(TsData indexData, Integer refyear) {
@@ -234,7 +234,7 @@ public class KIXCalc {
      * multiplyed by 100.
      *
      * @param inputTsData the time series to be unchained
-     * @param helper      the time series used for the prior-year averages
+     * @param helper the time series used for the prior-year averages
      * @return A new unchained time series is returned.
      */
     public static TsData unchain(TsData inputTsData, TsData helper) {
@@ -254,12 +254,12 @@ public class KIXCalc {
         TsData[] tempWeightSum = new TsData[2];
         if (operation.equalsIgnoreCase("-")) {
             tempWeightSum[0] = (TsData.multiply(weightedSumD, weightedSumW)
-                                .minus(TsData.multiply(addD, addW)))
+                    .minus(TsData.multiply(addD, addW)))
                     .div(TsData.subtract(weightedSumW, addW));
             tempWeightSum[1] = weightedSumW.minus(addW);
         } else {
             tempWeightSum[0] = (TsData.multiply(weightedSumD, weightedSumW)
-                                .plus(TsData.multiply(addD, addW)))
+                    .plus(TsData.multiply(addD, addW)))
                     .div(TsData.add(weightedSumW, addW));
             tempWeightSum[1] = weightedSumW.plus(addW);
         }
