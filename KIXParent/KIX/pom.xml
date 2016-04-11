@@ -24,8 +24,9 @@
         <findbugs-maven-plugin.version>3.0.3</findbugs-maven-plugin.version>
         <nbm-maven-plugin.version>3.14</nbm-maven-plugin.version>
         <!-- < plugins versions -->
+        <netbeans.hint.license>EUPL_v1_1</netbeans.hint.license>
     </properties>
-        
+
     <dependencies>
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>
@@ -103,7 +104,6 @@
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${maven-jar-plugin.version}</version>
                     <configuration>
-                        <!-- to have the jar plugin pickup the nbm generated manifest -->
                         <useDefaultManifestFile>true</useDefaultManifestFile>
                     </configuration>
                 </plugin>
@@ -134,7 +134,7 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>            
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
@@ -170,6 +170,10 @@
                     <artifactId>nbm-maven-plugin</artifactId>
                     <version>${nbm-maven-plugin.version}</version>
                     <extensions>true</extensions>
+                    <configuration>
+                        <licenseName>EUPL, Version 1.1</licenseName>
+                        <licenseFile>./licence.txt</licenseFile>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -192,7 +196,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-            </plugin>            
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>

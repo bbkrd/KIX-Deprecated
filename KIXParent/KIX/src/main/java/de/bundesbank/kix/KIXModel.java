@@ -1,7 +1,17 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2016 Deutsche Bundesbank
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
  */
 package de.bundesbank.kix;
 
@@ -95,11 +105,11 @@ public class KIXModel implements IKIXModel {
                     case "":
                         throw new InputException("No control character found in formula "
                                 + String.valueOf(j + 1)
-                                + ". Please use the syntax described in the tooltip or the help.");
+                                + ". Please use the syntax described in the help.");
                     default:
                         throw new InputException(formula[0].toUpperCase(Locale.ENGLISH) + " in formula "
                                 + String.valueOf(j + 1)
-                                + " is an invalid control character. Please use the syntax described in the tooltip or the help.");
+                                + " is an invalid control character. Please use the syntax described in the help.");
                 }
             } catch (InputException | TsException e) {
                 errorMessage.append(e.getMessage()).append("\n");
@@ -443,11 +453,11 @@ public class KIXModel implements IKIXModel {
         int counter = 0;
         for (String line : splitInput) {
             line = line.replaceAll("\\s*", "");
-            if (line.startsWith("KIX") || line.startsWith("WBG")) {
-                line = addMissingWeights(line);
-            }
             formulaNames[counter] = line.split("=", 2);
             if (formulaNames[counter].length == 2) {
+                if (line.startsWith("KIX") || line.startsWith("WBG")) {
+                    line = addMissingWeights(line);
+                }
                 request[counter] = formulaNames[counter][1].split(",");
             } else {
                 request[counter] = formulaNames[counter][0].split(",");
