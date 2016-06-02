@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2016 Deutsche Bundesbank
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,6 +44,8 @@ import ec.util.various.swing.JCommand;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.annotation.Nonnull;
@@ -53,6 +55,7 @@ import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
 import static javax.swing.TransferHandler.COPY;
 import javax.swing.table.AbstractTableModel;
@@ -98,9 +101,9 @@ public class JTsKIXList extends JComponent implements ITsActionAble {
 
     private void registerInputs() {
         InputMap im = getInputMap();
-        KeyStrokes.putAll(im, KeyStrokes.OPEN, OPEN_ACTION);
-        KeyStrokes.putAll(im, KeyStrokes.DELETE, DELETE_ACTION);
-        KeyStrokes.putAll(im, KeyStrokes.CLEAR, CLEAR_ACTION);
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), OPEN_ACTION);
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), DELETE_ACTION);
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK), CLEAR_ACTION);
         InputMaps.copyEntries(im, false, table.getInputMap());
     }
 

@@ -50,6 +50,9 @@ import org.openide.util.NbPreferences;
  */
 public class KIXModel implements IKIXModel {
 
+    private static final String KIX = "kix", WBG = "wbg", UNC = "unc", CHA = "cha",
+            KIXE = "kixe", WBGE = "wbge", UNCE = "unce", CHAE = "chae", FBI = "fbi";
+
     private TsVariables indices, weights;
     private String[][] request;
     private String[][] formulaNames;
@@ -79,32 +82,32 @@ public class KIXModel implements IKIXModel {
                 } else {
                     formula = new String[]{""};
                 }
-                switch (formula[0].toUpperCase(Locale.ENGLISH)) {
-                    case "KIX":
+                switch (formula[0]) {
+                    case KIX:
                         outputTsData[j - 1] = doKIX(formula, j);
                         break;
-                    case "WBG":
+                    case WBG:
                         outputTsData[j - 1] = doWBG(formula, j);
                         break;
-                    case "UNC":
+                    case UNC:
                         outputTsData[j - 1] = doUNC(formula, j);
                         break;
-                    case "CHA":
+                    case CHA:
                         outputTsData[j - 1] = doCHA(formula, j);
                         break;
-                    case "KIXE":
+                    case KIXE:
                         outputTsData[j - 1] = doKIXE(formula, j);
                         break;
-                    case "WBGE":
+                    case WBGE:
                         outputTsData[j - 1] = doWBGE(formula, j);
                         break;
-                    case "UNCE":
+                    case UNCE:
                         outputTsData[j - 1] = doUNCE(formula, j);
                         break;
-                    case "CHAE":
+                    case CHAE:
                         outputTsData[j - 1] = doCHAE(formula, j);
                         break;
-                    case "FBI":
+                    case FBI:
                         outputTsData[j - 1] = doFBI(formula, j);
                         break;
                     case "":
@@ -422,11 +425,11 @@ public class KIXModel implements IKIXModel {
 
         int counter = 0;
         for (String line : splitInput) {
-            line = line.replaceAll("\\s*", "");
+            line = line.replaceAll("\\s*", "").toLowerCase(Locale.ENGLISH);
             formulaNames[counter] = line.split("=", 2);
             int formulaPosition = formulaNames[counter].length - 1;
             String formula = formulaNames[counter][formulaPosition];
-            if (formula.startsWith("KIX") || formula.startsWith("WBG")) {
+            if (formula.startsWith(KIX) || formula.startsWith(WBG)) {
                 formulaNames[counter][formulaPosition] = addMissingWeights(formula);
             }
             request[counter] = formulaNames[counter][formulaPosition].split(",");

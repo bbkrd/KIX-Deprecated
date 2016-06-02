@@ -26,7 +26,9 @@ import ec.ui.grid.JTsGrid;
 import ec.ui.interfaces.ITsCollectionView;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,6 +36,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import javax.swing.ToolTipManager;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -158,7 +161,7 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
         dataPane.setDividerLocation(.5);
         dataPane.setResizeWeight(.5);
 
-        initbutton();
+        initActionListener();
         _KIX = new KIXModel();
     }
 
@@ -175,19 +178,25 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
         return new HelpCtx("kix.possible_commands"); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void initbutton() {
-        runButton.addActionListener(new ActionListener() {
+    private void initActionListener() {
+        RunAction runAction = new RunAction();
+        runButton.addActionListener(runAction);
+        String RUN = "run";
+        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK), RUN);
+        this.getActionMap().put(RUN, runAction);
+    }
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!inputText.getText().trim().isEmpty()) {
-                    results.getTsCollection().clear();
-                    TsCollection data = _KIX.parser(inputText.getText(), indexData, weightsData);
-                    if (data != null) {
-                        results.getTsCollection().append(data);
-                    }
+    private final class RunAction extends AbstractAction {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (!inputText.getText().trim().isEmpty()) {
+                results.getTsCollection().clear();
+                TsCollection data = _KIX.parser(inputText.getText(), indexData, weightsData);
+                if (data != null) {
+                    results.getTsCollection().append(data);
                 }
             }
-        });
+        }
     }
 }
