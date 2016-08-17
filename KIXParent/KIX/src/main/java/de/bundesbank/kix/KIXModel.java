@@ -142,6 +142,7 @@ public class KIXModel implements IKIXModel {
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
     private TsData doKIX(String[] formula, int j) throws InputException {
+        generalFormulaCheck(formula, j, 3, 1);
         yearCheck(formula[formula.length - 1], j);
         dataAvailabilityCheck(formula, j);
         checkData(formula, j);
@@ -183,6 +184,7 @@ public class KIXModel implements IKIXModel {
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
     private TsData doWBG(String[] formula, int j) throws InputException {
+        generalFormulaCheck(formula, j, 3, 1);
         dataAvailabilityCheck(formula, j);
         checkData(formula, j);
         checkWBG(formula, j, indices);
@@ -248,6 +250,7 @@ public class KIXModel implements IKIXModel {
 
     private TsData doKIXE(String[] formula, int j) {
         yearCheck(formula[formula.length - 1], j);
+        generalFormulaCheck(formula, j, 3, 1);
         dataAvailabilityCheck(formula, j);
 
         int refYear = Integer.parseInt(formula[formula.length - 1]);
@@ -298,6 +301,8 @@ public class KIXModel implements IKIXModel {
     private TsData doWBGE(String[] formula, int j) {
 //        check(formula, j);
 //        checkData(formula, j);
+
+        dataAvailabilityCheck(formula, j);
 
         int lag = Integer.parseInt(formula[5]);
         TsData TsWBTData = extractData(indices.get(formula[1]));
@@ -352,11 +357,6 @@ public class KIXModel implements IKIXModel {
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
     private void dataAvailabilityCheck(String[] formula, int j) throws InputException {
-        if (formula.length % 3 != 1) {
-            throw new InputException("Formula "
-                    + j + " is not following the correct syntax.");
-        }
-
         String start = "The following data of formula " + j
                 + " could not be found: ";
         StringBuilder errortext = new StringBuilder(start);
@@ -365,13 +365,20 @@ public class KIXModel implements IKIXModel {
             if (!indices.contains(formula[i])) {
                 errortext.append(formula[i]).append(", ");
             }
-            if (!weights.contains(formula[i + 1])) {
+            if (!weights.contains(formula[i + 1]) && !formula[i + 1].matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
                 errortext.append(formula[i + 1]).append(", ");
             }
         }
         if (!errortext.toString().equals(start)) {
             errortext.delete(errortext.length() - 2, errortext.length());
             throw new InputException(errortext.toString());
+        }
+    }
+
+    private void generalFormulaCheck(String[] formula, int formulaNumber, int modulo, int expected) {
+        if (formula.length % modulo != expected) {
+            throw new InputException("Formula "
+                    + formulaNumber + " is not following the correct syntax.");
         }
     }
 
@@ -526,13 +533,15 @@ public class KIXModel implements IKIXModel {
     }
 
     private TsData doFBI(String[] formula, int j) {
-        boolean scalar = checkScalar(formula, j);
         FBICalc calc = null;
+
+        generalFormulaCheck(formula, j, 3, 0);
+        dataAvailabilityCheck(formula, j);
 
         for (int i = 1; i < formula.length; i += 3) {
 
             TsData addData = extractData(indices.get(formula[i]));
-            if (scalar) {
+            if (formula[i + 1].matches("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")) {
                 double addWeights = Double.parseDouble(formula[i + 1]);
                 if (calc == null) {
                     calc = new FBICalc(addData, addWeights);
@@ -566,22 +575,6 @@ public class KIXModel implements IKIXModel {
     }
 
     /**
-     * Returns true if the String can be parsed to Double.
-     *
-     * @param value String to test
-     * @return <code>true</code> if value can be parsed to Double;
-     * <code>false</code> otherwise.
-     */
-    private boolean tryParseDouble(String value) {
-        try {
-            Double.parseDouble(value);
-            return true;
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-    }
-
-    /**
      * Returns true if the String can be parsed to Integer.
      *
      * @param value String to test
@@ -595,21 +588,5 @@ public class KIXModel implements IKIXModel {
         } catch (NumberFormatException nfe) {
             return false;
         }
-    }
-
-    private boolean checkScalar(String[] formula, int j) {
-        int check = 0;
-        boolean test = false;
-        for (int i = 2; i < formula.length; i += 3) {
-            test = tryParseDouble(formula[i]);
-            if (test && check >= 0) {
-                check = 1;
-            } else if (!test && check <= 0) {
-                check = -1;
-            } else {
-                throw new InputException("Error in formular " + j);
-            }
-        }
-        return test;
     }
 }
