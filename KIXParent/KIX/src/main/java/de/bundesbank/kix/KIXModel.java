@@ -29,6 +29,7 @@ import ec.tstoolkit.timeseries.TsException;
 import ec.tstoolkit.timeseries.regression.ITsVariable;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.timeseries.simplets.TsData;
+import ec.tstoolkit.timeseries.simplets.TsDomain;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
 import java.util.ArrayList;
@@ -418,9 +419,10 @@ public class KIXModel implements IKIXModel {
 
     private TsData extractData(ITsVariable input) {
         ArrayList<DataBlock> data = new ArrayList<>();
-        data.add(new DataBlock(input.getDefinitionDomain().getLength()));
-        input.data(input.getDefinitionDomain(), data);
-        return new TsData(input.getDefinitionDomain().getStart(), data.get(0));
+        TsDomain domain = input.getDefinitionDomain();
+        data.add(new DataBlock(domain.getLength()));
+        input.data(domain, data);
+        return new TsData(domain.getStart(), data.get(0));
     }
 
     private void formatInput(String input) {
@@ -432,10 +434,10 @@ public class KIXModel implements IKIXModel {
 
         int counter = 0;
         for (String line : splitInput) {
-            line = line.replaceAll("\\s*", "").toLowerCase(Locale.ENGLISH);
+            line = line.replaceAll("\\s*", "");
             formulaNames[counter] = line.split("=", 2);
             int formulaPosition = formulaNames[counter].length - 1;
-            String formula = formulaNames[counter][formulaPosition];
+            String formula = formulaNames[counter][formulaPosition].toLowerCase(Locale.ENGLISH);
             if (formula.startsWith(KIX) || formula.startsWith(WBG)) {
                 formulaNames[counter][formulaPosition] = addMissingWeights(formula);
             }

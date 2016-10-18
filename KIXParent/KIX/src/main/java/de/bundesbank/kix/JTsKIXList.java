@@ -76,7 +76,7 @@ public class JTsKIXList extends JComponent implements ITsActionAble {
 
     private final XTable table;
     private transient final TsVariables variables;
-    private ITsAction tsAction;
+    private transient ITsAction tsAction;
 
     public JTsKIXList(TsVariables vars) {
         this.variables = vars;

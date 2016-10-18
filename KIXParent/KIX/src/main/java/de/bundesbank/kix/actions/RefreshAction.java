@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2016 Deutsche Bundesbank
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,7 @@ import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
 import ec.tstoolkit.timeseries.regression.ITsVariable;
 import ec.tstoolkit.utilities.IDynamicObject;
+import java.util.Collection;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -47,17 +48,17 @@ public final class RefreshAction extends SingleNodeAction<ItemWsNode> {
     protected void performAction(ItemWsNode context) {
         WorkspaceItem<KIXDocument> cur = (WorkspaceItem<KIXDocument>) context.getItem();
         if (cur != null && !cur.isReadOnly()) {
-            for (ITsVariable var : cur.getElement().getIndices().variables()) {
-                if (var instanceof IDynamicObject) {
-                    IDynamicObject dvar = (IDynamicObject) var;
-                    dvar.refresh();
-                }
+            {
+                Collection<ITsVariable> indices = cur.getElement().getIndices().variables();
+                indices.stream()
+                        .filter((variable) -> (variable instanceof IDynamicObject))
+                        .forEach(dynamicVariable -> ((IDynamicObject) dynamicVariable).refresh());
             }
-            for (ITsVariable var : cur.getElement().getWeights().variables()) {
-                if (var instanceof IDynamicObject) {
-                    IDynamicObject dvar = (IDynamicObject) var;
-                    dvar.refresh();
-                }
+            {
+                Collection<ITsVariable> weights = cur.getElement().getWeights().variables();
+                weights.stream()
+                        .filter((variable) -> (variable instanceof IDynamicObject))
+                        .forEach(dynamicVariable -> ((IDynamicObject) dynamicVariable).refresh());
             }
         }
     }

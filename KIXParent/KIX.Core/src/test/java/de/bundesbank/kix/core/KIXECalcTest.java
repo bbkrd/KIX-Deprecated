@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2016 Deutsche Bundesbank
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,6 +17,7 @@ package de.bundesbank.kix.core;
 
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
+import static org.junit.Assert.assertArrayEquals;
 import org.junit.Test;
 
 /**
@@ -25,14 +26,13 @@ import org.junit.Test;
  */
 public class KIXECalcTest {
 
-    public KIXECalcTest() {
-    }
+    final double DELTA = 0.005;
 
     @Test
     public void TestUnchainQuarterlyLastQuarter() {
-        double[] Data = {75.1, 78.1, 79.9, 79.7, 81.3, 86.1, 89.2, 90.8, 92.4, 95.6, 98.8, 103.5, 102.0,
+        double[] data = {75.1, 78.1, 79.9, 79.7, 81.3, 86.1, 89.2, 90.8, 92.4, 95.6, 98.8, 103.5, 102.0,
             107.4, 110.6, 113.9, 117.5, 121.1, 124.8, 128.4, 132.4, 136.2, 140.6, 144.7, 149.0};
-        TsData a = new TsData(TsFrequency.Quarterly, 2007, 3, Data, true);
+        TsData a = new TsData(TsFrequency.Quarterly, 2007, 3, data, true);
 
         TsData result = KIXECalc.unchain(a);
 
@@ -438,13 +438,6 @@ public class KIXECalcTest {
     }
 
     private void assertEquals(double[] expected, double[] actual) {
-        assertEquals(expected, actual, 0.005);
-    }
-
-    private void assertEquals(double[] expected, double[] actual, double delta) {
-        org.junit.Assert.assertEquals(expected.length, actual.length);
-        for (int i = 0; i < expected.length; i++) {
-            org.junit.Assert.assertEquals(expected[i], actual[i], delta);
-        }
+        assertArrayEquals(expected, actual, DELTA);
     }
 }
