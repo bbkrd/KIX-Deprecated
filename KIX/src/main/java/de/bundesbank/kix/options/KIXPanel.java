@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2016 Deutsche Bundesbank
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -80,10 +80,10 @@ final class KIXPanel extends javax.swing.JPanel {
 
     void load() {
         String kix2_method = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIX2_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC.toString());
-        kix2DefaultMethod.setSelectedItem(UnchainingMethod.valueOf(kix2_method));
+        kix2DefaultMethod.setSelectedItem(UnchainingMethod.fromString(kix2_method));
 
         String kixe_method = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIXE_DEFAULT_METHOD, UnchainingMethod.PURISTIC.toString());
-        kixeDefaultMethod.setSelectedItem(UnchainingMethod.valueOf(kixe_method));
+        kixeDefaultMethod.setSelectedItem(UnchainingMethod.fromString(kixe_method));
     }
 
     void store() {

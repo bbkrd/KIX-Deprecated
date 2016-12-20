@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2016 Deutsche Bundesbank
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,9 @@
  */
 package de.bundesbank.kix;
 
+import com.google.common.base.Strings;
+import ec.tstoolkit.information.InformationSet;
+import ec.tstoolkit.information.InformationSetSerializable;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.utilities.DefaultNameValidator;
 import ec.tstoolkit.utilities.IModifiable;
@@ -27,7 +30,9 @@ import org.openide.util.Exceptions;
  *
  * @author Thomas Witthohn
  */
-public class KIXDocument implements IModifiable {
+public class KIXDocument implements IModifiable, InformationSetSerializable {
+
+    private static final String INDICES = "indices", WEIGHTS = "weights", INPUT = "input";
 
     private final String VALIDATOR = ",= +-";
     private TsVariables indices, weights;
@@ -47,6 +52,7 @@ public class KIXDocument implements IModifiable {
 
     public void setInput(String i) {
         try {
+            i = Strings.emptyToNull(i);
             this.inputString.insertString(0, i, null);
             this.initial = i;
         } catch (BadLocationException ex) {
@@ -55,16 +61,6 @@ public class KIXDocument implements IModifiable {
     }
 
     public TsVariables getIndices() {
-        //TODO better way
-        boolean dirty = indices.isDirty();
-        TsVariables temp = indices;
-        indices = new TsVariables("i", new DefaultNameValidator(VALIDATOR));
-        for (String name : temp.getNames()) {
-            indices.set(name, temp.get(name));
-        }
-        if (!dirty) {
-            indices.resetDirty();
-        }
         return indices;
     }
 
@@ -73,16 +69,6 @@ public class KIXDocument implements IModifiable {
     }
 
     public TsVariables getWeights() {
-        //TODO better way
-        boolean dirty = weights.isDirty();
-        TsVariables temp = weights;
-        weights = new TsVariables("w", new DefaultNameValidator(VALIDATOR));
-        for (String name : temp.getNames()) {
-            weights.set(name, temp.get(name));
-        }
-        if (!dirty) {
-            weights.resetDirty();
-        }
         return weights;
     }
 
@@ -100,6 +86,26 @@ public class KIXDocument implements IModifiable {
     }
 
     @Override
+    public boolean read(InformationSet info) {
+        setInput(info.get(INPUT, String.class));
+        InformationSet indicesInfo = info.getSubSet(INDICES);
+        if (indicesInfo != null) {
+            boolean tok = indices.read(indicesInfo);
+            if (!tok) {
+                return false;
+            }
+        }
+        InformationSet weightsInfo = info.getSubSet(WEIGHTS);
+        if (weightsInfo != null) {
+            boolean tok = weights.read(weightsInfo);
+            if (!tok) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public void resetDirty() {
         indices.resetDirty();
         weights.resetDirty();
@@ -108,5 +114,24 @@ public class KIXDocument implements IModifiable {
         } catch (BadLocationException e) {
             initial = null;
         }
+    }
+
+    @Override
+    public InformationSet write(boolean verbose) {
+        InformationSet info = new InformationSet();
+        try {
+            info.add(INPUT, inputString.getText(0, inputString.getLength()));
+        } catch (BadLocationException ex) {
+            //Can't be thrown
+        }
+        InformationSet indicesInfo = indices.write(verbose);
+        if (indicesInfo != null) {
+            info.add(INDICES, indicesInfo);
+        }
+        InformationSet weightsInfo = weights.write(verbose);
+        if (weightsInfo != null) {
+            info.add(WEIGHTS, weightsInfo);
+        }
+        return info;
     }
 }

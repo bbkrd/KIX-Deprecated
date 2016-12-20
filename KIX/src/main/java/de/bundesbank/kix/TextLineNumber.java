@@ -266,7 +266,7 @@ public class TextLineNumber extends JPanel
 
                 //  Move to the next row
                 rowStartOffset = Utilities.getRowEnd(component, rowStartOffset) + 1;
-            } catch (Exception e) {
+            } catch (BadLocationException e) {
                 break;
             }
         }
