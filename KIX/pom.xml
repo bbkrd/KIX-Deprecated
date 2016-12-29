@@ -8,15 +8,19 @@
     <packaging>nbm</packaging>
 
     <name>KIX</name>
+    <organization>
+        <name>Deutsche Bundesbank</name>
+        <url>www.bundesbank.de</url>
+    </organization>
 
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jdk.version>1.7</jdk.version>
+        <jdk.version>1.8</jdk.version>
         <netbeans.version>RELEASE802</netbeans.version>
         <jdemetra.version>2.1.0</jdemetra.version>
         <!-- plugins versions > -->
-        <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
         <maven-source-plugin.version>2.4</maven-source-plugin.version>
         <maven-enforcer-plugin.version>1.4</maven-enforcer-plugin.version>
@@ -201,11 +205,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <showDeprecation>true</showDeprecation>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

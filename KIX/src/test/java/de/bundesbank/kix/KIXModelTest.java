@@ -62,7 +62,7 @@ public class KIXModelTest {
     }
 
     private void setMethod(String method, UnchainingMethod unchainingMethod) {
-        NbPreferences.forModule(KIXOptionsPanelController.class).put(method, unchainingMethod.toString());
+        NbPreferences.forModule(KIXOptionsPanelController.class).put(method, unchainingMethod.name());
     }
 
     @Test
