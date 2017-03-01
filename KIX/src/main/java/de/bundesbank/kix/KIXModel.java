@@ -502,7 +502,7 @@ public class KIXModel implements IKIXModel {
     }
 
     private void checkNaN(TsData data, String name) throws InputException {
-        if (data.getValues().hasMissingValues()) {
+        if (data.hasMissingValues()) {
             throw new InputException("Missing values in " + name);
         }
     }

@@ -74,7 +74,7 @@ public class KIXModelTest {
             118.76, 120.52, 122.33, 128.52, 127.37, 126.70, 125.15, 121.32, 105.96, 104.81, 108.07, 113.56};
         TsCollection result = instance.parser(inputString, indices, weights);
 
-        Assert.assertArrayEquals(expResult, result.get(0).getTsData().getValues().internalStorage(), 0.005);
+        Assert.assertArrayEquals(expResult, result.get(0).getTsData().internalStorage(), 0.005);
     }
 
     @Test
@@ -87,7 +87,7 @@ public class KIXModelTest {
         TsCollection result = instance.parser(inputString, indices, weights);
 
         for (int i = 0; i < expResult.length; i++) {
-            assertEquals(expResult[i], result.get(0).getTsData().getValues().internalStorage()[i], 0.005);
+            assertEquals(expResult[i], result.get(0).getTsData().internalStorage()[i], 0.005);
         }
     }
 
@@ -101,7 +101,7 @@ public class KIXModelTest {
         TsCollection result = instance.parser(inputString, indices, weights);
 
         for (int i = 0; i < expResult.length; i++) {
-            assertEquals(expResult[i], result.get(0).getTsData().getValues().internalStorage()[i], 0.005);
+            assertEquals(expResult[i], result.get(0).getTsData().internalStorage()[i], 0.005);
         }
     }
 
@@ -115,7 +115,7 @@ public class KIXModelTest {
         TsCollection result = instance.parser(inputString, indices, weights);
 
         for (int i = 0; i < expResult.length; i++) {
-            assertEquals(expResult[i], result.get(0).getTsData().getValues().internalStorage()[i], 0.005);
+            assertEquals(expResult[i], result.get(0).getTsData().internalStorage()[i], 0.005);
         }
     }
 
@@ -129,7 +129,7 @@ public class KIXModelTest {
         TsCollection result = instance.parser(inputString, indices, weights);
 
         for (int i = 0; i < expResult.length; i++) {
-            assertEquals(expResult[i], result.get(0).getTsData().getValues().internalStorage()[i], 0.005);
+            assertEquals(expResult[i], result.get(0).getTsData().internalStorage()[i], 0.005);
         }
     }
 
@@ -143,7 +143,7 @@ public class KIXModelTest {
         TsCollection result = instance.parser(inputString, indices, weights);
 
         for (int i = 0; i < expResult.length; i++) {
-            assertEquals(expResult[i], result.get(0).getTsData().getValues().internalStorage()[i], 0.005);
+            assertEquals(expResult[i], result.get(0).getTsData().internalStorage()[i], 0.005);
         }
     }
 
@@ -155,7 +155,7 @@ public class KIXModelTest {
         double[] expResult = {94.59634, 97.81158, 100.71445, 105.62539, 106.46924, 109.99229, 112.53047, 123.67321, 118.79002, 120.54374,
             122.34560, 128.53707, 127.35740, 126.68997, 125.14942, 121.36334, 105.96989, 104.81759, 108.08206, 113.56458};
         TsCollection result = instance.parser(inputString, indices, weights);
-        double[] resultDouble = result.get(0).getTsData().getValues().internalStorage();
+        double[] resultDouble = result.get(0).getTsData().internalStorage();
         assertEquals(expResult.length, resultDouble.length);
         for (int i = 0; i < expResult.length; i++) {
             org.junit.Assert.assertEquals(expResult[i], resultDouble[i], 0.005);
@@ -177,7 +177,7 @@ public class KIXModelTest {
         double[] expResult = {117.35039, 117.19164, 119.37548, 125.53398, 126.74698, 124.38076,
             124.47468, 118.38063, 107.10292, 103.05270, 107.68883, 112.16246};
         TsCollection result = instance.parser(inputString, indices, weights);
-        double[] resultDouble = result.get(0).getTsData().getValues().internalStorage();
+        double[] resultDouble = result.get(0).getTsData().internalStorage();
         assertEquals(expResult.length, resultDouble.length);
         for (int i = 0; i < expResult.length; i++) {
             org.junit.Assert.assertEquals(expResult[i], resultDouble[i], 0.005);
@@ -200,7 +200,7 @@ public class KIXModelTest {
             124.71687, 118.05069, 120.29964, 122.23897, 128.86989, 126.55549, 126.03296,
             125.14638, 123.58184, 108.69291, 107.81738, 110.21964, 116.29706};
         TsCollection result = instance.parser(inputString, indices, weights);
-        double[] resultDouble = result.get(0).getTsData().getValues().internalStorage();
+        double[] resultDouble = result.get(0).getTsData().internalStorage();
         assertEquals(expResult.length, resultDouble.length);
         for (int i = 0; i < expResult.length; i++) {
             org.junit.Assert.assertEquals(expResult[i], resultDouble[i], 0.000005);
@@ -222,7 +222,7 @@ public class KIXModelTest {
         double[] expResult = {95.47, 98.29, 100.15, 104.76, 107.69, 109.16, 112.40, 122.26,
             119.73, 120.83, 122.45, 128.06, 128.39, 127.53, 125.12, 118.38, 102.32, 100.80, 105.21, 109.90};
         TsCollection result = instance.parser(inputString, indices, weights);
-        double[] resultDouble = result.get(0).getTsData().getValues().internalStorage();
+        double[] resultDouble = result.get(0).getTsData().internalStorage();
         assertEquals(expResult.length, resultDouble.length);
         for (int i = 0; i < expResult.length; i++) {
             org.junit.Assert.assertEquals(expResult[i], resultDouble[i], 0.000005);
@@ -239,7 +239,7 @@ public class KIXModelTest {
         double[] expResult = {};
 
         TsCollection result = instance.parser(inputString, indices, weights);
-        double[] resultDouble = result.get(0).getTsData().getValues().internalStorage();
+        double[] resultDouble = result.get(0).getTsData().internalStorage();
         assertEquals(expResult.length, resultDouble.length);
         for (int i = 0; i < expResult.length; i++) {
             org.junit.Assert.assertEquals(expResult[i], resultDouble[i], 0.005);
@@ -263,7 +263,7 @@ public class KIXModelTest {
         double[] expResult = {};
 
         TsCollection result = instance.parser(inputString, indices, weights);
-        double[] resultDouble = result.get(0).getTsData().getValues().internalStorage();
+        double[] resultDouble = result.get(0).getTsData().internalStorage();
         assertEquals(expResult.length, resultDouble.length);
         for (int i = 0; i < expResult.length; i++) {
             org.junit.Assert.assertEquals(expResult[i], resultDouble[i], 0.005);
@@ -286,7 +286,7 @@ public class KIXModelTest {
 
         double[] expResult = {};
         TsCollection result = instance.parser(inputString, indices, weights);
-        double[] resultDouble = result.get(0).getTsData().getValues().internalStorage();
+        double[] resultDouble = result.get(0).getTsData().internalStorage();
         assertEquals(expResult.length, resultDouble.length);
         for (int i = 0; i < expResult.length; i++) {
             org.junit.Assert.assertEquals(expResult[i], resultDouble[i], 0.000005);
@@ -309,7 +309,7 @@ public class KIXModelTest {
 
         double[] expResult = {};
         TsCollection result = instance.parser(inputString, indices, weights);
-        double[] resultDouble = result.get(0).getTsData().getValues().internalStorage();
+        double[] resultDouble = result.get(0).getTsData().internalStorage();
         assertEquals(expResult.length, resultDouble.length);
         for (int i = 0; i < expResult.length; i++) {
             org.junit.Assert.assertEquals(expResult[i], resultDouble[i], 0.000005);

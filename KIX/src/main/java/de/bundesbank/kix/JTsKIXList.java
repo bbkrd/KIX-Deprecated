@@ -203,7 +203,7 @@ public class JTsKIXList extends JComponent implements ITsActionAble {
     }
 
     private static Ts toTs(TsVariable variable) {
-        return TsFactory.instance.createTs(variable.getDescription(), null, variable.getTsData());
+        return TsFactory.instance.createTs(variable.getDescription(TsFrequency.Undefined), null, variable.getTsData());
     }
 
     private static final class OpenCommand extends JCommand<JTsKIXList> {
@@ -417,7 +417,7 @@ public class JTsKIXList extends JComponent implements ITsActionAble {
                 case 0:
                     return names[rowIndex];
                 case 1:
-                    return var.getDescription();
+                    return var.getDescription(TsFrequency.Undefined);
                 case 2:
                     return var.getDefinitionFrequency();
                 case 3: {
