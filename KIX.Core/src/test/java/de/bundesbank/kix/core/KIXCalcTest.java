@@ -1,14 +1,24 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2017 Deutsche Bundesbank
+ * Licensed under the EUPL, Version 1.1 or - as soon they will be approved
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ *
+ * http://ec.europa.eu/idabc/eupl
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
  */
 package de.bundesbank.kix.core;
 
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
-import org.junit.Assert;
+import static org.junit.Assert.assertArrayEquals;
 import org.junit.Test;
 
 /**
@@ -46,7 +56,7 @@ public class KIXCalcTest {
         };
 
         TsData result = KIXCalc.chainSum(weightedSum);
-        Assert.assertArrayEquals(expResultData, result.getValues().internalStorage(), 0.00005);
+        assertArrayEquals(expResultData, result.internalStorage(), 0.00005);
     }
 
     @Test
@@ -55,7 +65,7 @@ public class KIXCalcTest {
             108.05, 109.52, 112.77, 122.67, 106.07, 107.05, 108.48, 113.45,
             104.58, 103.88, 101.92, 96.43, 81.95, 80.73, 84.27, 88.02};
         TsData result = KIXCalc.unchain(a);
-        Assert.assertArrayEquals(expResultData, result.getValues().internalStorage(), 0.005);
+        assertArrayEquals(expResultData, result.internalStorage(), 0.005);
     }
 
     @Test
@@ -64,7 +74,7 @@ public class KIXCalcTest {
             112.8775, 112.8775, 112.8775, 112.8775, 122.7675, 122.7675, 122.7675, 122.7675,
             124.855, 124.855, 124.855, 124.855, 104.5575, 104.5575, 104.5575, 104.5575};
         TsData result = KIXCalc.mid(a, false);
-        Assert.assertArrayEquals(expResultData, result.getValues().internalStorage(), 1E-13);
+        assertArrayEquals(expResultData, result.internalStorage(), 1E-13);
     }
 
 }

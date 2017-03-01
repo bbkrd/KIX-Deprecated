@@ -39,7 +39,7 @@ public class KIXECalcTest {
         double[] expResultData = {100, 103.99467, 106.39148, 106.12517, 108.25566, 105.90406, 109.71710, 111.68512, 113.65314,
             103.46320, 106.92641, 112.01299, 110.38961, 105.29412, 108.43137, 111.66667, 115.19608,
             103.06383, 106.21277, 109.27660, 112.68085, 102.87009, 106.19335, 109.29003, 112.53776};
-        assertEquals(expResultData, result.getValues().internalStorage());
+        assertEquals(expResultData, result.internalStorage());
     }
 
     @Test
@@ -52,7 +52,7 @@ public class KIXECalcTest {
 
         double[] expResultData = {96.064, 98.278, 98.032, 100, 105.90406, 109.71710, 111.68512, 113.65314, 103.46320, 106.92641, 112.01299, 110.38961, 105.29412, 108.43137,
             111.66667, 115.19608, 103.06383, 106.21277, 109.27660, 112.68085, 102.87009, 106.19335, 109.29003, 112.53776};
-        assertEquals(expResultData, result.getValues().internalStorage());
+        assertEquals(expResultData, result.internalStorage());
     }
 
     @Test
@@ -80,7 +80,7 @@ public class KIXECalcTest {
         double[] expResultData = {102.78260, 104.55982, 103.87845, 105.02323, 103.49592, 105.57702, 106.40975, 107.24248,
             101.04537, 102.14469, 102.66667, 101.30152, 102.69590, 103.76980, 104.78352, 105.83097,
             100.77294, 101.38873, 101.97067, 102.62435, 100.43248, 100.77719, 100.97571, 101.82925};
-        assertEquals(expResultData, result.getValues().internalStorage());
+        assertEquals(expResultData, result.internalStorage());
 
     }
 
@@ -109,7 +109,7 @@ public class KIXECalcTest {
         double[] expResultData = {106.73595, 110.53405, 111.20645, 115.56628, 112.72147, 121.43760, 126.61961, 131.80163,
             82.59345, 65.65265, 31.33953, 31.94507, 43.79315, -1.91043, -51.26081, -106.48060,
             91.86323, 82.62716, 73.55659, 63.51276, 96.46771, 91.96779, 87.45244, 84.41182};
-        assertEquals(expResultData, result.getValues().internalStorage());
+        assertEquals(expResultData, result.internalStorage());
 
     }
 
@@ -136,7 +136,7 @@ public class KIXECalcTest {
         double[] expResultData = {100, 102.78260, 104.55982, 103.87845, 105.02323, 103.49592, 105.57702, 106.40975, 107.24248,
             101.04537, 102.14469, 102.66667, 101.30152, 102.69590, 103.76980, 104.78352, 105.83097,
             100.77294, 101.38873, 101.97067, 102.62435, 100.43248, 100.77719, 100.97571, 101.82925};
-        assertEquals(expResultData, result.getValues().internalStorage());
+        assertEquals(expResultData, result.internalStorage());
     }
 
     @Test
@@ -162,7 +162,7 @@ public class KIXECalcTest {
         double[] expResultData = {105.953, 104.01901, 106.735785, 107.581984, 108.533926, 101.450541, 102.901082, 105.322301,
             103.731382, 102.33165, 103.58943, 103.782699, 105.058273, 101.579168, 102.588462,
             103.447755, 104.353303, 100.497129, 100.941098, 101.307421, 101.656023};
-        assertEquals(expResultData, result.getValues().internalStorage());
+        assertEquals(expResultData, result.internalStorage());
     }
 
     @Test
@@ -178,7 +178,7 @@ public class KIXECalcTest {
             113.80690, 115.04507, 115.63297, 114.09541, 117.17132, 118.39658, 119.55319, 120.74828,
             121.68159, 122.42515, 123.12783, 123.91713, 124.45306, 124.88021, 125.12620, 126.18389};
 
-        assertEquals(expResultData, result.getValues().internalStorage());
+        assertEquals(expResultData, result.internalStorage());
     }
 
     @Test
@@ -194,7 +194,7 @@ public class KIXECalcTest {
             113.80690, 115.04507, 115.63297, 114.09541, 117.17132, 118.39658, 119.55319, 120.74828,
             121.68159, 122.42515, 123.12783, 123.91713, 124.45306, 124.88021, 125.12620};
 
-        assertEquals(expResultData, result.getValues().internalStorage());
+        assertEquals(expResultData, result.internalStorage());
     }
 
     @Test
@@ -277,7 +277,7 @@ public class KIXECalcTest {
         double[] expResultData = {89.64233, 91.19234, 90.59808, 91.59650, 94.79864, 96.70486, 97.46761, 98.23036, 99.25723,
             100.33710, 100.84984, 99.50885, 102.19151, 103.26013, 104.26887, 105.31118, 106.12517,
             106.77367, 107.38652, 108.07491, 108.54232, 108.91486, 109.12940, 110.05187};
-        assertEquals(expResultData, result.getValues().internalStorage());
+        assertEquals(expResultData, result.internalStorage());
     }
 
     @Test
@@ -310,7 +310,7 @@ public class KIXECalcTest {
         double[] expResultData = {87.2155, 89.64233, 91.19234, 90.59808, 91.59650, 94.79864, 96.70486, 97.46761, 98.23036, 99.25723,
             100.33710, 100.84984, 99.50885, 102.19151, 103.26013, 104.26887, 105.31118, 106.12517,
             106.77367, 107.38652, 108.07491, 108.54232, 108.91486, 109.12940, 110.05187};
-        assertEquals(expResultData, result.getValues().internalStorage());
+        assertEquals(expResultData, result.internalStorage());
     }
 
     @Test
@@ -342,7 +342,7 @@ public class KIXECalcTest {
 
         double[] expResultData = {105.9522, 110.5334, 119.3295, 117.35039, 117.19164, 119.37548, 125.53398, 126.74698, 124.38076, 124.47468,
             118.38063, 107.10292, 103.05270, 107.68883, 112.16246};
-        assertEquals(expResultData, result.getValues().internalStorage());
+        assertEquals(expResultData, result.internalStorage());
     }
 
     @Test
@@ -373,7 +373,7 @@ public class KIXECalcTest {
             2.201427, -0.699011, 2.535229, 1.462919, 1.493023, 1.612995, 1.218587, 1.242831, 1.201896,
             1.327819, 0.888674, 1.024560, 0.951438, 0.995888};
 
-        assertEquals(expResultData, result.getValues().internalStorage());
+        assertEquals(expResultData, result.internalStorage());
     }
 
     @Test
@@ -404,7 +404,7 @@ public class KIXECalcTest {
             2.201427, -0.699011, 2.535229, 1.462919, 1.493023, 1.612995, 1.218587, 1.242831, 1.201896,
             1.327819, 0.888674, 1.024560, 0.951438, 0.995888};
 
-        assertEquals(expResultData, result.getValues().internalStorage());
+        assertEquals(expResultData, result.internalStorage());
     }
 
     @Test
@@ -434,7 +434,7 @@ public class KIXECalcTest {
         double[] expResultData = {7.071192, 7.889490, 9.472371, 9.237943, 6.652463, 5.632791, 6.603563, 4.592968, 5.571957, 5.503102,
             4.813595, 7.277047, 5.873127, 5.641882, 5.339490, 5.043598, 4.700673, 4.478372, 4.222756, 3.882103};
 
-        assertEquals(expResultData, result.getValues().internalStorage());
+        assertEquals(expResultData, result.internalStorage());
     }
 
     private void assertEquals(double[] expected, double[] actual) {
