@@ -14,7 +14,8 @@ and open the template in the editor.
     <mapID target="kix.possible_commands#UNC" url="kix-possible_commands.html#UNC"/>
     <mapID target="kix.possible_commands#CHA" url="kix-possible_commands.html#CHA"/>
     <mapID target="kix.possible_commands#KIXE" url="kix-possible_commands.html#KIXE"/>
-    <mapID target="kix.possible_commands#WBGE" url="kix-possible_commands.html#WBGE"/>  
+    <mapID target="kix.possible_commands#WBGE" url="kix-possible_commands.html#WBGE"/>
     <mapID target="kix.possible_commands#UNCE" url="kix-possible_commands.html#UNCE"/>
-    <mapID target="kix.possible_commands#CHAE" url="kix-possible_commands.html#CHAE"/>    
+    <mapID target="kix.possible_commands#CHAE" url="kix-possible_commands.html#CHAE"/>
+    <mapID target="kix.possible_commands#FBI" url="kix-possible_commands.html#FBI"/>
 </map>

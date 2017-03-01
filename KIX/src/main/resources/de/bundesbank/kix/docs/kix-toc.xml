@@ -11,11 +11,12 @@ and open the template in the editor.
             <tocitem text="KIX" target="kix.possible_commands#KIX"/>
             <tocitem text="WBG" target="kix.possible_commands#WBG"/>
             <tocitem text="UNC" target="kix.possible_commands#UNC"/>
-            <tocitem text="CHA" target="kix.possible_commands#CHA"/>   
+            <tocitem text="CHA" target="kix.possible_commands#CHA"/>
             <tocitem text="KIXE" target="kix.possible_commands#KIXE"/>
-            <tocitem text="WBGE" target="kix.possible_commands#WBGE"/>  
+            <tocitem text="WBGE" target="kix.possible_commands#WBGE"/>
             <tocitem text="UNCE" target="kix.possible_commands#UNCE"/>
-            <tocitem text="CHAE" target="kix.possible_commands#CHAE"/>           
+            <tocitem text="CHAE" target="kix.possible_commands#CHAE"/>
+            <tocitem text="FBI" target="kix.possible_commands#FBI"/>
         </tocitem>
         <tocitem text="KIX 2.0 - Method of Calculation" target="kix.2.methofcal"/>
         <tocitem text="KIXE - Method of Calculation" target="kix.e.methofcal"/>

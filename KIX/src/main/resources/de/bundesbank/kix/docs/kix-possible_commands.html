@@ -21,7 +21,7 @@
     </head>
     <body lang="en-US">
         <h1>Possible Commands for KIX</h1>
-        <p>Version: 2.0.2-beta (2016-01-26)</p>
+        <p>Version: 2.0.6 (2017-01-04)</p>
 
         <h2><a name="KIX">KIX</a></h2>
         Aggregation of chained time series with annual overlap method<br/>
@@ -164,6 +164,25 @@
             <dd>The programm will chain the index series <b>i1</b>. The resulting time series is normalized on <b>2005</b>.</dd>
 
             <dt><b>4. </b><i>Example4=CHAE,i1</i></dt>
+            <dd>The same as <b>Example 1</b> but the programm will name the resulting time series <b>Example4</b>.</dd>
+        </dl>
+
+        <h2><a name="FBI">FBI</a></h2>
+        Does a weighted aggregation of the specified time series<br/>
+        Formula: [Name=]FBI,i1,w1/number,+/-,i2,w2/number,...<br/>
+        Number format: &plusmn;#.#&plusmn;E# e.g. 2.5E-2
+        Examples:
+        <dl>
+            <dt><b>1. </b><i>FBI,i1,w1,+,i2,w2</i></dt>
+            <dd>The programm will add i1 and i2 and use w1 as weight for i1 and w2 for i2.</dd>
+
+            <dt><b>2. </b><i>FBI,i1,1,+,i2,2</i></dt>
+            <dd>The programm will add i1 and i2 and use 1 as weight for i1 and 2 for i2.</dd>
+
+            <dt><b>3. </b><i>FBI,i1,2.5,+,i2,w2</i></dt>
+            <dd>TThe programm will add i1 and i2 and use 2.5 as weight for i1 and w2 for i2.</dd>
+
+            <dt><b>4. </b><i>Example4=FBI,i1,w1,+,i2,w2</i></dt>
             <dd>The same as <b>Example 1</b> but the programm will name the resulting time series <b>Example4</b>.</dd>
         </dl>
     </body>
