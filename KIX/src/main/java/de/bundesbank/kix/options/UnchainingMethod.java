@@ -27,7 +27,7 @@ public enum UnchainingMethod {
     PRAGMATIC(Bundle.PRAGMATIC()),
     PURISTIC(Bundle.PURISTIC());
 
-    private String name;
+    private final String name;
 
     private UnchainingMethod(String name) {
         this.name = name;

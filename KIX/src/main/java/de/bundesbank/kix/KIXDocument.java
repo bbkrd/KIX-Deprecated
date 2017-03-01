@@ -79,7 +79,9 @@ public class KIXDocument implements IModifiable, InformationSetSerializable {
     @Override
     public boolean isDirty() {
         try {
-            return indices.isDirty() || weights.isDirty() || !inputString.getText(0, inputString.getLength()).equals(initial);
+            return indices.isDirty()
+                    || weights.isDirty()
+                    || !inputString.getText(0, inputString.getLength()).equals(initial);
         } catch (BadLocationException ex) {
             return true;
         }

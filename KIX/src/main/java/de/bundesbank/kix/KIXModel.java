@@ -19,7 +19,11 @@ import de.bundesbank.kix.core.FBICalc;
 import de.bundesbank.kix.core.KIXCalc;
 import de.bundesbank.kix.core.KIXECalc;
 import de.bundesbank.kix.options.KIXOptionsPanelController;
+import static de.bundesbank.kix.options.KIXOptionsPanelController.KIX2_DEFAULT_METHOD;
+import static de.bundesbank.kix.options.KIXOptionsPanelController.KIXE_DEFAULT_METHOD;
 import de.bundesbank.kix.options.UnchainingMethod;
+import static de.bundesbank.kix.options.UnchainingMethod.PRAGMATIC;
+import static de.bundesbank.kix.options.UnchainingMethod.PURISTIC;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
@@ -151,8 +155,8 @@ public class KIXModel implements IKIXModel {
         TsData addData, addWeights;
         int refYear = Integer.parseInt(formula[formula.length - 1]);
 
-        String unchainingMethod = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIXOptionsPanelController.KIX2_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC.toString());
-        boolean puristic = UnchainingMethod.valueOf(unchainingMethod) == UnchainingMethod.PURISTIC;
+        String unchainingMethod = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIX2_DEFAULT_METHOD, PRAGMATIC.name());
+        boolean puristic = UnchainingMethod.valueOf(unchainingMethod) == PURISTIC;
 
         KIXCalc calculator = null;
         for (int i = 1; i < formula.length; i += 3) {
@@ -291,8 +295,8 @@ public class KIXModel implements IKIXModel {
 
         }
         TsData returnValue = KIXECalc.scaleToRefYear(KIXECalc.chain(weightedIndex), factor, refYear);
-        String unchainingMethod = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIXOptionsPanelController.KIXE_DEFAULT_METHOD, UnchainingMethod.PURISTIC.toString());
-        if (UnchainingMethod.valueOf(unchainingMethod) == UnchainingMethod.PURISTIC) {
+        String unchainingMethod = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIXE_DEFAULT_METHOD, PURISTIC.name());
+        if (UnchainingMethod.valueOf(unchainingMethod) == PURISTIC) {
 
             return returnValue.drop(returnValue.getFrequency().intValue() - returnValue.getStart().getPosition(), 0);
         }
@@ -440,8 +444,10 @@ public class KIXModel implements IKIXModel {
             String formula = formulaNames[counter][formulaPosition].toLowerCase(Locale.ENGLISH);
             if (formula.startsWith(KIX) || formula.startsWith(WBG)) {
                 formulaNames[counter][formulaPosition] = addMissingWeights(formula);
+                request[counter] = formulaNames[counter][formulaPosition].split(",");
+            } else {
+                request[counter] = formula.split(",");
             }
-            request[counter] = formulaNames[counter][formulaPosition].split(",");
             counter++;
         }
         for (String[] formula : request) {
