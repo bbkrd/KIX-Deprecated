@@ -25,16 +25,26 @@ import org.junit.Test;
  *
  * @author Thomas Witthohn
  */
-public class KIXCalcTest {
+public class AnnualOverlapCalcTest {
 
-    public KIXCalcTest() {
-    }
     TsPeriod start = new TsPeriod(TsFrequency.Quarterly, 2004, 0);
 
     double[] aData = {89.78, 93.71, 90.85, 95.20, 95.47, 98.29, 100.15, 104.76,
         107.69, 109.16, 112.40, 122.26, 119.73, 120.83, 122.45, 128.06,
         128.39, 127.53, 125.12, 118.38, 102.32, 100.80, 105.21, 109.90};
     TsData a = new TsData(start, aData, true);
+
+    public AnnualOverlapCalcTest() {
+    }
+
+    @Test
+    public void testMid() {
+        double[] expResultData = {92.385, 92.385, 92.385, 92.385, 99.6675, 99.6675, 99.6675, 99.6675,
+            112.8775, 112.8775, 112.8775, 112.8775, 122.7675, 122.7675, 122.7675, 122.7675,
+            124.855, 124.855, 124.855, 124.855, 104.5575, 104.5575, 104.5575, 104.5575};
+        TsData result = AnnualOverlapCalc.mid(a, false);
+        assertArrayEquals(expResultData, result.internalStorage(), 1E-13);
+    }
 
     @Test
     public void testChainSum_TsData() {
@@ -55,7 +65,7 @@ public class KIXCalcTest {
             114.7563178624400, 113.5087878496830, 117.0429437972970, 122.9805156630170
         };
 
-        TsData result = KIXCalc.chainSum(weightedSum);
+        TsData result = AnnualOverlapCalc.chainSum(weightedSum);
         assertArrayEquals(expResultData, result.internalStorage(), 0.00005);
     }
 
@@ -64,17 +74,7 @@ public class KIXCalcTest {
         double[] expResultData = {97.18, 101.43, 98.34, 103.05, 103.34, 106.39, 108.41, 113.40,
             108.05, 109.52, 112.77, 122.67, 106.07, 107.05, 108.48, 113.45,
             104.58, 103.88, 101.92, 96.43, 81.95, 80.73, 84.27, 88.02};
-        TsData result = KIXCalc.unchain(a);
+        TsData result = AnnualOverlapCalc.unchain(a);
         assertArrayEquals(expResultData, result.internalStorage(), 0.005);
     }
-
-    @Test
-    public void testMid() {
-        double[] expResultData = {92.385, 92.385, 92.385, 92.385, 99.6675, 99.6675, 99.6675, 99.6675,
-            112.8775, 112.8775, 112.8775, 112.8775, 122.7675, 122.7675, 122.7675, 122.7675,
-            124.855, 124.855, 124.855, 124.855, 104.5575, 104.5575, 104.5575, 104.5575};
-        TsData result = KIXCalc.mid(a, false);
-        assertArrayEquals(expResultData, result.internalStorage(), 1E-13);
-    }
-
 }

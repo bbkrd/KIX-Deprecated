@@ -15,9 +15,12 @@
  */
 package de.bundesbank.kix;
 
+import de.bundesbank.kix.core.AnnualOverlapCalc;
 import de.bundesbank.kix.core.FBICalc;
+import de.bundesbank.kix.core.ICalc;
 import de.bundesbank.kix.core.KIXCalc;
 import de.bundesbank.kix.core.KIXECalc;
+import de.bundesbank.kix.core.WBGCalc;
 import de.bundesbank.kix.options.KIXOptionsPanelController;
 import static de.bundesbank.kix.options.KIXOptionsPanelController.KIX2_DEFAULT_METHOD;
 import static de.bundesbank.kix.options.KIXOptionsPanelController.KIXE_DEFAULT_METHOD;
@@ -55,9 +58,6 @@ import org.openide.util.NbPreferences;
  */
 public class KIXModel implements IKIXModel {
 
-    private static final String KIX = "kix", WBG = "wbg", UNC = "unc", CHA = "cha",
-            KIXE = "kixe", WBGE = "wbge", UNCE = "unce", CHAE = "chae", FBI = "fbi";
-
     private TsVariables indices, weights;
     private String[][] request;
     private String[][] formulaNames;
@@ -87,7 +87,7 @@ public class KIXModel implements IKIXModel {
                 } else {
                     formula = new String[]{""};
                 }
-                switch (formula[0]) {
+                switch (ControlCharacter.fromString(formula[0])) {
                     case KIX:
                         outputTsData[j - 1] = doKIX(formula, j);
                         break;
@@ -115,10 +115,6 @@ public class KIXModel implements IKIXModel {
                     case FBI:
                         outputTsData[j - 1] = doFBI(formula, j);
                         break;
-                    case "":
-                        throw new InputException("No control character found in formula "
-                                + j
-                                + ". Please use the syntax described in the help.");
                     default:
                         throw new InputException(formula[0].toUpperCase(Locale.ENGLISH) + " in formula "
                                 + j
@@ -152,16 +148,15 @@ public class KIXModel implements IKIXModel {
         dataAvailabilityCheck(formula, j);
         checkData(formula, j);
 
-        TsData addData, addWeights;
         int refYear = Integer.parseInt(formula[formula.length - 1]);
 
         String unchainingMethod = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIX2_DEFAULT_METHOD, PRAGMATIC.name());
-        boolean puristic = UnchainingMethod.valueOf(unchainingMethod) == PURISTIC;
+        boolean puristic = UnchainingMethod.fromString(unchainingMethod) == PURISTIC;
 
         KIXCalc calculator = null;
         for (int i = 1; i < formula.length; i += 3) {
-            addData = extractData(indices.get(formula[i]));
-            addWeights = extractData(weights.get(formula[i + 1]));
+            TsData addData = extractData(indices.get(formula[i]));
+            TsData addWeights = extractData(weights.get(formula[i + 1]));
 
             if (calculator == null) {
                 calculator = new KIXCalc(addData, addWeights, refYear, puristic);
@@ -200,30 +195,15 @@ public class KIXModel implements IKIXModel {
         TsData TsAllData = extractData(indices.get(formula[4]));
         TsData TsAllWeights = extractData(weights.get(formula[5]));
 
-        TsAllData = KIXCalc.normalizeToYear(TsAllData, TsAllData.getStart().getYear());
-        TsData TsRemainData;
-        TsData TsRemainWeights;
+        ICalc calc = new WBGCalc(TsAllData, TsAllWeights, lag);
+
         if (formula[3].equalsIgnoreCase("-")) {
-            TsData[] tempNewIndex = KIXCalc.weightsum(KIXCalc.unchain(TsAllData), KIXCalc.mid(TsAllWeights, true),
-                    KIXCalc.unchain(TsWBTData), KIXCalc.mid(TsWBTWeights, true), "+");
-            TsRemainData = tempNewIndex[0];
-            TsRemainWeights = TsAllWeights.plus(TsWBTWeights);
+            calc.minus(TsWBTData, TsWBTWeights);
         } else {
-            TsData[] tempNewIndex = KIXCalc.weightsum(KIXCalc.unchain(TsAllData), KIXCalc.mid(TsAllWeights, true),
-                    KIXCalc.unchain(TsWBTData), KIXCalc.mid(TsWBTWeights, true), "-");
-            TsRemainData = tempNewIndex[0];
-            TsRemainWeights = TsAllWeights.minus(TsWBTWeights);
+            calc.add(TsWBTData, TsWBTWeights);
         }
 
-        TsData TsWBTDataLagDiff = KIXCalc.weightsum(KIXCalc.unchain(TsWBTData.lead(lag), TsWBTData),
-                KIXCalc.mid(TsWBTWeights, true), TsRemainData, KIXCalc.mid(TsRemainWeights, true), formula[3])[0];
-        TsWBTDataLagDiff = KIXCalc.chainSum(TsWBTDataLagDiff, KIXCalc.unchain(TsAllData));
-
-        TsData TsAllDataLagDiff = ((TsAllData.lag(lag).minus(TsAllData)).div(TsAllData).times(100)).lead(lag);
-        TsWBTDataLagDiff = ((TsWBTDataLagDiff.lag(lag).minus(TsAllData)).div(TsAllData).times(100)).lead(lag);
-
-        TsData TsReturnData = TsAllDataLagDiff.minus(TsWBTDataLagDiff);
-        return TsReturnData;
+        return calc.getResult();
     }
 
     private TsData doUNC(String[] formula, int j) {
@@ -235,7 +215,7 @@ public class KIXModel implements IKIXModel {
         } else {
             throw new InputException(formula[1] + "in formula " + j + " doesn't exist");
         }
-        return KIXCalc.unchain(TsToUnchain);
+        return AnnualOverlapCalc.unchain(TsToUnchain);
     }
 
     private TsData doCHA(String[] formula, int j) {
@@ -248,9 +228,9 @@ public class KIXModel implements IKIXModel {
             throw new InputException(formula[1] + "in formula " + j + " doesn't exist");
         }
         if (formula.length > 2 && tryParseInt(formula[2])) {
-            return KIXCalc.normalizeToYear(KIXCalc.chainSum(TsToChain), Integer.parseInt(formula[2]));
+            return AnnualOverlapCalc.chainSum(TsToChain).index(TsPeriod.year(Integer.parseInt(formula[2])), 100);
         }
-        return KIXCalc.chainSum(TsToChain);
+        return AnnualOverlapCalc.chainSum(TsToChain);
     }
 
     private TsData doKIXE(String[] formula, int j) {
@@ -296,7 +276,7 @@ public class KIXModel implements IKIXModel {
         }
         TsData returnValue = KIXECalc.scaleToRefYear(KIXECalc.chain(weightedIndex), factor, refYear);
         String unchainingMethod = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIXE_DEFAULT_METHOD, PURISTIC.name());
-        if (UnchainingMethod.valueOf(unchainingMethod) == PURISTIC) {
+        if (UnchainingMethod.fromString(unchainingMethod) == PURISTIC) {
 
             return returnValue.drop(returnValue.getFrequency().intValue() - returnValue.getStart().getPosition(), 0);
         }
@@ -304,9 +284,7 @@ public class KIXModel implements IKIXModel {
     }
 
     private TsData doWBGE(String[] formula, int j) {
-//        check(formula, j);
-//        checkData(formula, j);
-
+        generalFormulaCheck(formula, j, 3, 0);
         dataAvailabilityCheck(formula, j);
 
         int lag = Integer.parseInt(formula[5]);
@@ -333,7 +311,6 @@ public class KIXModel implements IKIXModel {
             TsToUnchain = extractData(weights.get(formula[1]));
         } else {
             throw new InputException(formula[1] + "in formula " + j + " doesn't exist");
-
         }
         return KIXECalc.unchain(TsToUnchain);
     }
@@ -348,7 +325,7 @@ public class KIXModel implements IKIXModel {
             throw new InputException(formula[1] + "in formula " + j + " doesn't exist");
         }
         if (formula.length > 2 && tryParseInt(formula[2])) {
-            return KIXCalc.normalizeToYear(KIXECalc.chain(TsToChain), Integer.parseInt(formula[2]));
+            return KIXECalc.chain(TsToChain).index(TsPeriod.year(Integer.parseInt(formula[2])), 100);
         }
         return KIXECalc.chain(TsToChain);
     }
@@ -366,7 +343,8 @@ public class KIXModel implements IKIXModel {
                 + " could not be found: ";
         StringBuilder errortext = new StringBuilder(start);
 
-        for (int i = 1; i < formula.length; i += 3) {
+        int increment = ControlCharacter.fromString(formula[0]).getNumber();
+        for (int i = 1; i + increment - 1 < formula.length; i += increment) {
             if (!indices.contains(formula[i])) {
                 errortext.append(formula[i]).append(", ");
             }
@@ -442,7 +420,7 @@ public class KIXModel implements IKIXModel {
             formulaNames[counter] = line.split("=", 2);
             int formulaPosition = formulaNames[counter].length - 1;
             String formula = formulaNames[counter][formulaPosition].toLowerCase(Locale.ENGLISH);
-            if (formula.startsWith(KIX) || formula.startsWith(WBG)) {
+            if (formula.startsWith(ControlCharacter.KIX.getName()) || formula.startsWith(ControlCharacter.WBG.getName())) {
                 formulaNames[counter][formulaPosition] = addMissingWeights(formula);
                 request[counter] = formulaNames[counter][formulaPosition].split(",");
             } else {

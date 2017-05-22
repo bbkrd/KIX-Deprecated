@@ -83,8 +83,7 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
     }
 
     public KIXTopComponent() {
-        super(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
-        initDocument();
+        this(manager().create(WorkspaceFactory.getInstance().getActiveWorkspace()));
     }
 
     public KIXTopComponent(WorkspaceItem<KIXDocument> doc) {

@@ -23,7 +23,7 @@
         <h1>Possible Commands for KIX</h1>
         <p>Version: 2.0.6 (2017-01-04)</p>
 
-        <h2><a name="KIX">KIX</a></h2>
+        <h2><a id="KIX">KIX</a></h2>
         Aggregation of chained time series with annual overlap method<br/>
         Formula: [Name=]KIX,i1,[w1,]+/-,i2,[w2,]...,refyr<br/>
         Examples:
@@ -44,7 +44,7 @@
             <dd>The same as <b>Example 3</b> but the programm will name the resulting time series <b>Example4</b>.</dd>
         </dl>
 
-        <h2><a name="WBG">WBG</a></h2>
+        <h2><a id="WBG">WBG</a></h2>
         Calculates the growth rate contribution of a chained time series (iContr) to another chained time series (iTotal) lagged by #ofLags.<br/>
         The number of lags must be between 1 and the periodicity of the time series. Chaining and unchaining is done with the annual overlap method.<br/>
         Formula: [Name=]WBG,iContr,[wContr,]+/-,iTotal,[wTotal,]#ofLags<br/>
@@ -62,7 +62,7 @@
             <dd>The same as <b>Example 2</b> but the programm will name the resulting time series <b>Example3</b>.</dd>
         </dl>
 
-        <h2><a name="UNC">UNC</a></h2>
+        <h2><a id="UNC">UNC</a></h2>
         Unchain a chained time series (i1) with the annual overlap method.<br/>
         Formula: [Name=]UNC,i1<br/>
         Examples:
@@ -77,7 +77,7 @@
             <dd>The same as <b>Example 1</b> but the programm will name the resulting time series <b>Example3</b>.</dd>
         </dl>
 
-        <h2><a name="CHA">CHA</a></h2>
+        <h2><a id="CHA">CHA</a></h2>
         Chain a time series (i1) with the annual overlap method.<br/>
         Formula: [Name=]CHA,i1[,refyr]<br/>
         Examples:
@@ -95,7 +95,7 @@
             <dd>The same as <b>Example 1</b> but the programm will name the resulting time series <b>Example4</b>.</dd>
         </dl>
 
-        <h2><a name="KIXE">KIXE</a></h2>
+        <h2><a id="KIXE">KIXE</a></h2>
         Aggregation of chained time series with one-quarter overlap method (one-month overlap method)<br/>
         Formula: [Name=]KIXE,i1,[w1,]+/-,i2,[w2,]...,refyr<br/>
         Examples:
@@ -116,7 +116,7 @@
             <dd>The same as <b>Example 3</b> but the programm will name the resulting time series <b>Example4</b>.</dd>
         </dl>
 
-        <h2><a name="WBGE">WBGE</a></h2>
+        <h2><a id="WBGE">WBGE</a></h2>
         Calculates the growth rate contribution of a chained time series (iContr) to another chained time series (iTotal) lagged by #ofLags.<br/>
         The number of lags must be between 1 and the periodicity of the time series. Chaining and unchaining is done with the one-quarter overlap method (one-month overlap method).<br/>
         Formula: [Name=]WBGE,iContr,[wContr,]iTotal,[wTotal,]#ofLags<br/>
@@ -134,7 +134,7 @@
             <dd>The same as <b>Example 2</b> but the programm will name the resulting time series <b>Example3</b>.</dd>
         </dl>
 
-        <h2><a name="UNCE">UNCE</a></h2>
+        <h2><a id="UNCE">UNCE</a></h2>
         Unchain a chained time series (i1) with the one-quarter overlap method (one-month overlap method).<br/>
         Formula: [Name=]UNCE,i1<br/>
         Examples:
@@ -149,7 +149,7 @@
             <dd>The same as <b>Example 1</b> but the programm will name the resulting time series <b>Example3</b>.</dd>
         </dl>
 
-        <h2><a name="CHAE">CHAE</a></h2>
+        <h2><a id="CHAE">CHAE</a></h2>
         Chain a time series (i1) with the one-quarter overlap method (one-month overlap method).<br/>
         Formula: [Name=]CHAE,i1[,refyr]<br/>
         Examples:
@@ -167,7 +167,7 @@
             <dd>The same as <b>Example 1</b> but the programm will name the resulting time series <b>Example4</b>.</dd>
         </dl>
 
-        <h2><a name="FBI">FBI</a></h2>
+        <h2><a id="FBI">FBI</a></h2>
         Does a weighted aggregation of the specified time series<br/>
         Formula: [Name=]FBI,i1,w1/number,+/-,i2,w2/number,...<br/>
         Number format: &plusmn;#.#&plusmn;E# e.g. 2.5E-2
