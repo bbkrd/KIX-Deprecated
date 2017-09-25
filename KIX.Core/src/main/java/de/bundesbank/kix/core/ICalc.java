@@ -23,10 +23,10 @@ import ec.tstoolkit.timeseries.simplets.TsData;
  */
 public interface ICalc {
 
-    public void add(TsData index, TsData weight);
+    public void plus(TsData index, TsData weight);
 
-    public default void add(TsData index, double weight) {
-        add(index, new TsData(index.getDomain(), weight));
+    public default void plus(TsData index, double weight) {
+        ICalc.this.plus(index, new TsData(index.getDomain(), weight));
     }
 
     public void minus(TsData index, TsData weight);

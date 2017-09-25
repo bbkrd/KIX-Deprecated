@@ -42,7 +42,7 @@ public class WBGCalc extends AnnualOverlapCalc {
     }
 
     @Override
-    public void add(TsData index, TsData weight) {
+    public void plus(TsData index, TsData weight) {
         weight = mid(weight, true);
 
         TsData TsRemainData = weightsum(unchain(wholeIndex), wholeWeight,

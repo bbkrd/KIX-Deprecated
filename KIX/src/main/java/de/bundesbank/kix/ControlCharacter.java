@@ -15,32 +15,34 @@
  */
 package de.bundesbank.kix;
 
+import java.util.Locale;
+
 /**
  *
  * @author Thomas Witthohn
  */
 public enum ControlCharacter {
 
-    KIX("kix", 3),
-    WBG("wbg", 3),
-    UNC("unc", 0),
-    CHA("cha", 0),
-    KIXE("kixe", 3),
-    WBGE("wbge", 2),
-    UNCE("unce", 0),
-    CHAE("chae", 0),
-    FBI("fbi", 3);
+    KIX(new String[]{"kix", "cli.ann"}, 3),
+    WBG(new String[]{"wbg", "pcg.ann"}, 3),
+    UNC(new String[]{"unc.ann"}, 0),
+    CHA(new String[]{"cha.ann"}, 0),
+    KIXE(new String[]{"kixe", "cli.per"}, 3),
+    WBGE(new String[]{"wbge", "pcg.per"}, 2),
+    UNCE(new String[]{"unc.per"}, 0),
+    CHAE(new String[]{"cha.per"}, 0),
+    FBI(new String[]{"fbi"}, 3);
 
-    private ControlCharacter(String name, int number) {
-        this.name = name;
+    private ControlCharacter(String[] names, int number) {
+        this.names = names;
         this.number = number;
     }
 
-    private final String name;
+    private final String[] names;
     private final int number;
 
-    public String getName() {
-        return name;
+    public String[] getNames() {
+        return names;
     }
 
     public int getNumber() {
@@ -49,15 +51,20 @@ public enum ControlCharacter {
 
     /**
      * @param text the text of the constant to return
+     *
      * @return the enum constant with the specified text
+     *
      * @throws IllegalArgumentException - if no constant with the specified name
-     * exists
-     * @throws NullPointerException - if text is null
+     *                                  exists
+     * @throws NullPointerException     - if text is null
      */
     public static ControlCharacter fromString(String text) {
+        String inputLowerCase = text.toLowerCase(Locale.ENGLISH);
         for (ControlCharacter b : ControlCharacter.values()) {
-            if (text.equalsIgnoreCase(b.name)) {
-                return b;
+            for (String name : b.getNames()) {
+                if (inputLowerCase.equals(name)) {
+                    return b;
+                }
             }
         }
         throw new IllegalArgumentException("No constant with text " + text + " found");

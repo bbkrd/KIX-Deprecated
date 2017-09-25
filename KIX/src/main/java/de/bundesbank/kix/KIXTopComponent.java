@@ -28,16 +28,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.ToolTipManager;
+import javax.swing.*;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.util.HelpCtx;
@@ -58,25 +49,21 @@ import org.openide.windows.TopComponent;
 @Messages({
     "CTL_KIXAction=KIX",
     "CTL_KIXTopComponent=KIX Window",
-    "HINT_KIXTopComponent=This is a KIX window"
+    "HINT_KIXTopComponent=This is a KIX window",
+    "KIX_TOOL_TIP_TEXTAREA=<html>For information about the available formulas, please consult the <b>Help (F1)</b></html>",
+    "KIX_TOOL_TIP_RUNBUTTON=Start calculation",
+    "KIX_LblIndexData=Index Data",
+    "KIX_LblWeightData=Weight Data",
+    "KIX_LblResults=Results"
 })
 public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
-    private static final String TOOL_TIP_TEXTAREA = "<html>"
-            + "For information about the available formulas, please consult the Help (F1)"
-            + "</html>";
-
-    private JSplitPane mainPane, listPane, dataPane, indexDataPane, weightDataPane, resultPane;
-    private JPanel textPanel;
     private JTsKIXList indexDataList, weightsDataList;
     private JTsGrid results;
     private JTextArea inputText;
-    private JToolBar toolBarRepresentation;
     private JButton runButton;
-    private JLabel lblIndexData, lblWeightData, lblResults;
     private TsVariables indexData, weightsData;
     private IKIXModel _KIX;
-    private JScrollPane scrollpane;
 
     private static KIXDocumentManager manager() {
         return WorkspaceFactory.getInstance().getManager(KIXDocumentManager.class);
@@ -88,10 +75,6 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
     public KIXTopComponent(WorkspaceItem<KIXDocument> doc) {
         super(doc);
-        initDocument();
-    }
-
-    private void initDocument() {
         initComponents();
         setToolTipText(Bundle.HINT_KIXTopComponent());
         setName(getDocument().getDisplayName());
@@ -100,55 +83,53 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
     private void initComponents() {
         setLayout(new java.awt.BorderLayout());
 
-        toolBarRepresentation = NbComponents.newInnerToolbar();
+        JToolBar toolBarRepresentation = NbComponents.newInnerToolbar();
         runButton = new JButton(DemetraUiIcon.COMPILE_16);
-        runButton.setToolTipText("Start calculation");
+        runButton.setToolTipText(Bundle.KIX_TOOL_TIP_RUNBUTTON());
 
         toolBarRepresentation.add(runButton);
         toolBarRepresentation.setFloatable(false);
 
         indexData = this.getDocument().getElement().getIndices();
         indexDataList = new JTsKIXList(indexData);
-        indexDataList.setToolTipText("Drop your index times series into this list");
 
         weightsData = this.getDocument().getElement().getWeights();
         weightsDataList = new JTsKIXList(weightsData);
-        weightsDataList.setToolTipText("Drop your weight times series into this list");
 
         inputText = new JTextArea();
         inputText.setLineWrap(true);
         inputText.setWrapStyleWord(true);
 
-        inputText.setToolTipText(TOOL_TIP_TEXTAREA);
+        inputText.setToolTipText(Bundle.KIX_TOOL_TIP_TEXTAREA());
         ToolTipManager.sharedInstance().registerComponent(inputText);
 
         inputText.setDocument(this.getDocument().getElement().getinput());
 
-        scrollpane = new JScrollPane(inputText);
+        JScrollPane scrollpane = new JScrollPane(inputText);
         TextLineNumber tln = new TextLineNumber(inputText);
         scrollpane.setRowHeaderView(tln);
 
-        textPanel = new JPanel(new BorderLayout());
+        JPanel textPanel = new JPanel(new BorderLayout());
         textPanel.add(scrollpane, BorderLayout.CENTER);
 
         results = new JTsGrid();
         results.setTsUpdateMode(ITsCollectionView.TsUpdateMode.None);
 
-        lblIndexData = new JLabel("Index Data", JLabel.CENTER);
-        indexDataPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, lblIndexData, indexDataList);
+        JLabel lblIndexData = new JLabel(Bundle.KIX_LblIndexData(), JLabel.CENTER);
+        JSplitPane indexDataPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, lblIndexData, indexDataList);
         indexDataPane.setDividerSize(0);
 
-        lblWeightData = new JLabel("Weight Data", JLabel.CENTER);
-        weightDataPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, lblWeightData, weightsDataList);
+        JLabel lblWeightData = new JLabel(Bundle.KIX_LblWeightData(), JLabel.CENTER);
+        JSplitPane weightDataPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, lblWeightData, weightsDataList);
         weightDataPane.setDividerSize(0);
 
-        lblResults = new JLabel("Results", JLabel.CENTER);
-        resultPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, lblResults, results);
+        JLabel lblResults = new JLabel(Bundle.KIX_LblResults(), JLabel.CENTER);
+        JSplitPane resultPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, lblResults, results);
         resultPane.setDividerSize(0);
 
-        dataPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, indexDataPane, weightDataPane);
-        listPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataPane, resultPane);
-        mainPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, textPanel, listPane);
+        JSplitPane dataPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, indexDataPane, weightDataPane);
+        JSplitPane listPane = NbComponents.newJSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataPane, resultPane);
+        JSplitPane mainPane = NbComponents.newJSplitPane(JSplitPane.VERTICAL_SPLIT, textPanel, listPane);
 
         setLayout(new BorderLayout());
         add(toolBarRepresentation, BorderLayout.NORTH);
@@ -174,7 +155,7 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
 
     @Override
     public HelpCtx getHelpCtx() {
-        return new HelpCtx("kix.possible_commands"); //To change body of generated methods, choose Tools | Templates.
+        return new HelpCtx("kix.possible_commands");
     }
 
     private void initActionListener() {

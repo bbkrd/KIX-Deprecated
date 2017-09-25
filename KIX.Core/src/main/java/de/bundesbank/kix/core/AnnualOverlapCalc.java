@@ -15,10 +15,10 @@
  */
 package de.bundesbank.kix.core;
 
-import ec.tstoolkit.timeseries.TsAggregationType;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsFrequency;
 import ec.tstoolkit.timeseries.simplets.TsPeriod;
+import ec.tstoolkit.timeseries.simplets.YearIterator;
 
 /**
  *
@@ -30,6 +30,7 @@ public abstract class AnnualOverlapCalc implements ICalc {
      *
      * @param s
      * @param previousYearAverage
+     *
      * @return
      */
     public static TsData mid(TsData s, boolean previousYearAverage) {
@@ -38,12 +39,20 @@ public abstract class AnnualOverlapCalc implements ICalc {
 
         int lag = previousYearAverage ? 1 : 0;
         double[] averages = new double[numberOfYears + lag];
-        s.changeFrequency(TsFrequency.Yearly, TsAggregationType.Average, false).copyTo(averages, lag);
-        if (lag == 1) {
-            averages[0] = averages[1];
+
+        {
+            YearIterator iter = new YearIterator(s);
+            int counter = lag;
+            while (iter.hasMoreElements()) {
+                averages[counter] = iter.nextElement().data.average();
+                ++counter;
+            }
+            if (lag == 1) {
+                averages[0] = averages[1];
+            }
         }
 
-        TsFrequency frequence = s.getFrequency();
+        TsFrequency frequency = s.getFrequency();
         TsData result = new TsData(s.getDomain());
         for (int i = 0; i < numberOfYears; i++) {
             double average = averages[i];
@@ -51,11 +60,11 @@ public abstract class AnnualOverlapCalc implements ICalc {
             if (i == numberOfYears - 1) {
                 int lastPeriodPosition = s.getLastPeriod().getPosition();
                 for (int k = 0; k <= lastPeriodPosition; k++) {
-                    result.set(new TsPeriod(frequence, startYear + i, k), average);
+                    result.set(new TsPeriod(frequency, startYear + i, k), average);
                 }
             } else {
-                for (int k = 0; k < frequence.intValue(); k++) {
-                    result.set(new TsPeriod(frequence, startYear + i, k), average);
+                for (int k = 0; k < frequency.intValue(); k++) {
+                    result.set(new TsPeriod(frequency, startYear + i, k), average);
                 }
             }
         }
@@ -66,6 +75,7 @@ public abstract class AnnualOverlapCalc implements ICalc {
     /**
      *
      * @param s
+     *
      * @return
      */
     public static TsData chainSum(TsData s) {
@@ -76,34 +86,25 @@ public abstract class AnnualOverlapCalc implements ICalc {
      *
      * @param s
      * @param helper
+     *
      * @return
      */
     public static TsData chainSum(TsData s, TsData helper) {
         helper = mid(helper, true);
         int startYear = helper.getStart().getYear();
-        int endYear = helper.getLastPeriod().getYear();
+        int duration = helper.getLastPeriod().getYear() - startYear;
         int lastPeriodPosition = s.getLastPeriod().getPosition();
-        TsFrequency frequence = helper.getFrequency();
+        TsFrequency frequency = helper.getFrequency();
 
-        for (int i = 1; i <= endYear - startYear; i++) {
-            TsPeriod period = new TsPeriod(frequence, startYear + i - 1, 0);
-            if (i == endYear - startYear) {
-                for (int j = 0; j <= lastPeriodPosition; j++) {
-                    if (Double.isFinite(helper.get(period.plus(j)))) {
-                        double prevyearval = helper.get(period.plus(j));
-                        double thisyearval = helper.get(period.plus(j + frequence.intValue()));
-                        double result = (thisyearval * prevyearval / 100);
-                        helper.set(period.plus(j + frequence.intValue()), result);
-                    }
-                }
-            } else {
-                for (int j = 0; j < frequence.intValue(); j++) {
-                    if (Double.isFinite(helper.get(period.plus(j)))) {
-                        double prevyearval = helper.get(period.plus(j));
-                        double thisyearval = helper.get(period.plus(j + frequence.intValue()));
-                        double result = (thisyearval * prevyearval / 100);
-                        helper.set(period.plus(j + frequence.intValue()), result);
-                    }
+        for (int i = 0; i < duration; i++) {
+            TsPeriod period = new TsPeriod(frequency, startYear + i, 0);
+            final int end = (i + 1 == duration) ? lastPeriodPosition + 1 : frequency.intValue();
+            for (int j = 0; j < end; j++) {
+                if (Double.isFinite(helper.get(period.plus(j)))) {
+                    double prevyearval = helper.get(period.plus(j));
+                    double thisyearval = helper.get(period.plus(j + frequency.intValue()));
+                    double result = (thisyearval * prevyearval / 100);
+                    helper.set(period.plus(j + frequency.intValue()), result);
                 }
             }
         }
@@ -112,11 +113,13 @@ public abstract class AnnualOverlapCalc implements ICalc {
 
     /**
      * Returns an unchained time series. Each value of <code>index</code> is
-     * therefor divided by the prior-year average and multiplyed by 100. Calls
+     * therefore divided by the prior-year average and multiplyed by 100. Calls
      * unchain(inputTsData, inputTsData).
      *
      * @param index the time series
+     *
      * @return A new unchained time series is returned.
+     *
      * @see #unchain(TsData, TsData)
      */
     public static TsData unchain(TsData index) {
@@ -125,11 +128,12 @@ public abstract class AnnualOverlapCalc implements ICalc {
 
     /**
      * Returns an unchained time series. Each value of <code>index</code> is
-     * therefor divided by the prior-year average of <code>helper</code> and
+     * therefore divided by the prior-year average of <code>helper</code> and
      * multiplyed by 100.
      *
-     * @param index the time series to be unchained
+     * @param index  the time series to be unchained
      * @param helper the time series used for the prior-year averages
+     *
      * @return A new unchained time series is returned.
      */
     public static TsData unchain(TsData index, TsData helper) {

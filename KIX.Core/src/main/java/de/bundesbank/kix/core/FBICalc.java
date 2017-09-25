@@ -21,7 +21,7 @@ import ec.tstoolkit.timeseries.simplets.TsData;
  *
  * @author Thomas Witthohn
  */
-public class FBICalc {
+public class FBICalc implements ICalc{
 
     private TsData totalIndex, totalWeight;
 
@@ -35,26 +35,31 @@ public class FBICalc {
         this.totalWeight = totalWeight;
     }
 
-    public void add(TsData indexSeriesTwo, TsData weightSeriesTwo) {
+    @Override
+    public void plus(TsData indexSeriesTwo, TsData weightSeriesTwo) {
         totalIndex = totalIndex.times(totalWeight).plus(indexSeriesTwo.times(weightSeriesTwo)).div(totalWeight.plus(weightSeriesTwo));
         totalWeight = totalWeight.plus(weightSeriesTwo);
     }
 
-    public void add(TsData indexSeriesTwo, double weightTwo) {
+    @Override
+    public void plus(TsData indexSeriesTwo, double weightTwo) {
         totalIndex = totalIndex.times(totalWeight).plus(indexSeriesTwo.times(weightTwo)).div(totalWeight.plus(weightTwo));
         totalWeight = totalWeight.plus(weightTwo);
     }
 
+    @Override
     public void minus(TsData indexSeriesTwo, TsData weightSeriesTwo) {
         totalIndex = totalIndex.times(totalWeight).minus(indexSeriesTwo.times(weightSeriesTwo)).div(totalWeight.minus(weightSeriesTwo));
         totalWeight = totalWeight.minus(weightSeriesTwo);
     }
 
+    @Override
     public void minus(TsData indexSeriesTwo, double weightTwo) {
         totalIndex = totalIndex.times(totalWeight).minus(indexSeriesTwo.times(weightTwo)).div(totalWeight.minus(weightTwo));
         totalWeight = totalWeight.minus(weightTwo);
     }
 
+    @Override
     public TsData getResult() {
         return totalIndex;
     }

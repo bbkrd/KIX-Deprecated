@@ -48,7 +48,7 @@ public class KIXCalc extends AnnualOverlapCalc {
     }
 
     @Override
-    public void add(TsData addData, TsData addWeights) {
+    public void plus(TsData addData, TsData addWeights) {
         addFactor(addData, addWeights);
         addWeightsum(addData, addWeights);
     }

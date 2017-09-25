@@ -34,13 +34,13 @@ final class KIXPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        defaultModelMainPanel = new javax.swing.JPanel();
-        defaultModelPanel = new javax.swing.JPanel();
-        kix2DefaultMethodLabel = new javax.swing.JLabel();
+        javax.swing.JPanel defaultModelMainPanel = new javax.swing.JPanel();
+        javax.swing.JPanel defaultModelPanel = new javax.swing.JPanel();
+        javax.swing.JLabel kix2DefaultMethodLabel = new javax.swing.JLabel();
         kix2DefaultMethod = new javax.swing.JComboBox();
-        kixeDefaultMethodLabel = new javax.swing.JLabel();
+        javax.swing.JLabel kixeDefaultMethodLabel = new javax.swing.JLabel();
         kixeDefaultMethod = new javax.swing.JComboBox();
-        defaultModelFiller = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        javax.swing.Box.Filler defaultModelFiller = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
 
         defaultModelMainPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(""), org.openide.util.NbBundle.getMessage(KIXPanel.class, "KIXPanel.defaultModelMainPanel.border.title"), javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.TOP)); // NOI18N
         defaultModelMainPanel.setLayout(new javax.swing.BoxLayout(defaultModelMainPanel, javax.swing.BoxLayout.LINE_AXIS));
@@ -96,12 +96,7 @@ final class KIXPanel extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.Box.Filler defaultModelFiller;
-    private javax.swing.JPanel defaultModelMainPanel;
-    private javax.swing.JPanel defaultModelPanel;
     private javax.swing.JComboBox kix2DefaultMethod;
-    private javax.swing.JLabel kix2DefaultMethodLabel;
     private javax.swing.JComboBox kixeDefaultMethod;
-    private javax.swing.JLabel kixeDefaultMethodLabel;
     // End of variables declaration//GEN-END:variables
 }

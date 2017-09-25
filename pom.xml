@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.bundesbank</groupId>
     <artifactId>KIXParent</artifactId>
-    <version>2.2.0-SNAPSHOT</version>
+    <version>2.2.0.2</version>
     <packaging>pom</packaging>
 
     <name>KIX - Parent</name>
@@ -18,7 +18,7 @@
         <brandingToken>bundesbank</brandingToken>
         <jdk.version>1.8</jdk.version>
         <netbeans.version>RELEASE82</netbeans.version>
-        <jdemetra.version>2.2.0-SNAPSHOT</jdemetra.version>
+        <jdemetra.version>2.2.0</jdemetra.version>
         <!-- plugins versions > -->
         <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>

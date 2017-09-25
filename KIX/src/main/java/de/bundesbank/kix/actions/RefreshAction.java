@@ -20,9 +20,6 @@ import de.bundesbank.kix.KIXDocumentManager;
 import ec.nbdemetra.ui.nodes.SingleNodeAction;
 import ec.nbdemetra.ws.WorkspaceItem;
 import ec.nbdemetra.ws.nodes.ItemWsNode;
-import ec.tstoolkit.timeseries.regression.ITsVariable;
-import ec.tstoolkit.utilities.IDynamicObject;
-import java.util.Collection;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -46,20 +43,9 @@ public final class RefreshAction extends SingleNodeAction<ItemWsNode> {
 
     @Override
     protected void performAction(ItemWsNode context) {
-        WorkspaceItem<KIXDocument> cur = (WorkspaceItem<KIXDocument>) context.getItem();
+        WorkspaceItem<KIXDocument> cur = context.getItem(KIXDocument.class);
         if (cur != null && !cur.isReadOnly()) {
-            {
-                Collection<ITsVariable> indices = cur.getElement().getIndices().variables();
-                indices.stream()
-                        .filter((variable) -> (variable instanceof IDynamicObject))
-                        .forEach(dynamicVariable -> ((IDynamicObject) dynamicVariable).refresh());
-            }
-            {
-                Collection<ITsVariable> weights = cur.getElement().getWeights().variables();
-                weights.stream()
-                        .filter((variable) -> (variable instanceof IDynamicObject))
-                        .forEach(dynamicVariable -> ((IDynamicObject) dynamicVariable).refresh());
-            }
+            cur.getElement().refresh();
         }
     }
 

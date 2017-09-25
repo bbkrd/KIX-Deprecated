@@ -21,11 +21,7 @@ import ec.nbdemetra.ui.awt.ActionMaps;
 import ec.nbdemetra.ui.awt.InputMaps;
 import ec.nbdemetra.ui.awt.KeyStrokes;
 import ec.nbdemetra.ui.tsaction.ITsAction;
-import ec.tss.DynamicTsVariable;
-import ec.tss.Ts;
-import ec.tss.TsCollection;
-import ec.tss.TsFactory;
-import ec.tss.TsInformationType;
+import ec.tss.*;
 import ec.tss.datatransfer.TssTransferSupport;
 import ec.tstoolkit.timeseries.regression.ITsVariable;
 import ec.tstoolkit.timeseries.regression.TsVariable;
@@ -49,14 +45,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.annotation.Nonnull;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.KeyStroke;
-import javax.swing.TransferHandler;
+import javax.swing.*;
 import static javax.swing.TransferHandler.COPY;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -359,15 +348,12 @@ public class JTsKIXList extends JComponent implements ITsActionAble {
 
         @Override
         public boolean importData(TransferHandler.TransferSupport support) {
-            TsCollection col = TssTransferSupport.getDefault().toTsCollection(support.getTransferable());
-            if (col != null) {
-                col.query(TsInformationType.All);
-                if (!col.isEmpty()) {
-                    appendTsVariables(col);
-                }
-                return true;
-            }
-            return false;
+            return TssTransferSupport.getDefault()
+                    .toTsCollectionStream(support.getTransferable())
+                    .peek(o -> o.load(TsInformationType.All))
+                    .filter(o -> !o.isEmpty())
+                    .peek(JTsKIXList.this::appendTsVariables)
+                    .count() > 0;
         }
     }
 

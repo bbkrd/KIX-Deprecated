@@ -20,6 +20,7 @@ import ec.tstoolkit.information.InformationSet;
 import ec.tstoolkit.information.InformationSetSerializable;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.utilities.DefaultNameValidator;
+import ec.tstoolkit.utilities.IDynamicObject;
 import ec.tstoolkit.utilities.IModifiable;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -30,7 +31,7 @@ import org.openide.util.Exceptions;
  *
  * @author Thomas Witthohn
  */
-public class KIXDocument implements IModifiable, InformationSetSerializable {
+public class KIXDocument implements IModifiable, InformationSetSerializable, IDynamicObject {
 
     private static final String INDICES = "indices", WEIGHTS = "weights", INPUT = "input";
 
@@ -135,5 +136,16 @@ public class KIXDocument implements IModifiable, InformationSetSerializable {
             info.add(WEIGHTS, weightsInfo);
         }
         return info;
+    }
+
+    @Override
+    public boolean refresh() {
+        indices.variables().stream()
+                .filter((variable) -> (variable instanceof IDynamicObject))
+                .forEach(dynamicVariable -> ((IDynamicObject) dynamicVariable).refresh());
+        weights.variables().stream()
+                .filter((variable) -> (variable instanceof IDynamicObject))
+                .forEach(dynamicVariable -> ((IDynamicObject) dynamicVariable).refresh());
+        return true;
     }
 }

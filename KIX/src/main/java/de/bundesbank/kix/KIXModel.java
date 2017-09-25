@@ -15,12 +15,7 @@
  */
 package de.bundesbank.kix;
 
-import de.bundesbank.kix.core.AnnualOverlapCalc;
-import de.bundesbank.kix.core.FBICalc;
-import de.bundesbank.kix.core.ICalc;
-import de.bundesbank.kix.core.KIXCalc;
-import de.bundesbank.kix.core.KIXECalc;
-import de.bundesbank.kix.core.WBGCalc;
+import de.bundesbank.kix.core.*;
 import de.bundesbank.kix.options.KIXOptionsPanelController;
 import static de.bundesbank.kix.options.KIXOptionsPanelController.KIX2_DEFAULT_METHOD;
 import static de.bundesbank.kix.options.KIXOptionsPanelController.KIXE_DEFAULT_METHOD;
@@ -34,6 +29,7 @@ import ec.tstoolkit.MetaData;
 import ec.tstoolkit.data.DataBlock;
 import ec.tstoolkit.timeseries.TsException;
 import ec.tstoolkit.timeseries.regression.ITsVariable;
+import ec.tstoolkit.timeseries.regression.TsVariable;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
@@ -63,11 +59,16 @@ public class KIXModel implements IKIXModel {
     private String[][] formulaNames;
     private TsCollection outputTsCollection;
 
+    @NbBundle.Messages({
+        "# {0} - formula control character",
+        "# {1} - formula number",
+        "ERR_InvalidControlCharacter={0} in formula {1}  is an invalid control character. Please use the syntax described in the help."})
     /**
      *
      * @param inputString
      * @param indices
      * @param weights
+     *
      * @return
      */
     @Override
@@ -116,9 +117,7 @@ public class KIXModel implements IKIXModel {
                         outputTsData[j - 1] = doFBI(formula, j);
                         break;
                     default:
-                        throw new InputException(formula[0].toUpperCase(Locale.ENGLISH) + " in formula "
-                                + j
-                                + " is an invalid control character. Please use the syntax described in the help.");
+                        errorMessage.append(Bundle.ERR_InvalidControlCharacter(formula[0].toUpperCase(Locale.ENGLISH), j)).append("\n");
                 }
             } catch (InputException | TsException e) {
                 errorMessage.append(e.getMessage()).append("\n");
@@ -139,10 +138,12 @@ public class KIXModel implements IKIXModel {
      *
      * @param formula
      * @param j
+     *
      * @return
+     *
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
-    private TsData doKIX(String[] formula, int j) throws InputException {
+    private TsData doKIX(String[] formula, int j) {
         generalFormulaCheck(formula, j, 3, 1);
         yearCheck(formula[formula.length - 1], j);
         dataAvailabilityCheck(formula, j);
@@ -153,19 +154,17 @@ public class KIXModel implements IKIXModel {
         String unchainingMethod = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIX2_DEFAULT_METHOD, PRAGMATIC.name());
         boolean puristic = UnchainingMethod.fromString(unchainingMethod) == PURISTIC;
 
-        KIXCalc calculator = null;
+        ICalc calculator = null;
         for (int i = 1; i < formula.length; i += 3) {
             TsData addData = extractData(indices.get(formula[i]));
             TsData addWeights = extractData(weights.get(formula[i + 1]));
 
             if (calculator == null) {
                 calculator = new KIXCalc(addData, addWeights, refYear, puristic);
+            } else if (formula[i - 1].equals("+")) {
+                calculator.plus(addData, addWeights);
             } else {
-                if (formula[i - 1].equals("+")) {
-                    calculator.add(addData, addWeights);
-                } else {
-                    calculator.minus(addData, addWeights);
-                }
+                calculator.minus(addData, addWeights);
             }
         }
 
@@ -180,10 +179,12 @@ public class KIXModel implements IKIXModel {
      *
      * @param formula
      * @param j
+     *
      * @return
+     *
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
-    private TsData doWBG(String[] formula, int j) throws InputException {
+    private TsData doWBG(String[] formula, int j) {
         generalFormulaCheck(formula, j, 3, 1);
         dataAvailabilityCheck(formula, j);
         checkData(formula, j);
@@ -200,7 +201,7 @@ public class KIXModel implements IKIXModel {
         if (formula[3].equalsIgnoreCase("-")) {
             calc.minus(TsWBTData, TsWBTWeights);
         } else {
-            calc.add(TsWBTData, TsWBTWeights);
+            calc.plus(TsWBTData, TsWBTWeights);
         }
 
         return calc.getResult();
@@ -239,13 +240,13 @@ public class KIXModel implements IKIXModel {
         dataAvailabilityCheck(formula, j);
 
         int refYear = Integer.parseInt(formula[formula.length - 1]);
-        double factor = 0;
-        double factorWeight = 0;
-        TsData weightedIndex = null;
-        TsData weightedIndexWeights = null;
         TsData addData;
         TsData addWeights;
 
+        String unchainingMethod = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIXE_DEFAULT_METHOD, PURISTIC.name());
+        boolean puristic = UnchainingMethod.fromString(unchainingMethod) == PURISTIC;
+
+        ICalc calculator = null;
         for (int i = 1; i < formula.length; i += 3) {
 
             addData = extractData(indices.get(formula[i]));
@@ -254,33 +255,20 @@ public class KIXModel implements IKIXModel {
             checkNaN(addData, formula[i]);
             checkNaN(addWeights, formula[i + 1]);
 
-            if (weightedIndex == null || weightedIndexWeights == null) {
-                weightedIndex = KIXECalc.unchain(addData);
-                weightedIndexWeights = addWeights;
-                factor = KIXECalc.addToFactor(factor, factorWeight, addData, KIXECalc.weightInRefYear(addData, addWeights, refYear), refYear);
-                factorWeight += KIXECalc.weightInRefYear(addData, addWeights, refYear);
+            if (calculator == null) {
+                calculator = new KIXECalc(addData, addWeights, refYear, puristic);
+            } else if (formula[i - 1].equals("+")) {
+                calculator.plus(addData, addWeights);
             } else {
-                if ("-".equals(formula[i - 1])) {
-                    weightedIndex = KIXECalc.subtractFromWeightSum(weightedIndex, weightedIndexWeights, KIXECalc.unchain(addData), addWeights);
-                    weightedIndexWeights = weightedIndexWeights.minus(addWeights);
-                    factor = KIXECalc.subtractFromFactor(factor, factorWeight, addData, KIXECalc.weightInRefYear(addData, addWeights, refYear), refYear);
-                    factorWeight -= KIXECalc.weightInRefYear(addData, addWeights, refYear);
-                } else {
-                    weightedIndex = KIXECalc.addToWeightSum(weightedIndex, weightedIndexWeights, KIXECalc.unchain(addData), addWeights);
-                    weightedIndexWeights = weightedIndexWeights.plus(addWeights);
-                    factor = KIXECalc.addToFactor(factor, factorWeight, addData, KIXECalc.weightInRefYear(addData, addWeights, refYear), refYear);
-                    factorWeight += KIXECalc.weightInRefYear(addData, addWeights, refYear);
-                }
+                calculator.minus(addData, addWeights);
             }
-
         }
-        TsData returnValue = KIXECalc.scaleToRefYear(KIXECalc.chain(weightedIndex), factor, refYear);
-        String unchainingMethod = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIXE_DEFAULT_METHOD, PURISTIC.name());
-        if (UnchainingMethod.fromString(unchainingMethod) == PURISTIC) {
 
-            return returnValue.drop(returnValue.getFrequency().intValue() - returnValue.getStart().getPosition(), 0);
+        if (calculator != null) {
+            return calculator.getResult();
+        } else {
+            throw new InputException("Error in formular " + j);
         }
-        return returnValue;
     }
 
     private TsData doWBGE(String[] formula, int j) {
@@ -335,10 +323,11 @@ public class KIXModel implements IKIXModel {
      * data list and informs the user about formulas with missing data parts.
      *
      * @param formula String array with all parts of the requested formula
-     * @param j the count of the formula
+     * @param j       the count of the formula
+     *
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
-    private void dataAvailabilityCheck(String[] formula, int j) throws InputException {
+    private void dataAvailabilityCheck(String[] formula, int j) {
         String start = "The following data of formula " + j
                 + " could not be found: ";
         StringBuilder errortext = new StringBuilder(start);
@@ -372,19 +361,31 @@ public class KIXModel implements IKIXModel {
         "# {0} - index series name",
         "# {1} - weighted series name",
         "# {2} - formula number",
-        "ERR_CHECKDATA_IndexStartsBeforeWeights=The index series {0} begins before the corresponding weight series {1} in formula {2}."
+        "ERR_CHECKDATA_IndexStartsBeforeWeights=The index series {0} begins before the corresponding weight series {1} in formula {2}.",
+        "# {0} - index series name",
+        "ERR_CHECKDATA_IndexNoStartDate=Index series {0} has no defined start date.",
+        "# {0} - weighted series name",
+        "ERR_CHECKDATA_WeightNoStartDate=Weight series {0} has no defined start date."
     })
     /**
      *
      * @param formula
      * @param j
+     *
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
-    private void checkData(String[] formula, int j) throws InputException {
+    private void checkData(String[] formula, int j) {
         StringBuilder errortext = new StringBuilder();
         for (int i = 1; i < formula.length; i += 3) {
+            if (indices.get(formula[i]).getDefinitionDomain() == null) {
+                errortext.append(Bundle.ERR_CHECKDATA_IndexNoStartDate(formula[i]));
+            }
+            if (weights.get(formula[i + 1]).getDefinitionDomain() == null) {
+                errortext.append(Bundle.ERR_CHECKDATA_WeightNoStartDate(formula[i + 1]));
+            }
             TsPeriod indexStart = indices.get(formula[i]).getDefinitionDomain().getStart();
             TsPeriod weightStart = weights.get(formula[i + 1]).getDefinitionDomain().getStart();
+
             if (!(indexStart.getPosition() == 0)
                     || !(weightStart.getPosition() == 0)) {
                 //TODO Prüfung vervollständigen/verifizieren
@@ -400,6 +401,9 @@ public class KIXModel implements IKIXModel {
     }
 
     private TsData extractData(ITsVariable input) {
+        if (input instanceof TsVariable) {
+            return ((TsVariable) input).getTsData();
+        }
         ArrayList<DataBlock> data = new ArrayList<>();
         TsDomain domain = input.getDefinitionDomain();
         data.add(new DataBlock(domain.getLength()));
@@ -420,7 +424,8 @@ public class KIXModel implements IKIXModel {
             formulaNames[counter] = line.split("=", 2);
             int formulaPosition = formulaNames[counter].length - 1;
             String formula = formulaNames[counter][formulaPosition].toLowerCase(Locale.ENGLISH);
-            if (formula.startsWith(ControlCharacter.KIX.getName()) || formula.startsWith(ControlCharacter.WBG.getName())) {
+            //TODO efficient and flexible way instead of hardcoded magic strings
+            if (formula.startsWith("kix") || formula.startsWith("wbg") || formula.startsWith("cli") || formula.startsWith("pcg")) {
                 formulaNames[counter][formulaPosition] = addMissingWeights(formula);
                 request[counter] = formulaNames[counter][formulaPosition].split(",");
             } else {
@@ -443,11 +448,12 @@ public class KIXModel implements IKIXModel {
      * year is 1900 or later.
      *
      * @param year the string representation of the year
-     * @param j the count of the formula
+     * @param j    the count of the formula
+     *
      * @throws ec.nbdemetra.kix.KIXModel.InputException exception message
-     * informs the user about the formula with the false year
+     *                                                  informs the user about the formula with the false year
      */
-    private void yearCheck(String year, int j) throws InputException {
+    private void yearCheck(String year, int j) {
         if (!tryParseInt(year)) {
             throw new InputException("The reference year (" + year + ") has to be numeric in formula " + j);
         }
@@ -460,9 +466,10 @@ public class KIXModel implements IKIXModel {
      *
      * @param formula
      * @param j
+     *
      * @throws ec.nbdemetra.kix.KIXModel.InputException
      */
-    private void checkWBG(String[] formula, int j, TsVariables indices) throws InputException {
+    private void checkWBG(String[] formula, int j, TsVariables indices) {
         if (formula.length != 7) {
             throw new InputException("Formula "
                     + j + " is not following the WBG syntax.");
@@ -479,13 +486,13 @@ public class KIXModel implements IKIXModel {
         }
     }
 
-    private void checkNaN(TsData data, String name) throws InputException {
+    private void checkNaN(TsData data, String name) {
         if (data.hasMissingValues()) {
             throw new InputException("Missing values in " + name);
         }
     }
 
-    private void checkLag(TsData data, int lag, int j) throws InputException {
+    private void checkLag(TsData data, int lag, int j) {
         if (data.getFrequency() == TsFrequency.Monthly && lag != 1 && lag != 3 && lag != 6 && lag != 12) {
             throw new InputException("In formula" + j + ": Only lag 1,3,6 or 12 allowed for monthly data");
         }
@@ -497,17 +504,17 @@ public class KIXModel implements IKIXModel {
     private void fillTsCollection(TsData[] outputTsData) {
         for (int i = 0; i < outputTsData.length; i++) {
             if (outputTsData[i] != null) {
-                Ts t;
+                MetaData metaData = new MetaData();
+                String name;
                 if (formulaNames[i].length == 2) {
-                    MetaData metaData = new MetaData();
-                    metaData.put("titel", formulaNames[i][0]);
+                    name = formulaNames[i][0];
+                    metaData.put("name", name);
                     metaData.put("formula", formulaNames[i][1]);
-                    t = TsFactory.instance.createTs(formulaNames[i][0], metaData, outputTsData[i]);
                 } else {
-                    MetaData metaData = new MetaData();
+                    name = "Formula " + String.valueOf(i + 1);
                     metaData.put("formula", formulaNames[i][0]);
-                    t = TsFactory.instance.createTs("Formula " + String.valueOf(i + 1), metaData, outputTsData[i]);
                 }
+                Ts t = TsFactory.instance.createTs(name, metaData, outputTsData[i]);
                 outputTsCollection.add(t);
             }
         }
@@ -519,7 +526,7 @@ public class KIXModel implements IKIXModel {
     }
 
     private TsData doFBI(String[] formula, int j) {
-        FBICalc calc = null;
+        ICalc calc = null;
 
         generalFormulaCheck(formula, j, 3, 0);
         dataAvailabilityCheck(formula, j);
@@ -531,23 +538,19 @@ public class KIXModel implements IKIXModel {
                 double addWeights = Double.parseDouble(formula[i + 1]);
                 if (calc == null) {
                     calc = new FBICalc(addData, addWeights);
+                } else if (formula[i - 1].equals("+")) {
+                    calc.plus(addData, addWeights);
                 } else {
-                    if (formula[i - 1].equals("+")) {
-                        calc.add(addData, addWeights);
-                    } else {
-                        calc.minus(addData, addWeights);
-                    }
+                    calc.minus(addData, addWeights);
                 }
             } else {
                 TsData addWeights = extractData(weights.get(formula[i + 1]));
                 if (calc == null) {
                     calc = new FBICalc(addData, addWeights);
+                } else if (formula[i - 1].equals("+")) {
+                    calc.plus(addData, addWeights);
                 } else {
-                    if (formula[i - 1].equals("+")) {
-                        calc.add(addData, addWeights);
-                    } else {
-                        calc.minus(addData, addWeights);
-                    }
+                    calc.minus(addData, addWeights);
                 }
             }
 
@@ -564,8 +567,9 @@ public class KIXModel implements IKIXModel {
      * Returns true if the String can be parsed to Integer.
      *
      * @param value String to test
+     *
      * @return <code>true</code> if value can be parsed to Integer;
-     * <code>false</code> otherwise.
+     *         <code>false</code> otherwise.
      */
     private boolean tryParseInt(String value) {
         try {

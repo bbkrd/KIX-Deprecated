@@ -15,11 +15,7 @@
  */
 package de.bundesbank.kix;
 
-import ec.nbdemetra.ws.AbstractWorkspaceItemManager;
-import ec.nbdemetra.ws.IWorkspaceItemManager;
-import ec.nbdemetra.ws.Workspace;
-import ec.nbdemetra.ws.WorkspaceFactory;
-import ec.nbdemetra.ws.WorkspaceItem;
+import ec.nbdemetra.ws.*;
 import ec.tstoolkit.utilities.Id;
 import ec.tstoolkit.utilities.LinearId;
 import java.awt.event.ActionEvent;

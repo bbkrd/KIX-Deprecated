@@ -1,13 +1,6 @@
 package de.bundesbank.kix;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
@@ -21,12 +14,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.Utilities;
+import javax.swing.text.*;
 
 /**
  * This class will display line numbers for a related text component. The text
@@ -81,9 +69,9 @@ public class TextLineNumber extends JPanel
     /**
      * Create a line number component for a text component.
      *
-     * @param component the related text component
+     * @param component            the related text component
      * @param minimumDisplayDigits the number of digits used to calculate the
-     * minimum width of the component
+     *                             minimum width of the component
      */
     public TextLineNumber(JTextComponent component, int minimumDisplayDigits) {
         this.component = component;
@@ -115,7 +103,7 @@ public class TextLineNumber extends JPanel
      * changed.
      *
      * @param updateFont when true update the Font and repaint the line numbers,
-     * otherwise just repaint the line numbers.
+     *                   otherwise just repaint the line numbers.
      */
     public void setUpdateFont(boolean updateFont) {
         this.updateFont = updateFont;
@@ -201,7 +189,7 @@ public class TextLineNumber extends JPanel
      * width of the component. Default is 3.
      *
      * @param minimumDisplayDigits the number digits used in the preferred width
-     * calculation
+     *                             calculation
      */
     public void setMinimumDisplayDigits(int minimumDisplayDigits) {
         this.minimumDisplayDigits = minimumDisplayDigits;
@@ -408,7 +396,9 @@ public class TextLineNumber extends JPanel
                     repaint();
                     lastHeight = rect.y;
                 }
-            } catch (BadLocationException ex) { /* nothing to do */ }
+            } catch (BadLocationException ex) {
+                /* nothing to do */
+            }
         });
     }
 

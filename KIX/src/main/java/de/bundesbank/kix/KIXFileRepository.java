@@ -36,17 +36,17 @@ public class KIXFileRepository extends AbstractFileItemRepository<KIXDocument> {
     @Override
     public boolean load(WorkspaceItem<KIXDocument> item) {
         return loadFile(item, (KIXDocument o) -> {
-            item.setElement(o);
-            item.resetDirty();
-        });
+                    item.setElement(o);
+                    item.resetDirty();
+                });
     }
 
     @Override
     public boolean save(WorkspaceItem<KIXDocument> item) {
         return storeFile(item, item.getElement(), () -> {
-            item.resetDirty();
-            item.getElement().resetDirty();
-        });
+                     item.resetDirty();
+                     item.getElement().resetDirty();
+                 });
     }
 
     @Override
