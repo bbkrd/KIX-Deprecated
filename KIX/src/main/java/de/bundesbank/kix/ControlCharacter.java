@@ -31,7 +31,8 @@ public enum ControlCharacter {
     WBGE(new String[]{"wbge", "pcg.per"}, 2),
     UNCE(new String[]{"unc.per"}, 0),
     CHAE(new String[]{"cha.per"}, 0),
-    FBI(new String[]{"fbi"}, 3);
+    FBI(new String[]{"fbi"}, 3),
+    UNKNOWN(new String[]{}, 0);
 
     private ControlCharacter(String[] names, int number) {
         this.names = names;
@@ -67,6 +68,6 @@ public enum ControlCharacter {
                 }
             }
         }
-        throw new IllegalArgumentException("No constant with text " + text + " found");
+        return UNKNOWN;
     }
 }

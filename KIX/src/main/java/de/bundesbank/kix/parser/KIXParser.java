@@ -16,7 +16,9 @@ import static de.bundesbank.kix.options.UnchainingMethod.PURISTIC;
 import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import org.openide.util.NbPreferences;
+import org.openide.util.lookup.ServiceProvider;
 
+@ServiceProvider(service = IParser.class)
 public class KIXParser extends AbstractParser {
 
     @Override

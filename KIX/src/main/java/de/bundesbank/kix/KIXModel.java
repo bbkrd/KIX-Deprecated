@@ -62,7 +62,7 @@ public class KIXModel implements IKIXModel {
     @NbBundle.Messages({
         "# {0} - formula control character",
         "# {1} - formula number",
-        "ERR_InvalidControlCharacter={0} in formula {1}  is an invalid control character. Please use the syntax described in the help."})
+        "ERR_InvalidControlCharacter={0} in formula {1} is an invalid control character. Please use the syntax described in the help."})
     /**
      *
      * @param inputString
