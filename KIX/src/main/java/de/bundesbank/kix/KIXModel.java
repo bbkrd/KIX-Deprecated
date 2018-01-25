@@ -19,9 +19,6 @@ import de.bundesbank.kix.core.*;
 import de.bundesbank.kix.options.KIXOptionsPanelController;
 import static de.bundesbank.kix.options.KIXOptionsPanelController.KIX2_DEFAULT_METHOD;
 import static de.bundesbank.kix.options.KIXOptionsPanelController.KIXE_DEFAULT_METHOD;
-import de.bundesbank.kix.options.UnchainingMethod;
-import static de.bundesbank.kix.options.UnchainingMethod.PRAGMATIC;
-import static de.bundesbank.kix.options.UnchainingMethod.PURISTIC;
 import ec.tss.Ts;
 import ec.tss.TsCollection;
 import ec.tss.TsFactory;
@@ -151,8 +148,7 @@ public class KIXModel implements IKIXModel {
 
         int refYear = Integer.parseInt(formula[formula.length - 1]);
 
-        String unchainingMethod = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIX2_DEFAULT_METHOD, PRAGMATIC.name());
-        boolean puristic = UnchainingMethod.fromString(unchainingMethod) == PURISTIC;
+        boolean displayFirstYear = NbPreferences.forModule(KIXOptionsPanelController.class).getBoolean(KIX2_DEFAULT_METHOD, true);
 
         ICalc calculator = null;
         for (int i = 1; i < formula.length; i += 3) {
@@ -160,7 +156,7 @@ public class KIXModel implements IKIXModel {
             TsData addWeights = extractData(weights.get(formula[i + 1]));
 
             if (calculator == null) {
-                calculator = new KIXCalc(addData, addWeights, refYear, puristic);
+                calculator = new KIXCalc(addData, addWeights, refYear, displayFirstYear);
             } else if (formula[i - 1].equals("+")) {
                 calculator.plus(addData, addWeights);
             } else {
@@ -243,8 +239,7 @@ public class KIXModel implements IKIXModel {
         TsData addData;
         TsData addWeights;
 
-        String unchainingMethod = NbPreferences.forModule(KIXOptionsPanelController.class).get(KIXE_DEFAULT_METHOD, PURISTIC.name());
-        boolean puristic = UnchainingMethod.fromString(unchainingMethod) == PURISTIC;
+        boolean displayFirstYear = NbPreferences.forModule(KIXOptionsPanelController.class).getBoolean(KIXE_DEFAULT_METHOD, false);
 
         ICalc calculator = null;
         for (int i = 1; i < formula.length; i += 3) {
@@ -256,7 +251,7 @@ public class KIXModel implements IKIXModel {
             checkNaN(addWeights, formula[i + 1]);
 
             if (calculator == null) {
-                calculator = new KIXECalc(addData, addWeights, refYear, puristic);
+                calculator = new KIXECalc(addData, addWeights, refYear, displayFirstYear);
             } else if (formula[i - 1].equals("+")) {
                 calculator.plus(addData, addWeights);
             } else {

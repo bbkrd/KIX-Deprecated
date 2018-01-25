@@ -24,11 +24,11 @@ import java.util.Locale;
 public enum ControlCharacter {
 
     KIX(new String[]{"kix", "cli.ann"}, 3),
-    WBG(new String[]{"wbg", "pcg.ann"}, 3),
+    WBG(new String[]{"wbg", "ctg.ann"}, 3),
     UNC(new String[]{"unc.ann"}, 0),
     CHA(new String[]{"cha.ann"}, 0),
     KIXE(new String[]{"kixe", "cli.per"}, 3),
-    WBGE(new String[]{"wbge", "pcg.per"}, 2),
+    WBGE(new String[]{"wbge", "ctg.per"}, 2),
     UNCE(new String[]{"unc.per"}, 0),
     CHAE(new String[]{"cha.per"}, 0),
     FBI(new String[]{"fbi"}, 3),

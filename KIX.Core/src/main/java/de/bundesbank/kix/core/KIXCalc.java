@@ -26,7 +26,7 @@ import ec.tstoolkit.timeseries.simplets.TsPeriod;
 public class KIXCalc extends AnnualOverlapCalc {
 
     private double factor, factorWeight;
-    private final boolean puristic;
+    private final boolean displayFirstYear;
     private final int referenzYear;
     private TsData weightedSumData;
     private TsData weightedSumWeights;
@@ -35,11 +35,11 @@ public class KIXCalc extends AnnualOverlapCalc {
         this(indexData, indexWeights, referenzYear, false);
     }
 
-    public KIXCalc(TsData indexData, TsData indexWeights, int referenzYear, boolean puristic) {
+    public KIXCalc(TsData indexData, TsData indexWeights, int referenzYear, boolean displayFirstYear) {
         this.weightedSumData = unchain(indexData);
         this.weightedSumWeights = mid(indexWeights, true);
 
-        this.puristic = puristic;
+        this.displayFirstYear = displayFirstYear;
         this.referenzYear = referenzYear;
 
         TsPeriod referenzYearPeriod = new TsPeriod(indexData.getFrequency(), referenzYear, 1);
@@ -59,10 +59,11 @@ public class KIXCalc extends AnnualOverlapCalc {
         double meanInRefYear = mid(chainSum(weightedSumData), false).get(referenzYearPeriod);
 
         TsData indexData = chainSum(weightedSumData).times(factor).div(meanInRefYear);
-        if (puristic) {
-            return indexData.drop(indexData.getFrequency().intValue() - indexData.getStart().getPosition(), 0);
+        if (displayFirstYear) {
+            return indexData;
         }
-        return indexData;
+        return indexData.drop(indexData.getFrequency().intValue() - indexData.getStart().getPosition(), 0);
+
     }
 
     @Override

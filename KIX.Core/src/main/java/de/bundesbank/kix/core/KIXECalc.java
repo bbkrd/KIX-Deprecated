@@ -24,13 +24,13 @@ import ec.tstoolkit.timeseries.simplets.TsData;
 public class KIXECalc extends LastPeriodOverlapCalc {
 
     private double factor, factorWeight;
-    private final boolean puristic;
+    private final boolean displayFirstYear;
     private final int referenzYear;
     private TsData weightedSumData;
     private TsData weightedSumWeights;
 
-    public KIXECalc(TsData indexData, TsData indexWeights, int referenzYear, boolean puristic) {
-        this.puristic = puristic;
+    public KIXECalc(TsData indexData, TsData indexWeights, int referenzYear, boolean displayFirstYear) {
+        this.displayFirstYear = displayFirstYear;
         this.referenzYear = referenzYear;
 
         this.weightedSumData = unchain(indexData);
@@ -62,9 +62,10 @@ public class KIXECalc extends LastPeriodOverlapCalc {
     public TsData getResult() {
 
         TsData indexData = scaleToRefYear(chain(weightedSumData), factor, referenzYear);
-        if (puristic) {
-            return indexData.drop(indexData.getFrequency().intValue() - indexData.getStart().getPosition(), 0);
+        if (displayFirstYear) {
+            return indexData;
         }
-        return indexData;
+        return indexData.drop(indexData.getFrequency().intValue() - indexData.getStart().getPosition(), 0);
+
     }
 }

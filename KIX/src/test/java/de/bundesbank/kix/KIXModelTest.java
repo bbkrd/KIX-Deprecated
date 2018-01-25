@@ -18,7 +18,6 @@ package de.bundesbank.kix;
 import de.bundesbank.kix.options.KIXOptionsPanelController;
 import static de.bundesbank.kix.options.KIXOptionsPanelController.KIX2_DEFAULT_METHOD;
 import static de.bundesbank.kix.options.KIXOptionsPanelController.KIXE_DEFAULT_METHOD;
-import de.bundesbank.kix.options.UnchainingMethod;
 import ec.tss.TsCollection;
 import ec.tstoolkit.timeseries.regression.TsVariable;
 import ec.tstoolkit.timeseries.regression.TsVariables;
@@ -61,13 +60,13 @@ public class KIXModelTest {
         weights.set("w2", new TsVariable(new TsData(TsFrequency.Quarterly, 2004, 0, w2Data, true)));
     }
 
-    private void setMethod(String method, UnchainingMethod unchainingMethod) {
-        NbPreferences.forModule(KIXOptionsPanelController.class).put(method, unchainingMethod.name());
+    private void setMethod(String method, boolean displayFirstYear) {
+        NbPreferences.forModule(KIXOptionsPanelController.class).putBoolean(method, displayFirstYear);
     }
 
     @Test
     public void TestKIX_Add2TsPragmatic() {
-        setMethod(KIX2_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC);
+        setMethod(KIX2_DEFAULT_METHOD, true);
         String inputString = "KIX,i1,w1,+,i2,w2,2005";
         quarterlyData();
         double[] expResult = {88.59, 93.74, 91.52, 95.49, 94.60, 97.81, 100.71, 105.62, 106.50, 110.00, 112.55, 123.68,
@@ -79,7 +78,7 @@ public class KIXModelTest {
 
     @Test
     public void TestKIX_Add2TsPuristic() {
-        setMethod(KIX2_DEFAULT_METHOD, UnchainingMethod.PURISTIC);
+        setMethod(KIX2_DEFAULT_METHOD, false);
         String inputString = "KIX,i1,w1,+,i2,w2,2005";
         quarterlyData();
         double[] expResult = {94.60, 97.81, 100.71, 105.62, 106.50, 110.00, 112.55, 123.68,
@@ -93,7 +92,7 @@ public class KIXModelTest {
 
     @Test
     public void TestKIX_Subtract2TsPragmatic() {
-        setMethod(KIX2_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC);
+        setMethod(KIX2_DEFAULT_METHOD, true);
         String inputString = "KIX,i1,w1,-,i2,w2,2005";
         quarterlyData();
         double[] expResult = {91.42, 93.66, 89.92, 94.8, 96.67, 98.95, 99.37, 103.57, 109.35, 107.99, 112.2, 120.29, 121.07,
@@ -107,7 +106,7 @@ public class KIXModelTest {
 
     @Test
     public void TestKIX_Subtract2TsPuristic() {
-        setMethod(KIX2_DEFAULT_METHOD, UnchainingMethod.PURISTIC);
+        setMethod(KIX2_DEFAULT_METHOD, false);
         String inputString = "KIX,i1,w1,-,i2,w2,2005";
         quarterlyData();
         double[] expResult = {96.67, 98.95, 99.37, 103.57, 109.35, 107.99, 112.2, 120.29, 121.07,
@@ -121,7 +120,7 @@ public class KIXModelTest {
 
     @Test
     public void TestKIX_NullTestPragmatic() {
-        setMethod(KIX2_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC);
+        setMethod(KIX2_DEFAULT_METHOD, true);
         String inputString = "KIX,i1,w1,+,i2,w2,-,i2,w2,2005";
         quarterlyData();
         double[] expResult = {89.78, 93.71, 90.85, 95.20, 95.47, 98.29, 100.15, 104.76, 107.69, 109.16, 112.40, 122.26,
@@ -135,7 +134,7 @@ public class KIXModelTest {
 
     @Test
     public void TestKIX_NullTestPuristic() {
-        setMethod(KIX2_DEFAULT_METHOD, UnchainingMethod.PURISTIC);
+        setMethod(KIX2_DEFAULT_METHOD, false);
         String inputString = "KIX,i1,w1,+,i2,w2,-,i2,w2,2005";
         quarterlyData();
         double[] expResult = {95.47, 98.29, 100.15, 104.76, 107.69, 109.16, 112.40, 122.26,
@@ -149,7 +148,7 @@ public class KIXModelTest {
 
     @Test
     public void TestKIXE_Add2TsPuristic() {
-        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PURISTIC);
+        setMethod(KIXE_DEFAULT_METHOD, false);
         String inputString = "KIXE,i1,w1,+,i2,w2,2005";
         quarterlyData();
         double[] expResult = {94.59634, 97.81158, 100.71445, 105.62539, 106.46924, 109.99229, 112.53047, 123.67321, 118.79002, 120.54374,
@@ -164,7 +163,7 @@ public class KIXModelTest {
 
     @Test
     public void TestKIXE_Add2Ts2Puristic() {
-        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PURISTIC);
+        setMethod(KIXE_DEFAULT_METHOD, false);
         String inputString = "KIXE,i1,w1,+,i2,w2,2007";
 
         indices.clear();
@@ -186,7 +185,7 @@ public class KIXModelTest {
 
     @Test
     public void TestKIXE_Add3TsPuristic() {
-        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PURISTIC);
+        setMethod(KIXE_DEFAULT_METHOD, false);
         String inputString = "KIXE,i1,w1,+,i2,w2,+,i2,w2,2007";
 
         indices.clear();
@@ -209,7 +208,7 @@ public class KIXModelTest {
 
     @Test
     public void TestKIXE_AddAndSubtractTsPuristic() {
-        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PURISTIC);
+        setMethod(KIXE_DEFAULT_METHOD, false);
         String inputString = "KIXE,i1,w1,+,i2,w2,-,i2,w2,2007";
 
         indices.clear();
@@ -233,7 +232,7 @@ public class KIXModelTest {
     @Test
     //TODO: Complet test (expected results)
     public void TestKIXE_Add2TsPragmatic() {
-        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC);
+        setMethod(KIXE_DEFAULT_METHOD, true);
         String inputString = "KIXE,i1,w1,+,i2,w2,2005";
         quarterlyData();
         double[] expResult = {};
@@ -250,7 +249,7 @@ public class KIXModelTest {
     @Test
     //TODO: Complet test (expected results)
     public void TestKIXE_Add2Ts2Pragmatic() {
-        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC);
+        setMethod(KIXE_DEFAULT_METHOD, true);
         String inputString = "KIXE,i1,w1,+,i2,w2,2007";
 
         indices.clear();
@@ -274,7 +273,7 @@ public class KIXModelTest {
     @Test
     //TODO: Complet test (expected results)
     public void TestKIXE_Add3TsPragmatic() {
-        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC);
+        setMethod(KIXE_DEFAULT_METHOD, true);
         String inputString = "KIXE,i1,w1,+,i2,w2,+,i2,w2,2007";
 
         indices.clear();
@@ -297,7 +296,7 @@ public class KIXModelTest {
     @Test
     //TODO: Complet test (expected results)
     public void TestKIXE_AddAndSubtractTsPragmatic() {
-        setMethod(KIXE_DEFAULT_METHOD, UnchainingMethod.PRAGMATIC);
+        setMethod(KIXE_DEFAULT_METHOD, true);
         String inputString = "KIXE,i1,w1,+,i2,w2,-,i2,w2,2007";
 
         indices.clear();
