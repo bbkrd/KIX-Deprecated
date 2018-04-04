@@ -38,7 +38,11 @@ public class WBGCalc extends AnnualOverlapCalc {
 
         this.wholeIndex = index.index(TsPeriod.year(index.getStart().getYear()), 100);
         this.wholeWeight = mid(weight, true);
-        this.lag = lag;
+        if (lag > 0) {
+            this.lag = lag;
+        } else {
+            this.lag = wholeIndex.getFrequency().intValue() * lag * -1;
+        }
     }
 
     @Override
@@ -46,12 +50,12 @@ public class WBGCalc extends AnnualOverlapCalc {
         weight = mid(weight, true);
 
         TsData TsRemainData = weightsum(unchain(wholeIndex), wholeWeight,
-                unchain(index), weight, true);
+                                        unchain(index), weight, true);
 
         TsData TsRemainWeights = wholeWeight.minus(weight);
 
         tsWBTDataLagDiff = weightsum(unchain(index.lead(lag), index),
-                weight, TsRemainData, TsRemainWeights, false);
+                                     weight, TsRemainData, TsRemainWeights, false);
     }
 
     @Override
@@ -59,12 +63,12 @@ public class WBGCalc extends AnnualOverlapCalc {
         weight = mid(weight, true);
 
         TsData TsRemainData = weightsum(unchain(wholeIndex), wholeWeight,
-                unchain(index), weight, false);
+                                        unchain(index), weight, false);
 
         TsData TsRemainWeights = wholeWeight.plus(weight);
 
         tsWBTDataLagDiff = weightsum(unchain(index.lead(lag), index),
-                weight, TsRemainData, TsRemainWeights, true);
+                                     weight, TsRemainData, TsRemainWeights, true);
     }
 
     @Override

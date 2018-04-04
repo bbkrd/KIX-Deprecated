@@ -19,11 +19,8 @@ import de.bundesbank.kix.KIXDocument;
 import de.bundesbank.kix.KIXDocumentManager;
 import ec.nbdemetra.ws.WorkspaceFactory;
 import ec.nbdemetra.ws.WorkspaceItem;
-import ec.tstoolkit.timeseries.regression.ITsVariable;
-import ec.tstoolkit.utilities.IDynamicObject;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collection;
 import java.util.List;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -49,19 +46,6 @@ public final class RefreshAllAction implements ActionListener {
         List<WorkspaceItem<KIXDocument>> documents = WorkspaceFactory.getInstance().getActiveWorkspace().searchDocuments(KIXDocument.class);
         documents.stream()
                 .filter(document -> document != null && !document.isReadOnly())
-                .forEach(document -> {
-                    {
-                        Collection<ITsVariable> indices = document.getElement().getIndices().variables();
-                        indices.stream()
-                        .filter((variable) -> (variable instanceof IDynamicObject))
-                        .forEach(dynamicVariable -> ((IDynamicObject) dynamicVariable).refresh());
-                    }
-                    {
-                        Collection<ITsVariable> weights = document.getElement().getWeights().variables();
-                        weights.stream()
-                        .filter((variable) -> (variable instanceof IDynamicObject))
-                        .forEach(dynamicVariable -> ((IDynamicObject) dynamicVariable).refresh());
-                    }
-                });
+                .forEach(document -> document.getElement().refresh());
     }
 }

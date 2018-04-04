@@ -24,6 +24,9 @@ import ec.tstoolkit.timeseries.simplets.*;
 public abstract class LastPeriodOverlapCalc implements ICalc {
 
     public static TsData contributionToGrowth(TsData unchainedContributor, TsData weightsContributor, TsData unchainedTotal, TsData weightsTotal, int lag) {
+        if (lag < 0) {
+            lag = unchainedContributor.getFrequency().intValue() * lag * -1;
+        }
         TsDomain domain = unchainedContributor.lead(lag).getDomain().intersection(unchainedContributor.getDomain());
         TsData returnValue = new TsData(domain, 0);
         TsFrequency frequency = returnValue.getFrequency();
