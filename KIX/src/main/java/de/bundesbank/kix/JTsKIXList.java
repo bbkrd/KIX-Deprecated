@@ -399,6 +399,7 @@ public class JTsKIXList extends JComponent implements ITsActionAble {
             }
 
             ITsVariable var = variables.get(names[rowIndex]);
+            TsDomain domain;
             switch (columnIndex) {
                 case 0:
                     return names[rowIndex];
@@ -406,18 +407,16 @@ public class JTsKIXList extends JComponent implements ITsActionAble {
                     return var.getDescription(TsFrequency.Undefined);
                 case 2:
                     return var.getDefinitionFrequency();
-                case 3: {
-                    TsDomain d = var.getDefinitionDomain();
-                    if (d != null) {
-                        return d.getStart();
+                case 3:
+                    domain = var.getDefinitionDomain();
+                    if (domain != null) {
+                        return domain.getStart();
                     }
-                }
-                case 4: {
-                    TsDomain d = var.getDefinitionDomain();
-                    if (d != null) {
-                        return d.getLast();
+                case 4:
+                    domain = var.getDefinitionDomain();
+                    if (domain != null) {
+                        return domain.getLast();
                     }
-                }
                 default:
                     return null;
             }

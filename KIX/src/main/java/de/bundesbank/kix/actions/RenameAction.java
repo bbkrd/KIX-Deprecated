@@ -60,8 +60,10 @@ public final class RenameAction extends SingleNodeAction<ItemWsNode> {
             }
             newName = nd.getInputText();
             if (newName.equals(oldName)) {
+                return;
+            }
 
-            } else if (null != WorkspaceFactory.getInstance().getActiveWorkspace().searchDocumentByName(cur.getFamily(), newName)) {
+            if (null != WorkspaceFactory.getInstance().getActiveWorkspace().searchDocumentByName(cur.getFamily(), newName)) {
                 NotifyDescriptor descriptor = new NotifyDescriptor.Message(newName + " is in use. You should choose another name!");
                 DialogDisplayer.getDefault().notify(descriptor);
             } else {

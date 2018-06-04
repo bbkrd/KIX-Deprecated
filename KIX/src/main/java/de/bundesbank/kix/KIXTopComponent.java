@@ -63,7 +63,7 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
     private JTextArea inputText;
     private JButton runButton;
     private TsVariables indexData, weightsData;
-    private IKIXModel _KIX;
+    private Repository repository;
 
     private static KIXDocumentManager manager() {
         return WorkspaceFactory.getInstance().getManager(KIXDocumentManager.class);
@@ -81,7 +81,7 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
     }
 
     private void initComponents() {
-        setLayout(new java.awt.BorderLayout());
+        setLayout(new BorderLayout());
 
         JToolBar toolBarRepresentation = NbComponents.newInnerToolbar();
         runButton = new JButton(DemetraUiIcon.COMPILE_16);
@@ -142,7 +142,7 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
         dataPane.setResizeWeight(.5);
 
         initActionListener();
-        _KIX = new KIXModel();
+        repository = new Repository();
     }
 
     /**
@@ -161,9 +161,9 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
     private void initActionListener() {
         RunAction runAction = new RunAction();
         runButton.addActionListener(runAction);
-        String RUN = "run";
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK), RUN);
-        this.getActionMap().put(RUN, runAction);
+        String run = "run";
+        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK), run);
+        this.getActionMap().put(run, runAction);
     }
 
     private final class RunAction extends AbstractAction {
@@ -172,7 +172,7 @@ public final class KIXTopComponent extends WorkspaceTopComponent<KIXDocument> {
         public void actionPerformed(ActionEvent e) {
             if (!inputText.getText().trim().isEmpty()) {
                 results.getTsCollection().clear();
-                TsCollection data = _KIX.parser(inputText.getText(), indexData, weightsData);
+                TsCollection data = repository.calculate(inputText.getText(), indexData, weightsData);
                 if (data != null) {
                     results.getTsCollection().append(data);
                 }

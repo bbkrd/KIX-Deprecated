@@ -141,10 +141,10 @@ public class KIXDocument implements IModifiable, InformationSetSerializable, IDy
     @Override
     public boolean refresh() {
         indices.variables().stream()
-                .filter((variable) -> (variable instanceof IDynamicObject))
+                .filter(variable -> variable instanceof IDynamicObject)
                 .forEach(dynamicVariable -> ((IDynamicObject) dynamicVariable).refresh());
         weights.variables().stream()
-                .filter((variable) -> (variable instanceof IDynamicObject))
+                .filter(variable -> variable instanceof IDynamicObject)
                 .forEach(dynamicVariable -> ((IDynamicObject) dynamicVariable).refresh());
         return true;
     }
