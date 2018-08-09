@@ -67,6 +67,7 @@ public class Repository {
                 Optional<? extends IParser> optionalParser = Lookup.getDefault().lookupAll(IParser.class).stream().filter(x -> x.isValidControlCharacter(controlCharacter)).findFirst();
                 if (optionalParser.isPresent()) {
                     IParser x = optionalParser.get();
+                    x.clearErrorMessage();
                     TsData tsData = x.compute(formulaInputs[i].getFormula(), indices, weights);
                     String parserErrorMessage = x.getErrorMessage();
                     if (parserErrorMessage == null || parserErrorMessage.isEmpty()) {
@@ -101,16 +102,16 @@ public class Repository {
         formulaInputs = new FormulaInput[splitInput.length];
 
         for (int i = 0; i < splitInput.length; i++) {
-            String line = splitInput[i].replaceAll("\\s*", "");
+            String line = splitInput[i];
             String formulaName, formula;
             if (line.contains("=")) {
-                formulaName = line.substring(0, line.indexOf('='));
-                formula = line.substring(line.indexOf('='));
+                formulaName = line.substring(0, line.indexOf('=')).trim();
+                formula = line.substring(line.indexOf('=') + 1).trim();
             } else {
                 formulaName = "Formula " + (i + 1);
-                formula = line;
+                formula = line.trim();
             }
-            String controlCharacter = formula.split(",", 2)[0];
+            String controlCharacter = formula.split(",", 2)[0].trim();
             formulaInputs[i] = new FormulaInput(formulaName, controlCharacter, formula);
         }
     }
@@ -127,83 +128,4 @@ public class Repository {
             }
         }
     }
-
-//    //TODO komplette Implementierung
-//    @NbBundle.Messages({
-//        "# {0} - formula number",
-//        "ERR_CHECKDATA_NotDefinedFirstPeriod=Some data of formula {0} is not defined from their first period onward.",
-//        "# {0} - index series name",
-//        "# {1} - weighted series name",
-//        "# {2} - formula number",
-//        "ERR_CHECKDATA_IndexStartsBeforeWeights=The index series {0} begins before the corresponding weight series {1} in formula {2}.",
-//        "# {0} - index series name",
-//        "ERR_CHECKDATA_IndexNoStartDate=Index series {0} has no defined start date.",
-//        "# {0} - weighted series name",
-//        "ERR_CHECKDATA_WeightNoStartDate=Weight series {0} has no defined start date."
-//    })
-//    /**
-//     *
-//     * @param formula
-//     * @param j
-//     *
-//     */
-//    private void checkData(String[] formula, int j) {
-//        StringBuilder errortext = new StringBuilder();
-//        for (int i = 1; i < formula.length; i += 3) {
-//            if (indices.get(formula[i]).getDefinitionDomain() == null) {
-//                errortext.append(Bundle.ERR_CHECKDATA_IndexNoStartDate(formula[i]));
-//            }
-//            if (weights.get(formula[i + 1]).getDefinitionDomain() == null) {
-//                errortext.append(Bundle.ERR_CHECKDATA_WeightNoStartDate(formula[i + 1]));
-//            }
-//            TsPeriod indexStart = indices.get(formula[i]).getDefinitionDomain().getStart();
-//            TsPeriod weightStart = weights.get(formula[i + 1]).getDefinitionDomain().getStart();
-//
-//            if (!(indexStart.getPosition() == 0)
-//                    || !(weightStart.getPosition() == 0)) {
-//                //TODO Prüfung vervollständigen/verifizieren
-//                errortext.append(Bundle.ERR_CHECKDATA_NotDefinedFirstPeriod(j));
-//            }
-//            if (indexStart.isBefore(weightStart)) {
-//                errortext.append(Bundle.ERR_CHECKDATA_IndexStartsBeforeWeights(formula[i], formula[i + 1], j));
-//            }
-//        }
-//        if (errortext.length() > 0) {
-//        }
-//    }
-//
-//    /**
-//     *
-//     * @param formula
-//     * @param j
-//     *
-//     * @throws ec.nbdemetra.kix.KIXModel.InputException
-//     */
-//    private void checkWBG(String[] formula, int j, TsVariables indices) {
-//
-//        
-//        if (!(indices.get(formula[4]).getDefinitionDomain().getStart().isNotBefore(indices.get(formula[1]).getDefinitionDomain().getStart()))) {
-//            throw new InputException("The contributing index series (iContr) should not begin after the total index series (iTotal) in formula "
-//                    + j);
-//        }
-//    }
-//
-//    private void checkNaN(TsData data, String name) {
-//        if (data.hasMissingValues()) {
-//            throw new InputException("Missing values in " + name);
-//        }
-//    }
-//
-//    private void checkLag(TsData data, int lag, int j) {
-//        if (data.getFrequency() == TsFrequency.Monthly && lag != 1 && lag != 3 && lag != 6 && lag != 12) {
-//            throw new InputException("In formula" + j + ": Only lag 1,3,6 or 12 allowed for monthly data");
-//        }
-//        if (data.getFrequency() == TsFrequency.Quarterly && lag != 1 && lag != 2 && lag != 4) {
-//            throw new InputException("In formula" + j + ": Only lag 1,2 or 4 allowed for quarterly data");
-//        }
-//    }
-//
-//    private String addMissingWeights(String input) {
-//        return input.replaceAll("i((?:\\d)+)(?=,(((([\\+\\-]){1}|i(\\d)+),)|(\\d)+))", "i$1,w$1");
-//    }
 }

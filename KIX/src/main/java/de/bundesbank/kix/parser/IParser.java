@@ -33,4 +33,6 @@ public interface IParser {
 
     String getErrorMessage();
 
+    void clearErrorMessage();
+
 }

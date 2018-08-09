@@ -12,6 +12,8 @@ import ec.tstoolkit.timeseries.regression.TsVariables;
 import ec.tstoolkit.timeseries.simplets.TsData;
 import ec.tstoolkit.timeseries.simplets.TsDomain;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -33,6 +35,11 @@ public abstract class AbstractParser implements IParser {
         this.errorMessage = input;
     }
 
+    @Override
+    public void clearErrorMessage() {
+        this.errorMessage = "";
+    }
+
     protected final TsData extractData(final ITsVariable input) {
         if (input instanceof TsVariable) {
             return ((TsVariable) input).getTsData();
@@ -45,19 +52,19 @@ public abstract class AbstractParser implements IParser {
     }
 
     protected final boolean isDataAvailable(final String[] input, final TsVariables indices, final TsVariables weights) {
-        StringBuilder errors = new StringBuilder("The following data is not available:");
-        boolean isDataAvailable = true;
-        for (String string : input) {
+        Set<String> missingData = new TreeSet<>();
+        for (int i = 1; i < input.length - 1; i++) {
+            String string = input[i];
             if ((string.startsWith("i") && !indices.contains(string))
                     || (string.startsWith("w") && !weights.contains(string))) {
-                errors.append(" ").append(string);
-                isDataAvailable = false;
+                missingData.add(string);
             }
         }
-        if (!isDataAvailable) {
-            setErrorMessage(errors.toString());
+        if (!missingData.isEmpty()) {
+            setErrorMessage("The following data is not available: " + String.join(" ", missingData));
+            return false;
         }
-        return isDataAvailable;
+        return true;
     }
 
 }
