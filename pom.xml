@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.bundesbank</groupId>
     <artifactId>KIXParent</artifactId>
-    <version>2.2.0.4</version>
+    <version>2.2.2</version>
     <packaging>pom</packaging>
 
     <name>KIX - Parent</name>
@@ -18,7 +18,7 @@
         <brandingToken>bundesbank</brandingToken>
         <jdk.version>1.8</jdk.version>
         <netbeans.version>RELEASE82</netbeans.version>
-        <jdemetra.version>2.2.0</jdemetra.version>
+        <jdemetra.version>2.2.2</jdemetra.version>
         <!-- plugins versions > -->
         <maven-compiler-plugin.version>3.6.0</maven-compiler-plugin.version>
         <maven-jar-plugin.version>2.6</maven-jar-plugin.version>
@@ -26,7 +26,7 @@
         <maven-enforcer-plugin.version>1.4</maven-enforcer-plugin.version>
         <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
         <findbugs-maven-plugin.version>3.0.3</findbugs-maven-plugin.version>
-        <animal-sniffer-maven-plugin.version>1.14</animal-sniffer-maven-plugin.version>
+        <animal-sniffer-maven-plugin.version>1.16</animal-sniffer-maven-plugin.version>
         <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
         <nbm-maven-plugin.version>3.14</nbm-maven-plugin.version>
         <!-- < plugins versions -->
@@ -263,15 +263,15 @@
             </snapshots>
         </repository>
         <repository>
-            <id>joinup-releases</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
+            <id>oss-jfrog-artifactory-releases</id>
+            <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
         </repository>
         <repository>
-            <id>joinup-snapshots</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
+            <id>oss-jfrog-artifactory-snapshots</id>
+            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
